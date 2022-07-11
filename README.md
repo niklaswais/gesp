@@ -6,7 +6,7 @@ The federal and state governments in Germany make court decisions available for 
 A call without command-line argument will result in the retrival of **all** available court decisions regardless of state or court type. If only a **subset** is to be downloaded, the arguments **"-s"** (followed by abbreviations of states) and **"-t"** (followed by abbreviations of court types) can be used. Multiple states or court types are separated by a comma.
 ```Shell
 gesp.py -s bund,by,hh,nw -c bgh,ag,lg,olg
-
+```
 
 ### B. Results
 If no specific path is passed, gesp will create a folder for the results in the program folder. The name of the folder is based on the date and time of execution. 
