@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 __version__ = "0.1"
 __author__ = "Niklas Wais"
-__licence__ = "GPLv3"
+__licence__ = "MIT"
 
 import argparse
 import datetime
@@ -98,6 +98,8 @@ def main():
         rnr.crawl(hh.SpdrHH, path=path, courts=cl_courts, domains=cl_domains)
     if ("nw" in cl_states or not cl_states):
         rnr.crawl(nw.SpdrNW, path=path, courts=cl_courts, domains=cl_domains)
+    if ("mv" in cl_states or not cl_states):
+        rnr.crawl(mv.SpdrMV, path=path, courts=cl_courts, domains=cl_domains)
     d = rnr.join()
     d.addBoth(lambda _: reactor.stop())
     reactor.run()

@@ -22,5 +22,4 @@ class PrePipeline:
             item["date"] = item["date"].strip()
             item["date"] = datetime.datetime.strptime(item["date"], "%d.%m.%Y").strftime("%Y%m%d")
         # Weitergabe an die individuellen Pipelines
-        print(item["court"])
         return item
