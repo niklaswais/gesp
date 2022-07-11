@@ -104,6 +104,8 @@ def main():
         rnr.crawl(rp.SpdrRP, path=path, courts=cl_courts, domains=cl_domains)
     if ("sl" in cl_states or not cl_states):
         rnr.crawl(sl.SpdrSL, path=path, courts=cl_courts, domains=cl_domains)
+    if ("st" in cl_states or not cl_states):
+        rnr.crawl(st.SpdrST, path=path, courts=cl_courts, domains=cl_domains)
     d = rnr.join()
     d.addBoth(lambda _: reactor.stop())
     reactor.run()
