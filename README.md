@@ -8,8 +8,13 @@ A call without command-line argument will result in the retrival of **all** avai
 gesp.py -s bund,by,hh,nw -c bgh,ag,lg,olg
 ```
 
+A specific path under which the decisions are to be stored can be specified with the argument "-p". If the folder has not been created yet, gesp will take care of that.
+```Shell
+gesp.py -p path/to/folder
+```
+
 ### B. Results
-If no specific path is passed, gesp will create a folder for the results in the program folder. The name of the folder is based on the date and time of execution. 
+If no specific path is passed with "-p", gesp will create a folder for the results in the program folder. The name of the folder is based on the date and time of execution.
 
 ### C. Appendix
 #### 1. Abbreviations for "-s" (federal/states)
@@ -49,7 +54,7 @@ If no specific path is passed, gesp will create a folder for the results in the 
 | Landesarbeitsgerichte | *lag* |
 | Landgerichte | *lg* |
 | Landessozialgerichte | *lsg* |
-| Oberlandesgerichte (inkl. KG, BayObLG) | *olg* |
-| Oberverwaltungsgerichte (inkl. vgh) | *ovg* |
+| Oberlandesgerichte (incl. KG, BayObLG) | *olg* |
+| Oberverwaltungsgerichte (incl. vgh) | *ovg* |
 | Sozialgerichte | *sg* |
  
