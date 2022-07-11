@@ -4,5 +4,8 @@ The federal and state governments in Germany make court decisions available for 
 
 ### Usage
 
-A call without command-line argument results in retrieving **all** available court decisions regardless of state or court type. If only a **subset** is to be downloaded, the arguments **"-s"** (followed by abbreviations of states) and **"-t"** (followed by abbreviations of court types) can be used.
+A call without command-line argument will result in the retrival of **all** available court decisions regardless of state or court type. If only a **subset** is to be downloaded, the arguments **"-s"** (followed by abbreviations of states) and **"-t"** (followed by abbreviations of court types) can be used.
+```
+gesp.py -s bund,by,hh,nw -c bgh,ag,lg,olg
+´´´
 
