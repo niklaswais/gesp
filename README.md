@@ -13,6 +13,8 @@ If no specific path is passed, gesp will create a folder for the results in the 
 
 ### C. Appendix
 #### 1. Abbreviations for "-s" (federal/states)
+| Name | Abbreviation |
+| --- | --- |
 | Federal | *bund* |
 | Baden-Württemberg | *bw* |
 | Bavaria | *by* |
@@ -32,6 +34,8 @@ If no specific path is passed, gesp will create a folder for the results in the 
 | Thuringia | *th* |
 
 #### 2. Abbreviations for "-c" (court types)
+| Name | Abbreviation |
+| --- | --- |
 | Amtsgerichte | *ag* |
 | Arbeitsgerichte | *arbg* |
 | Bundesgerichtshof | *bgh* |
