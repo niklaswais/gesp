@@ -1,0 +1,121 @@
+# -*- coding: utf-8 -*-
+import datetime
+import re
+import scrapy
+from pipelines import pre, nw, post
+from output import output
+
+
+class SpdrNW(scrapy.Spider):
+    name = "spider_nw"
+    base_url = "https://www.justiz.nrw.de/BS/nrwe2/index.php"
+    custom_settings = {
+        "ITEM_PIPELINES": { 
+            pre.PrePipeline: 100,
+            nw.NWPipeline: 200,
+            post.PostPipeline: 300
+        }
+    }
+
+    def __init__(self, path, courts="", domains="", **kwargs):
+        self.path = path
+        self.courts = courts
+        self.domains = domains
+        super().__init__(**kwargs)
+
+    def start_requests(self):
+        start_req_bodies = []
+        self.headers = {
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+            "Accept-Language": "de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7",
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "Content-Type": "application/x-www-form-urlencoded",
+            "Origin": "https://www.justiz.nrw.de",
+            "Pragma": "no-cache",
+            "Referer": "https://www.justiz.nrw.de/BS/nrwe2/index.php",
+            "Sec-Fetch-Dest": "document",
+            "Sec-Fetch-Mode": "navigate",
+            "Sec-Fetch-Site": "same-origin",
+            "Sec-Fetch-User": "?1",
+            "Upgrade-Insecure-Requests": "1",
+            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.53 Safari/537.36",
+            "sec-ch-ua": "\"Chromium\";v=\"103\", \".Not/A)Brand\";v=\"99\"",
+            "sec-ch-ua-mobile": "?0",
+            "sec-ch-ua-platform": "\"Linux\""
+        }
+        date_from = "23.5.1949"
+        date_until = datetime.datetime.today().strftime("%d.%m.%Y")
+        body = "gerichtstyp={}&gerichtsbarkeit={}&gerichtsort=Alle+Gerichtsorte&entscheidungsart=&date=&von={}&bis={}&validFrom=&von2=&bis2=&aktenzeichen=&schlagwoerter=&q=&method=stem&qSize=100&sortieren_nach=datum_absteigend&absenden=Suchen&advanced_search=true"
+        if self.courts:
+            if "ag" in self.courts:
+                start_req_bodies.append(body.format("Amtsgericht", "Ordentliche+Gerichtsbarkeit", date_from, date_until))
+            if "arbg" in self.courts:
+                start_req_bodies.append(body.format("Arbeitsgericht", "Arbeitsgerichtsbarkeit", date_from, date_until))
+            if "fg" in self.courts:
+                start_req_bodies.append(body.format("Finanzgericht", "Finanzgerichtsbarkeit", date_from, date_until))
+            if "lag" in self.courts:
+                start_req_bodies.append(body.format("Landesarbeitsgericht", "Arbeitsgerichtsbarkeit", date_from, date_until))
+            if "lg" in self.courts:
+                start_req_bodies.append(body.format("Landgericht", "Ordentliche+Gerichtsbarkeit", date_from, date_until))
+            if "lsg" in self.courts:
+                start_req_bodies.append(body.format("Landessozialgericht", "Sozialgerichtsbarkeit", date_from, date_until))
+            if "olg" in self.courts:
+                start_req_bodies.append(body.format("Oberlandesgericht", "Ordentliche+Gerichtsbarkeit", date_from, date_until))
+            if "ovg" in self.courts:
+                start_req_bodies.append(body.format("Oberverwaltungsgericht", "Verwaltungsgerichtsbarkeit", date_from, date_until))
+            if "sg" in self.courts:
+                start_req_bodies.append(body.format("Sozialgericht", "Sozialgerichtsbarkeit", date_from, date_until))
+            if "vg" in self.courts:
+                start_req_bodies.append(body.format("Verwaltungsgericht", "Verwaltungsgerichtsbarkeit", date_from, date_until))
+        else:
+            start_req_bodies.append(body.format("","", date_from, date_until))
+        for start_req_body in start_req_bodies:
+            yield scrapy.Request(url=self.base_url, method="POST", headers=self.headers, body=start_req_body, meta={"body":start_req_body, "page":1}, dont_filter=True, callback=self.parse)
+    
+    def parse(self, response):
+        yield self.extract_data(response)
+        if response.xpath("//input[@value='>']"): # Button für nächste Seite
+            page = response.meta["page"] + 1
+            body = "page" + str(page) + "=%3E&" + response.meta["body"]
+            yield scrapy.Request(url=self.base_url, method="POST", headers=self.headers, body=body, meta={"body":response.meta["body"], "page":page}, dont_filter=True, callback=self.parse)
+
+
+    def extract_data(self, response):
+        if response.xpath("//div[@class='alleErgebnisse']"):
+            for res_div in response.xpath("//div[@class='einErgebnis']"):
+                r = {
+                    "court": res_div.xpath("text()[1]").get().strip()[9:],
+                    "date": res_div.xpath("text()[5]").get().strip()[21:],
+                    "az": res_div.xpath("text()[3]").get().strip()[14:],
+                    "link": res_div.xpath(".//a/@href").get(),
+                }
+                return r
+        else:
+            output("blank search results page", "warn")
+
+#    def parse(self, response):
+#        if not response.xpath("//p[@class='FehlerMeldung']"): #  Hinweis-Seite ohne Suchergebnisse, d.h. alle Seiten für das Jahr wurden durchgegangen
+#            for doc_link in response.xpath("//a[@class='doklink']"):
+#                if self.courts:
+#                    # Auswahl notwendig, da ArbG & LAG == Arbeitsgerichte, SG & LSG == Sozialgerichte, VG & VGH == Verwaltungserichte
+#                    # Nur wenn self.courts, um Geschwindigkeit (XPath...) bei ungefiltertem Durchgang nicht zu bremsen
+#                    doc_court = doc_link.xpath("../../td[@class='EGericht']/text()").get().split()[0].lower()
+#                    if not doc_court in self.courts:
+#                        continue
+#                    # Wenn Rechtsgebiet ausgewählt weitere Unterscheidung notwendig, da ag + lg + olg == Straf UND Zivil
+#                    # ggf. Filtern nach Aktenzeichen?
+#                    if "straf" in self.domains and not "zivil" in self.domains:
+#                        output("filter (-s bw -d straf) not yet implemented", "warn")
+#                        # Ausbauen ....
+#                    elif "zivil" in self.domains and not "straf" in self.domains:
+#                        output("filter (-s bw -d zivil) not yet implemented", "warn")
+#                        # Ausbauen ....            
+#                yield {
+#                    "court": doc_link.xpath("../../td[@class='EGericht']/text()").get(),
+#                    "date": doc_link.xpath("../../td[@class='EDatum']/text()").get(),
+#                    "az": doc_link.xpath("text()").get(),
+#                    "link": self.base_url + doc_link.xpath("@href").get() + "&Blank=1"
+#                }
+#        if response.xpath("//img[@title='nächste Seite']"):
+#            yield response.follow(response.xpath("//img[@title='nächste Seite']/../@href").get(), callback=self.parse)
