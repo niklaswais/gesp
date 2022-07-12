@@ -14,7 +14,7 @@ from twisted.internet import reactor
 from spiders import *
 from output import output
 
-COURTS = ["ag", "arbg", "bgh", "bfh", "bverwg", "bverfg", "bpatg", "bag", "bsg", "fg", "lag", "lg", "lsg", "olg", "ovg", "sg"] # vgh = ovg
+COURTS = ["ag", "arbg", "bgh", "bfh", "bverwg", "bverfg", "bpatg", "bag", "bsg", "fg", "lag", "lg", "lsg", "olg", "ovg", "sg", "vg"] # vgh = ovg
 STATES = ["bund", "bw", "by", "be", "bb", "hb", "hh", "he", "mv", "ni", "nw", "rp", "sl", "sn", "st", "sh", "th"]
 DOMAINS = ["oeff", "zivil", "straf"]
 
@@ -54,10 +54,13 @@ def main():
     # -c (courts)
     if (args.courts):
         for court in args.courts.split(","):
-            if (not court in COURTS and court != "larbg"):
+            if (not court in COURTS and court != "larbg" and court != "vgh"):
                 output("unknown court '" + court + "'", "err")
             elif (court == "larbg"): # larbg = lag
                 output("court '" + court + "' is interpreted as 'lag'", "warn")
+                cl_courts.append("lag")
+            elif (court == "vgh"): # vgh = ovg
+                output("court '" + court + "' is interpreted as 'ovg'", "warn")
                 cl_courts.append("lag")
             else:
                 cl_courts.append(court)
@@ -96,10 +99,12 @@ def main():
         rnr.crawl(he.SpdrHE, path=path, courts=cl_courts, domains=cl_domains)
     if ("hh" in cl_states or not cl_states):
         rnr.crawl(hh.SpdrHH, path=path, courts=cl_courts, domains=cl_domains)
-    if ("nw" in cl_states or not cl_states):
-        rnr.crawl(nw.SpdrNW, path=path, courts=cl_courts, domains=cl_domains)
     if ("mv" in cl_states or not cl_states):
         rnr.crawl(mv.SpdrMV, path=path, courts=cl_courts, domains=cl_domains)
+    if ("ni" in cl_states or not cl_states):
+        rnr.crawl(ni.SpdrNI, path=path, courts=cl_courts, domains=cl_domains)
+    if ("nw" in cl_states or not cl_states):
+        rnr.crawl(nw.SpdrNW, path=path, courts=cl_courts, domains=cl_domains)
     if ("rp" in cl_states or not cl_states):
         rnr.crawl(rp.SpdrRP, path=path, courts=cl_courts, domains=cl_domains)
     if ("sl" in cl_states or not cl_states):
