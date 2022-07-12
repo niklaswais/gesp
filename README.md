@@ -13,7 +13,7 @@ A specific path under which the decisions are to be stored can be specified with
 gesp.py -p path/to/folder
 ```
 
-An existing fingerprint (see C.) can be used to reconstruct a dataset. To do so, the path to the fingerprint file must be passed as an argument using "-fp". Naturally, "-c" and "-s" arguments are not allowed in this case.
+An existing fingerprint (see C.) can be used to **reconstruct** a dataset. To do so, the path to the fingerprint file must be passed as an argument using "-fp". Naturally, "-c" and "-s" arguments are not allowed in this case.
 ```Shell
 gesp.py -fp /path/to/fingerprint
 ```
