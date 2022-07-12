@@ -3,7 +3,7 @@
 The federal and state governments in Germany make court decisions available for download on individual online platforms. In addition to the lack of uniformity, these platforms only allow individual retrieval out of the box. With gesp, decisions can be downloaded in large quantities in a filter-based and reproducible manner.
 
 ### A. Usage
-A call without command-line argument will result in the retrival of **all** available court decisions regardless of state or court type. If only a **subset** is to be downloaded, the arguments **"-s"** (followed by abbreviations of states) and **"-t"** (followed by abbreviations of court types) can be used. Multiple states or court types are separated by a comma.
+A call without command-line argument will result in the retrival of **all** available court decisions regardless of state or court type. If only a **subset** is to be downloaded, the arguments **"-s"** (followed by abbreviations of states) and **"-t"** (followed by abbreviations of court types) can be used. Multiple states or court types are separated by commas.
 ```Shell
 gesp.py -s bund,by,hh,nw -c bgh,ag,lg,olg
 ```
@@ -14,7 +14,7 @@ gesp.py -p path/to/folder
 ```
 
 ### B. Results
-If no specific path is passed with "-p", gesp will create a folder for the results in the program folder. The name of the folder is based on the date and time of execution.
+If no specific path is passed with "-p", gesp will create a folder for the results in the program folder. The name of the folder is based on the date and time of execution to avoid conflicts in subsequent runs. Decisions that are available as **html/xhtml** files are preferentially downloaded as such. However, some federal states unfortunately provide decisions only as pdf files. The editable documents are minimally cleaned up (e.g., print dialogs and navigation menus are removed), but **not pre-processed**.
 
 ### C. Appendix
 #### 1. Abbreviations for "-s" (federal/states)
