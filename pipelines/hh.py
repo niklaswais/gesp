@@ -14,7 +14,6 @@ class HHPipeline:
         for term in cut_at:
             if term in item["court"]:
                 item["court"] = item["court"].split(term)[0]
-        item["court"] = item["court"].strip()
         #  Eigennamen entfernen
         names = ["hanseatisches-", "hamburgisches-"]
         for name in names:

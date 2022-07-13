@@ -86,13 +86,13 @@ class SpdrBE(scrapy.Spider):
         if "resultList" in results:
             for result in results["resultList"]:
                 r = {
-                        "court": result["titleList"][0],
-                        "date": result["date"],
-                        "az": result["titleList"][1],
-                        "link": "https://gesetze.berlin.de/bsbe/document/" + result["docId"],
-                        "docId": result["docId"],
-                        "xcsrft" : self.headers["x-csrf-token"] 
-                    }
+                    "court": result["titleList"][0],
+                    "date": result["date"],
+                    "az": result["titleList"][1],
+                    "link": "https://gesetze.berlin.de/bsbe/document/" + result["docId"],
+                    "docId": result["docId"],
+                    "xcsrft" : self.headers["x-csrf-token"] 
+                }
                 if self.filter:
                     for f in self.filter:
                         if r["court"][0:len(f)].lower() == f:
