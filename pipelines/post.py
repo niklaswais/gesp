@@ -15,8 +15,7 @@ class PostPipeline:
 
     def process_item(self, item, spider):
         output("downloading " + item["link"] + "...")
-        if spider.name == "spider_bund":
-            # Sonderfall Bund: *.zip mit *.xml
+        if spider.name == "spider_bund": # Sonderfall Bund: *.zip mit *.xml
             filename = item["court"] + "_" + item["date"] + "_" + item["az"] + ".xml"
             try:
                 with ZipFile(BytesIO((requests.get(item["link"]).content))) as zip_ref: # Im RAM entpacken

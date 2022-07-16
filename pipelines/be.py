@@ -21,7 +21,7 @@ class BEPipeline:
             if key in item["court"]:
                  item["court"] = item["court"].replace(key, courts[key])
         # item["text"]: Berlin ist JSON-Post-Response
-        url = 'https://gesetze.berlin.de/jportal/wsrest/recherche3/document'
+        url = "https://gesetze.berlin.de/jportal/wsrest/recherche3/document"
         headers = spider.headers
         headers["Referer"] = "https://gesetze.berlin.de/bsbe/document/" + item["docId"]
         date = str(datetime.date.today())

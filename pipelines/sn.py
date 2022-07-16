@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import os
-from attr import asdict
 import requests
 from lxml import html
 from output import output
