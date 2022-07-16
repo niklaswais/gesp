@@ -95,10 +95,12 @@ def main():
         rnr.crawl(be.SpdrBE, path=path, courts=cl_courts, domains=cl_domains)
     if ("bb" in cl_states or not cl_states):
         rnr.crawl(bb.SpdrBB, path=path, courts=cl_courts, domains=cl_domains)
-    if ("he" in cl_states or not cl_states):
-        rnr.crawl(he.SpdrHE, path=path, courts=cl_courts, domains=cl_domains)
+    if ("hb" in cl_states or not cl_states):
+        rnr.crawl(hb.SpdrHB, path=path, courts=cl_courts, domains=cl_domains)
     if ("hh" in cl_states or not cl_states):
         rnr.crawl(hh.SpdrHH, path=path, courts=cl_courts, domains=cl_domains)
+    if ("he" in cl_states or not cl_states):
+        rnr.crawl(he.SpdrHE, path=path, courts=cl_courts, domains=cl_domains)
     if ("mv" in cl_states or not cl_states):
         rnr.crawl(mv.SpdrMV, path=path, courts=cl_courts, domains=cl_domains)
     if ("ni" in cl_states or not cl_states):
