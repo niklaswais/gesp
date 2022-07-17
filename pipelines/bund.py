@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-COURTS = ["bgh", "bfh", "bverwg", "bverfg", "bpatg", "bag", "bsg"]
 
 class BundPipeline:
     def process_item(self, item, spider):
         # Gerichtsname
+        COURTS = ["bgh", "bfh", "bverwg", "bverfg", "bpatg", "bag", "bsg"]
         item["court"] = item["court"].lower()
         for c in COURTS:
             if c in item["court"].split():

@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-import datetime
-import json
 import scrapy
 from pipelines import pre, sh, post
 

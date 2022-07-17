@@ -2,7 +2,7 @@
 import datetime
 import scrapy
 from pipelines import pre, bw, post
-from output import output
+from src.output import output
 
 class SpdrBW(scrapy.Spider):
     name = "spider_bw"

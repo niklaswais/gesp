@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import scrapy
 from pipelines import pre, hb
-from output import output
+from src.output import output
 
 class SpdrHB(scrapy.Spider):
     name = "spider_hb"

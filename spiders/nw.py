@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 import datetime
-import re
 import scrapy
 from pipelines import pre, nw, post
-from output import output
+from src.output import output
 
 
 class SpdrNW(scrapy.Spider):
@@ -92,30 +91,4 @@ class SpdrNW(scrapy.Spider):
                 }
                 return r
         else:
-            output("blank search results page", "warn")
-
-#    def parse(self, response):
-#        if not response.xpath("//p[@class='FehlerMeldung']"): #  Hinweis-Seite ohne Suchergebnisse, d.h. alle Seiten für das Jahr wurden durchgegangen
-#            for doc_link in response.xpath("//a[@class='doklink']"):
-#                if self.courts:
-#                    # Auswahl notwendig, da ArbG & LAG == Arbeitsgerichte, SG & LSG == Sozialgerichte, VG & VGH == Verwaltungserichte
-#                    # Nur wenn self.courts, um Geschwindigkeit (XPath...) bei ungefiltertem Durchgang nicht zu bremsen
-#                    doc_court = doc_link.xpath("../../td[@class='EGericht']/text()").get().split()[0].lower()
-#                    if not doc_court in self.courts:
-#                        continue
-#                    # Wenn Rechtsgebiet ausgewählt weitere Unterscheidung notwendig, da ag + lg + olg == Straf UND Zivil
-#                    # ggf. Filtern nach Aktenzeichen?
-#                    if "straf" in self.domains and not "zivil" in self.domains:
-#                        output("filter (-s bw -d straf) not yet implemented", "warn")
-#                        # Ausbauen ....
-#                    elif "zivil" in self.domains and not "straf" in self.domains:
-#                        output("filter (-s bw -d zivil) not yet implemented", "warn")
-#                        # Ausbauen ....            
-#                yield {
-#                    "court": doc_link.xpath("../../td[@class='EGericht']/text()").get(),
-#                    "date": doc_link.xpath("../../td[@class='EDatum']/text()").get(),
-#                    "az": doc_link.xpath("text()").get(),
-#                    "link": self.base_url + doc_link.xpath("@href").get() + "&Blank=1"
-#                }
-#        if response.xpath("//img[@title='nächste Seite']"):
-#            yield response.follow(response.xpath("//img[@title='nächste Seite']/../@href").get(), callback=self.parse)
+            output(f"blank search results page {response.url}", "warn")

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import re
 from lxml import html
-from output import output
+from src.output import output
 
 class BBPipeline:
     def process_item(self, item, spider):

@@ -3,7 +3,7 @@ import datetime
 import re
 import requests
 from lxml import html
-from output import output
+from src.output import output
 
 class HHPipeline:
     def process_item(self, item, spider):

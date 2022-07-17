@@ -2,7 +2,7 @@
 import os
 import requests
 from io import BytesIO
-from output import output
+from src.output import output
 from zipfile import ZipFile
 
 class PostPipeline:
@@ -35,4 +35,3 @@ class PostPipeline:
                     output(f"could not create file {filename}", "err")
             else:
                 output("could not retrieve " + item["link"], "err")
-                

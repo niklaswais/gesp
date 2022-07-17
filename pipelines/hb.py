@@ -2,7 +2,7 @@
 import os
 import requests
 from lxml import html
-from output import output
+from src.output import output
 
 class HBPipeline:
     def open_spider(self, spider):
@@ -26,4 +26,3 @@ class HBPipeline:
                         f.write(req.content)
                 except:
                     output(f"could not create file {filename}", "err")
-

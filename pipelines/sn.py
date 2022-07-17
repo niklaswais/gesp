@@ -2,7 +2,7 @@
 import os
 import requests
 from lxml import html
-from output import output
+from src.output import output
 
 class SNPipeline:
     def open_spider(self, spider):
@@ -46,4 +46,3 @@ class SNPipeline:
                     f.write(req.content)
             except:
                 output(f"could not create file {filename}", "err")
-

@@ -2,7 +2,7 @@
 import re
 import scrapy
 from pipelines import pre, by, post
-from output import output
+from src.output import output
 
 class SpdrBY(scrapy.Spider):
     name = "spider_by"

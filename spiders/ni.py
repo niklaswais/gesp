@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 import scrapy
-from lxml import html
 from pipelines import pre, ni, post
-from output import output
+from src.output import output
 
 class SpdrNI(scrapy.Spider):
     name = "spider_ni"
