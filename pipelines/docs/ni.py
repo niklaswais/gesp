@@ -1,13 +1,10 @@
 # -*- coding: utf-8 -*-
-import re
 import requests
 from lxml import html
 from src.output import output
 
-class NIPipeline:
+class NIToTextPipeline:
     def process_item(self, item, spider):
-        #Senate/Kammern abschneiden
-        item["court"] = re.split(r"([-]?\d+)", item["court"])[0]
         # Entscheidungstext bereinigen (kein Menü etc.)
         try:
             tree = html.fromstring(requests.get(item["link"]).text)

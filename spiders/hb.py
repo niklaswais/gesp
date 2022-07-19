@@ -12,9 +12,10 @@ class SpdrHB(scrapy.Spider):
         }
     }
 
-    def __init__(self, path, courts="", domains="", **kwargs):
+    def __init__(self, path, courts="", states="", domains="", **kwargs):
         self.path = path
         self.courts = courts
+        self.states = states
         self.domains = domains
         super().__init__(**kwargs)
 

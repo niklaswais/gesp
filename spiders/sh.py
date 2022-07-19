@@ -12,9 +12,10 @@ class SpdrSH(scrapy.Spider):
             post.PostPipeline: 300        
         }
     }
-    def __init__(self, path, courts="", domains="", **kwargs):
+    def __init__(self, path, courts="", states="", domains="", **kwargs):
         self.path = path
         self.courts = courts
+        self.states = states
         self.domains = domains
         self.filter = []
         if "ag" in self.courts: self.filter.append("ag")

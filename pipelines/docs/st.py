@@ -1,24 +1,11 @@
 # -*- coding: utf-8 -*-
 import datetime
-import re
 import requests
 from lxml import html
 from src.output import output
 
-class STPipeline:
+class STToTextPipeline:
     def process_item(self, item, spider):
-        # Senate / Kammern abschneiden 
-        item["court"] = re.split(r"([-]?\d+)", item["court"])[0]
-        #  Eigennamen entfernen
-        names = ["-des-landes-sachsen-anhalt", "-sachsen-anhalt"]
-        for name in names:
-                if name in item["court"]:
-                    item["court"] = item["court"].replace(name, "")
-        # Gerichtstypen abkürzen
-        courts = {"finanzgericht": "fg", "landesarbeitsgericht": "lag", "landessozialgericht": "lsg", "oberlandesgericht":"olg", "oberverwaltungsgericht": "ovg", "landesverfassungsgericht": "verfgh" }
-        for key in courts:
-            if key in item["court"]:
-                item["court"] = item["court"].replace(key, courts[key])
         # item["text"]: Sachsen-Anhalt ist JSON-Post-Response
         url = "https://www.landesrecht.sachsen-anhalt.de/jportal/wsrest/recherche3/document"
         headers = spider.headers

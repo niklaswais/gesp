@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-class BundPipeline:
+class BundCourtPipeline:
     def process_item(self, item, spider):
         # Gerichtsname
         COURTS = ["bgh", "bfh", "bverwg", "bverfg", "bpatg", "bag", "bsg"]

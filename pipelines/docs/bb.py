@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-import re
+import requests
 from lxml import html
 from src.output import output
 
-class BBPipeline:
+class BBToTextPipeline:
     def process_item(self, item, spider):
-        #Senate/Kammern abschneiden
-        item["court"] = re.split(r"([-]?\d+)", item["court"])[0]
+        if not "tree" in item:
+            item["tree"] = html.fromstring(requests.get(item["link"]).text)
         if not item["tree"].xpath("//h1[@id='header']/text()")[0].rstrip().strip() == "Entscheidung": # Herausfiltern von leeren Seiten
             # Dokument Aufräumen (nur bestimmte Bereiche übernehmen)...
             body_meta = html.tostring(item["tree"].xpath("//div[@id='metadata']")[0]).decode("utf-8")

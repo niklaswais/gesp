@@ -15,9 +15,10 @@ class SpdrBB(scrapy.Spider):
         }
     }
 
-    def __init__(self, path, courts="", domains="", **kwargs):
+    def __init__(self, path, courts="", states="", domains="", **kwargs):
         self.path = path
         self.courts = courts
+        self.states = states
         self.domains = domains
         super().__init__(**kwargs)
 
@@ -65,8 +66,7 @@ class SpdrBB(scrapy.Spider):
         for result in response.xpath("//table[@id='resultlist']/tbody/tr"):
             link = self.base_url + result.xpath(".//a/@href").get()
             # Herausfinden des AZ...
-            req = requests.get(link).text
-            tree = html.fromstring(req)
+            tree = html.fromstring(requests.get(link).text)
             az = tree.xpath("//div[@id='metadata']/div/table/tbody/tr[2]/td[1]/text()")[0]
             yield {
                     "court": result.xpath(".//td[5]/text()").get(),

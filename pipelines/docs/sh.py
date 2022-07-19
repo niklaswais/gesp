@@ -1,25 +1,12 @@
 # -*- coding: utf-8 -*-
-import re
 import requests
 from lxml import html
 from src.output import output
 
 HEADERS = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:101.0) Gecko/20100101 Firefox/101.0"}
 
-class SHPipeline:
+class SHToTextPipeline:
     def process_item(self, item, spider):
-        #Senate/Kammern abschneiden
-        item["court"] = re.split(r"([-]?\d+)", item["court"])[0]
-        # Eigennamen entfernen
-        names = ["schleswig-holsteinisches-", "-fuer-das-land-schleswig-holstein", "-schleswig-holstein"]
-        for name in names:
-            if name in item["court"]:
-                item["court"] = item["court"].replace(name, "")
-        # Gerichtstypen abkürzen
-        courts = {"finanzgericht":"fg", "landesarbeitsgericht":"lag", "landessozialgericht":"lsg", "landesverfassungsgericht":"verfgh", "oberlandesgericht":"olg", "oberverwaltungsgericht":"ovg", "verwaltungsgericht":"vg"}
-        for key in courts:
-            if key in item["court"]:
-                 item["court"] = item["court"].replace(key, courts[key])
         # Urteilsseite laden
         try:
             tree = html.fromstring(requests.get(item["link"], headers=HEADERS).text)

@@ -1,3 +1,5 @@
+#### KANN GELÖSCHT WERDEN (ist in exporters/pdf.py überführt)
+
 # -*- coding: utf-8 -*-
 import os
 import requests
