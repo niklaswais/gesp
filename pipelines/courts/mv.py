@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import re
-from src.output import output
 
 class MVCourtPipeline:
     def process_item(self, item, spider):
