@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import scrapy
-from pipelines import pre, bund, post
+from pipelines import pre, courts, post
+from pipelines.exporters import as_html, fp_lzma
 
 class SpdrBund(scrapy.Spider):
     name = "spider_bund"
@@ -8,15 +9,18 @@ class SpdrBund(scrapy.Spider):
     custom_settings = {
         "ITEM_PIPELINES": { 
             pre.PrePipeline: 100,
-            bund.BundPipeline: 200,
-            post.PostPipeline: 300        
+            courts.CourtsPipeline: 200,
+            post.PostPipeline: 300,
+            as_html.TextToHtmlExportPipeline: 400,
+            fp_lzma.FingerprintExportPipeline: 500  
         }
     }
 
-    def __init__(self, path, courts="", states="", domains="", **kwargs):
+    def __init__(self, path, courts="", states="", fp=False, domains="", **kwargs):
         self.path = path
         self.courts = courts
         self.states = states
+        self.fp = fp
         self.domains = domains
         if ("zivil" in domains and not any(court in courts for court in ["bgh", "bpatg", "bag"])):
             courts.extend(["bgh", "bpatg", "bag"])

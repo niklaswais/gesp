@@ -11,7 +11,6 @@ from twisted.internet import reactor
 from spiders import *
 import src.config
 from src.output import output
-from src.fingerprint import Fingerprint
 
 COURTS = ["ag", "arbg", "bgh", "bfh", "bverwg", "bverfg", "bpatg", "bag", "bsg", "fg", "lag", "lg", "lsg", "olg", "ovg", "sg", "vg"] # vgh = ovg
 STATES = ["bund", "bw", "by", "be", "bb", "hb", "hh", "he", "mv", "ni", "nw", "rp", "sl", "sn", "st", "sh", "th"]
@@ -28,7 +27,7 @@ def main():
     cl_parser.add_argument("-fp", "--fingerprint", action='store_true', help="creates a fingerprint file")
     args = cl_parser.parse_args()
     # -p (path)
-    path = os.path.dirname(os.path.realpath(__file__)) + "/" + datetime.datetime.now().strftime("%Y-%m-%d_%H-%M")
+    path = os.path.dirname(os.path.realpath(__file__)) + "/results/" + datetime.datetime.now().strftime("%Y-%m-%d_%H-%M")
     if (args.path):
         if os.path.isdir(args.path):
             path = args.path
@@ -71,6 +70,11 @@ def main():
                 output("unknown state '" + state + "'", "err")
             else:
                 cl_states.append(state)
+    # -fp (fingerprint)
+    if (args.fingerprint):
+        fp = True
+    else:
+        fp = False
     # -d (domains)
     if (args.domains):
         for domain in args.domains.split(","):
@@ -86,39 +90,39 @@ def main():
     logger.setLevel(logging.DEBUG)
     rnr = CrawlerRunner()
     if ("bund" in cl_states or not cl_states):
-        rnr.crawl(bund.SpdrBund, path=path, courts=cl_courts, cl_states=cl_states, domains=cl_domains)
+        rnr.crawl(bund.SpdrBund, path=path, courts=cl_courts, cl_states=cl_states, fp=fp, domains=cl_domains)
     if ("bw" in cl_states or not cl_states):
-        rnr.crawl(bw.SpdrBW, path=path, courts=cl_courts, cl_states=cl_states, domains=cl_domains)
+        rnr.crawl(bw.SpdrBW, path=path, courts=cl_courts, cl_states=cl_states, fp=fp, domains=cl_domains)
     if ("by" in cl_states or not cl_states):
-        rnr.crawl(by.SpdrBY, path=path, courts=cl_courts, cl_states=cl_states, domains=cl_domains)
+        rnr.crawl(by.SpdrBY, path=path, courts=cl_courts, cl_states=cl_states, fp=fp, domains=cl_domains)
     if ("be" in cl_states or not cl_states):
-        rnr.crawl(be.SpdrBE, path=path, courts=cl_courts, cl_states=cl_states, domains=cl_domains)
+        rnr.crawl(be.SpdrBE, path=path, courts=cl_courts, cl_states=cl_states, fp=fp, domains=cl_domains)
     if ("bb" in cl_states or not cl_states):
-        rnr.crawl(bb.SpdrBB, path=path, courts=cl_courts, cl_states=cl_states, domains=cl_domains)
+        rnr.crawl(bb.SpdrBB, path=path, courts=cl_courts, cl_states=cl_states, fp=fp, domains=cl_domains)
     if ("hb" in cl_states or not cl_states):
-        rnr.crawl(hb.SpdrHB, path=path, courts=cl_courts, cl_states=cl_states, domains=cl_domains)
+        rnr.crawl(hb.SpdrHB, path=path, courts=cl_courts, cl_states=cl_states, fp=fp, domains=cl_domains)
     if ("hh" in cl_states or not cl_states):
-        rnr.crawl(hh.SpdrHH, path=path, courts=cl_courts, cl_states=cl_states, domains=cl_domains)
+        rnr.crawl(hh.SpdrHH, path=path, courts=cl_courts, cl_states=cl_states, fp=fp, domains=cl_domains)
     if ("he" in cl_states or not cl_states):
-        rnr.crawl(he.SpdrHE, path=path, courts=cl_courts, cl_states=cl_states, domains=cl_domains)
+        rnr.crawl(he.SpdrHE, path=path, courts=cl_courts, cl_states=cl_states, fp=fp, domains=cl_domains)
     if ("mv" in cl_states or not cl_states):
-        rnr.crawl(mv.SpdrMV, path=path, courts=cl_courts, cl_states=cl_states, domains=cl_domains)
+        rnr.crawl(mv.SpdrMV, path=path, courts=cl_courts, cl_states=cl_states, fp=fp, domains=cl_domains)
     if ("ni" in cl_states or not cl_states):
-        rnr.crawl(ni.SpdrNI, path=path, courts=cl_courts, cl_states=cl_states, domains=cl_domains)
+        rnr.crawl(ni.SpdrNI, path=path, courts=cl_courts, cl_states=cl_states, fp=fp, domains=cl_domains)
     if ("nw" in cl_states or not cl_states):
-        rnr.crawl(nw.SpdrNW, path=path, courts=cl_courts, cl_states=cl_states, domains=cl_domains)
+        rnr.crawl(nw.SpdrNW, path=path, courts=cl_courts, cl_states=cl_states, fp=fp, domains=cl_domains)
     if ("rp" in cl_states or not cl_states):
-        rnr.crawl(rp.SpdrRP, path=path, courts=cl_courts, cl_states=cl_states, domains=cl_domains)
+        rnr.crawl(rp.SpdrRP, path=path, courts=cl_courts, cl_states=cl_states, fp=fp, domains=cl_domains)
     if ("sh" in cl_states or not cl_states):
-        rnr.crawl(sh.SpdrSH, path=path, courts=cl_courts, cl_states=cl_states, domains=cl_domains)
+        rnr.crawl(sh.SpdrSH, path=path, courts=cl_courts, cl_states=cl_states, fp=fp, domains=cl_domains)
     if ("sl" in cl_states or not cl_states):
-        rnr.crawl(sl.SpdrSL, path=path, courts=cl_courts, cl_states=cl_states, domains=cl_domains)
+        rnr.crawl(sl.SpdrSL, path=path, courts=cl_courts, cl_states=cl_states, fp=fp, domains=cl_domains)
     if ("sn" in cl_states or not cl_states):
-        rnr.crawl(sn.SpdrSN, path=path, courts=cl_courts, cl_states=cl_states, domains=cl_domains)
+        rnr.crawl(sn.SpdrSN, path=path, courts=cl_courts, cl_states=cl_states, fp=fp, domains=cl_domains)
     if ("st" in cl_states or not cl_states):
-        rnr.crawl(st.SpdrST, path=path, courts=cl_courts, cl_states=cl_states, domains=cl_domains)
+        rnr.crawl(st.SpdrST, path=path, courts=cl_courts, cl_states=cl_states, fp=fp, domains=cl_domains)
     if ("th" in cl_states or not cl_states):
-        rnr.crawl(th.SpdrTH, path=path, courts=cl_courts, cl_states=cl_states, domains=cl_domains)
+        rnr.crawl(th.SpdrTH, path=path, courts=cl_courts, cl_states=cl_states, fp=fp, domains=cl_domains)
     d = rnr.join()
     d.addBoth(lambda _: reactor.stop())
     reactor.run()

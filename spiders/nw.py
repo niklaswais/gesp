@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 import datetime
 import scrapy
-from pipelines import pre, nw, post
+from pipelines import pre, courts, post
+from pipelines.docs import nw
+from pipelines.exporters import as_html, fp_lzma
 from src.output import output
-
 
 class SpdrNW(scrapy.Spider):
     name = "spider_nw"
@@ -11,15 +12,19 @@ class SpdrNW(scrapy.Spider):
     custom_settings = {
         "ITEM_PIPELINES": { 
             pre.PrePipeline: 100,
-            nw.NWPipeline: 200,
-            post.PostPipeline: 300
+            courts.CourtsPipeline: 200,
+            post.PostPipeline: 300,
+            nw.NWToTextPipeline: 400,
+            as_html.TextToHtmlExportPipeline: 500,
+            fp_lzma.FingerprintExportPipeline: 600
         }
     }
 
-    def __init__(self, path, courts="", states="", domains="", **kwargs):
+    def __init__(self, path, courts="", states="", fp=False, domains="", **kwargs):
         self.path = path
         self.courts = courts
         self.states = states
+        self.fp = fp
         self.domains = domains
         super().__init__(**kwargs)
 
@@ -79,7 +84,6 @@ class SpdrNW(scrapy.Spider):
             page = response.meta["page"] + 1
             body = "page" + str(page) + "=%3E&" + response.meta["body"]
             yield scrapy.Request(url=self.base_url, method="POST", headers=self.headers, body=body, meta={"body":response.meta["body"], "page":page}, dont_filter=True, callback=self.parse)
-
 
     def extract_data(self, response):
         if response.xpath("//div[@class='alleErgebnisse']"):

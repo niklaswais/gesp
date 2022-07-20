@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import scrapy
-from pipelines import pre, ni, post
+from pipelines import pre, courts, post
+from pipelines.docs import ni
+from pipelines.exporters import as_html, fp_lzma
 from src.output import output
 
 class SpdrNI(scrapy.Spider):
@@ -9,15 +11,19 @@ class SpdrNI(scrapy.Spider):
     custom_settings = {
         "ITEM_PIPELINES": { 
             pre.PrePipeline: 100,
-            ni.NIPipeline: 200,
-            post.PostPipeline: 300
+            courts.CourtsPipeline: 200,
+            post.PostPipeline: 300,
+            ni.NIToTextPipeline: 400,
+            as_html.TextToHtmlExportPipeline: 500,
+            fp_lzma.FingerprintExportPipeline: 600
         }
     }
 
-    def __init__(self, path, courts="", states="", domains="", **kwargs):
+    def __init__(self, path, courts="", states="", fp=False, domains="", **kwargs):
         self.path = path
         self.courts = courts
         self.states = states
+        self.fp = fp
         self.domains = domains
         self.base_url = "https://www.rechtsprechung.niedersachsen.de/jportal/portal/"
         super().__init__(**kwargs)

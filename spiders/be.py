@@ -2,22 +2,28 @@
 import datetime
 import json
 import scrapy
-from pipelines import pre, be, post
+from pipelines import pre, courts, post
+from pipelines.docs import be
+from pipelines.exporters import as_html, fp_lzma
 
 class SpdrBE(scrapy.Spider):
     name = "spider_be"
     custom_settings = {
         "ITEM_PIPELINES": { 
             pre.PrePipeline: 100,
-            be.BEPipeline: 200,
-            post.PostPipeline: 300        
+            courts.CourtsPipeline: 200,
+            post.PostPipeline: 300,
+            be.BEToTextPipeline: 400,
+            as_html.TextToHtmlExportPipeline: 500,
+            fp_lzma.FingerprintExportPipeline: 600
         }
     }
 
-    def __init__(self, path, courts="", states="", domains="", **kwargs):
+    def __init__(self, path, courts="", states="", fp=False, domains="", **kwargs):
         self.path = path
         self.courts = courts
         self.states = states
+        self.fp = fp
         self.domains = domains
         self.filter = []
         if "ag" in self.courts: self.filter.append("ag")

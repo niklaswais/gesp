@@ -2,7 +2,9 @@
 import requests
 import scrapy
 from lxml import html
-from pipelines import pre, bb, post
+from pipelines import pre, courts, post
+from pipelines.docs import bb
+from pipelines.exporters import as_html, fp_lzma
 
 class SpdrBB(scrapy.Spider):
     name = "spider_bb"
@@ -10,20 +12,24 @@ class SpdrBB(scrapy.Spider):
     custom_settings = {
         "ITEM_PIPELINES": { 
             pre.PrePipeline: 100,
-            bb.BBPipeline: 200,
-            post.PostPipeline: 300
+            courts.CourtsPipeline: 200,
+            bb.BBToTextPipeline: 300,
+            post.PostPipeline: 400,
+            as_html.TextToHtmlExportPipeline: 500,
+            fp_lzma.FingerprintExportPipeline: 600
         }
     }
 
-    def __init__(self, path, courts="", states="", domains="", **kwargs):
+    def __init__(self, path, courts="", states="", fp=False, domains="", **kwargs):
         self.path = path
         self.courts = courts
         self.states = states
         self.domains = domains
+        self.fp = fp
         super().__init__(**kwargs)
 
     def start_requests(self):
-        start_urls = []
+        start_urls = []     
         base_url = self.base_url + "/suche?"
         if self.courts:
             if "ag" in self.courts:

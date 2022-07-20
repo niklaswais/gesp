@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 import re
 import scrapy
-from pipelines import pre, by, post
+from pipelines import pre, courts, post
+from pipelines.docs import by
+from pipelines.exporters import as_html, fp_lzma
 from src.output import output
 
 class SpdrBY(scrapy.Spider):
@@ -10,15 +12,19 @@ class SpdrBY(scrapy.Spider):
     custom_settings = {
         "ITEM_PIPELINES": { 
             pre.PrePipeline: 100,
-            by.BYPipeline: 200,
-            post.PostPipeline: 300        
+            courts.CourtsPipeline: 200,
+            post.PostPipeline: 300,
+            by.BYToTextPipeline: 400,
+            as_html.TextToHtmlExportPipeline: 500,
+            fp_lzma.FingerprintExportPipeline: 600    
         }
     }
 
-    def __init__(self, path, courts="", states="", domains="", **kwargs):
+    def __init__(self, path, courts="", states="", fp=False, domains="", **kwargs):
         self.path = path
         self.courts = courts
         self.states = states
+        self.fp = fp
         self.domains = domains
         super().__init__(**kwargs)
 

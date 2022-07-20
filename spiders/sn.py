@@ -3,21 +3,26 @@ import datetime
 import re
 import urllib
 import scrapy
-from pipelines import pre, sn
+from pipelines import pre, courts, post
+from pipelines.exporters import as_pdf, fp_lzma
 
 class SpdrSN(scrapy.Spider):
     name = "spider_sn"
     custom_settings = {
         "ITEM_PIPELINES": { 
             pre.PrePipeline: 100,
-            sn.SNPipeline: 200,
+            courts.CourtsPipeline: 200,
+            post.PostPipeline: 300,
+            as_pdf.PdfExportPipeline: 400,
+            fp_lzma.FingerprintExportPipeline: 500
         }
     }
 
-    def __init__(self, path, courts="", states="", domains="", **kwargs):
+    def __init__(self, path, courts="", states="", fp=False, domains="", **kwargs):
         self.path = path
         self.courts = courts
         self.states = states
+        self.fp = fp
         self.domains = domains
         self.headers = {
             "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",

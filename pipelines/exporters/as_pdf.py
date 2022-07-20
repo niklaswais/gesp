@@ -11,6 +11,8 @@ class PdfExportPipeline:
                 req = requests.get(item["link"])
             except:
                 output("could not retrieve " + item["link"], "err")
+            else:
+                return item
         #### PROBLEM: item["link"] für "Download..."-Ausgabe bei post.py; muss in spider / pipeline docs
         filename = spider.path + spider.name[7:] + "/" + item["court"] + "_" + item["date"] + "_" + item["az"] + ".pdf"
         try:
@@ -18,3 +20,5 @@ class PdfExportPipeline:
                 f.write(req.content)
         except:
             output(f"could not create file {filename}", "err")
+        else:
+            return item
