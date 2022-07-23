@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 import requests
 from src.output import output
-
-HEADERS = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:101.0) Gecko/20100101 Firefox/101.0"}
+import src.config
 
 class BWToTextPipeline:
     def process_item(self, item, spider):
         try:
-            item["text"] = requests.get(item["link"], headers=HEADERS).text
+            item["text"] = requests.get(item["link"], headers=src.config.HEADERS).text
         except:
             output("could not retrieve " + item["link"], "err")
         else:
