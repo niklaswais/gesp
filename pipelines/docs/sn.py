@@ -17,6 +17,7 @@ class SNPdfLinkPipeline: # Kein item["text"]: In Sachsen nur PDF
                 return item
         elif "link" in item: # OVG-Subportal
             try:
+                # Zwischengeschaltete Seite, von der aus erst der Filelink kopiert werden muss
                 tree = html.fromstring(requests.get(item["link"]).text)
             except:
                 output("could not retrieve " + item["link"], "err")
