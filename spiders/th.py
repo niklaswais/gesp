@@ -5,6 +5,7 @@ import scrapy
 from pipelines import pre, courts, post
 from pipelines.docs import th
 from pipelines.exporters import as_html, fp_lzma
+import src.config
 
 class SpdrTH(scrapy.Spider):
     name = "spider_th"
@@ -40,28 +41,11 @@ class SpdrTH(scrapy.Spider):
 
     def start_requests(self):
         url = "https://landesrecht.thueringen.de/jportal/wsrest/recherche3/init"
-        self.headers = {
-            "Accept": "*/*",
-            "Accept-Language": "de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7",
-            "Connection": "keep-alive",
-            "Origin": "https://landesrecht.thueringen.de",
-            "Referer": "https://landesrecht.thueringen.de/bsth/search",
-            "Sec-Fetch-Dest": "empty",
-            "Sec-Fetch-Mode": "cors",
-            "Sec-Fetch-Site": "same-origin",
-            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.53 Safari/537.36",
-            "content-type": "application/json",
-            "juris-portalid": "bsth",
-            "sec-ch-ua": "\"Chromium\";v=\"103\", \".Not/A)Brand\";v=\"99\"",
-            "sec-ch-ua-mobile": "?0",
-            "sec-ch-ua-platform": "\"Linux\""
-        }
-        self.cookies = {
-            "r3autologin": "\"bsth\"",
-        }
+        self.headers = src.config.th_headers
+        self.cookies = src.config.th_cookies
         date = str(datetime.date.today())
         time = str(datetime.datetime.now(datetime.timezone.utc).time())[0:-3]
-        body = '{"clientID":"bsth","clientVersion":"bsth - V06_07_00 - 23.06.2022 11:20","r3ID":"%sT%sZ"}' % (date, time)
+        body = src.config.th_body % (date, time)
         yield scrapy.Request(url=url, method="POST", headers=self.headers, body=body, cookies=self.cookies, dont_filter=True, callback=self.parse)
 
     def parse(self, response):

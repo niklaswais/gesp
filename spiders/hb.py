@@ -16,7 +16,7 @@ class SpdrHB(scrapy.Spider):
         }
     }
 
-    def __init__(self, path, courts="", states="", dp=False, domains="", **kwargs):
+    def __init__(self, path, courts="", states="", fp=False, domains="", **kwargs):
         self.path = path
         self.courts = courts
         self.states = states
@@ -45,7 +45,6 @@ class SpdrHB(scrapy.Spider):
     def parse(self, response):
         for td in response.xpath("//tr/td[@class='dotright'][1]"):
             link = "https://" + response.url.split("/")[2] + td.xpath(".//following-sibling::td/a[1]/@href").get()
-            print(td.xpath(".//em/text()").get())
             yield {
                 "court": response.meta["c"],
                 "date": td.xpath(".//em/text()").get(),

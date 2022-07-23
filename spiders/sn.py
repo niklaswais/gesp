@@ -4,6 +4,7 @@ import re
 import urllib
 import scrapy
 from pipelines import pre, courts, post
+from pipelines.docs import sn
 from pipelines.exporters import as_pdf, fp_lzma
 
 class SpdrSN(scrapy.Spider):
@@ -12,9 +13,10 @@ class SpdrSN(scrapy.Spider):
         "ITEM_PIPELINES": { 
             pre.PrePipeline: 100,
             courts.CourtsPipeline: 200,
-            post.PostPipeline: 300,
-            as_pdf.PdfExportPipeline: 400,
-            fp_lzma.FingerprintExportPipeline: 500
+            sn.SNPdfLinkPipeline: 300,
+            post.PostPipeline: 400,
+            as_pdf.PdfExportPipeline: 500,
+            fp_lzma.FingerprintExportPipeline: 600
         }
     }
 
