@@ -1,18 +1,17 @@
 # -*- coding: utf-8 -*-
 import scrapy
-from pipelines import pre, courts, post
-from pipelines.exporters import as_html, fp_lzma
+from pipelines.formatters import AZsPipeline, CourtsPipeline
+from pipelines.exporters import ExportAsHtmlPipeline, FingerprintExportPipeline
 
 class SpdrBund(scrapy.Spider):
     name = "spider_bund"
     start_urls = ["http://www.rechtsprechung-im-internet.de/jportal/docs/bsjrs/"]
     custom_settings = {
         "ITEM_PIPELINES": { 
-            pre.PrePipeline: 100,
-            courts.CourtsPipeline: 200,
-            post.PostPipeline: 300,
-            as_html.TextToHtmlExportPipeline: 400,
-            fp_lzma.FingerprintExportPipeline: 500  
+            AZsPipeline: 100,
+            CourtsPipeline: 200,
+            ExportAsHtmlPipeline: 300,
+            FingerprintExportPipeline: 400
         }
     }
 

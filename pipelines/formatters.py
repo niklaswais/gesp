@@ -1,6 +1,24 @@
 # -*- coding: utf-8 -*-
+import datetime
 import re
 from src import config
+
+class AZsPipeline:
+    def process_item(self, item, spider):                
+        #Formattierunng der Aktenzeichen
+        item["az"] = item["az"].strip() 
+        item["az"] = item["az"].replace("/", "-")
+        item["az"] = item["az"].replace(".", "-")
+        item["az"] = re.sub(r"\s", "-", item["az"]) # Alle Arten von Leerzeichen (normale, geschützte, ...)
+        return item
+
+class DatesPipeline:
+    def process_item(self, item, spider):                
+        #Formattierung der Daten
+        item["date"] = item["date"].strip()
+        item["date"] = datetime.datetime.strptime(item["date"], "%d.%m.%Y").strftime("%Y%m%d")
+        # Weitergabe an die individuellen Pipelines
+        return item
 
 class CourtsPipeline:
     def __cut_at_nr(self, court):

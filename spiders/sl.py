@@ -2,21 +2,21 @@
 import datetime
 import json
 import scrapy
-from pipelines import pre, courts, post
-from pipelines.docs import sl
-from pipelines.exporters import as_html, fp_lzma
 import src.config
+from pipelines.formatters import AZsPipeline, DatesPipeline, CourtsPipeline
+from pipelines.texts import TextsPipeline
+from pipelines.exporters import ExportAsHtmlPipeline, FingerprintExportPipeline
 
 class SpdrSL(scrapy.Spider):
     name = "spider_sl"
     custom_settings = {
         "ITEM_PIPELINES": { 
-            pre.PrePipeline: 100,
-            courts.CourtsPipeline: 200,
-            post.PostPipeline: 300,
-            sl.SLToTextPipeline: 400,
-            as_html.TextToHtmlExportPipeline: 500,
-            fp_lzma.FingerprintExportPipeline: 600  
+            AZsPipeline: 100,
+            DatesPipeline: 200,
+            CourtsPipeline: 300,
+            TextsPipeline: 400,
+            ExportAsHtmlPipeline: 500,
+            FingerprintExportPipeline: 600
         }
     }
 

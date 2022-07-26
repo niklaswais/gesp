@@ -1,22 +1,22 @@
 # -*- coding: utf-8 -*-
 import datetime
 import scrapy
-from pipelines import pre, courts, post
-from pipelines.docs import bw
-from pipelines.exporters import as_html, fp_lzma
 from src.output import output
+from pipelines.formatters import AZsPipeline, DatesPipeline, CourtsPipeline
+from pipelines.texts import TextsPipeline
+from pipelines.exporters import ExportAsHtmlPipeline, FingerprintExportPipeline
 
 class SpdrBW(scrapy.Spider):
     name = "spider_bw"
     base_url = "https://lrbw.juris.de/cgi-bin/laender_rechtsprechung/"
     custom_settings = {
         "ITEM_PIPELINES": { 
-            pre.PrePipeline: 100,
-            courts.CourtsPipeline: 200,
-            post.PostPipeline: 300,
-            bw.BWToTextPipeline: 400,
-            as_html.TextToHtmlExportPipeline: 500,
-            fp_lzma.FingerprintExportPipeline: 600
+            AZsPipeline: 100,
+            DatesPipeline: 200,
+            CourtsPipeline: 300,
+            TextsPipeline: 400,
+            ExportAsHtmlPipeline: 500,
+            FingerprintExportPipeline: 600
         }
     }
 

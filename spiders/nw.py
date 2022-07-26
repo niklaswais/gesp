@@ -1,22 +1,22 @@
 # -*- coding: utf-8 -*-
 import datetime
 import scrapy
-from pipelines import pre, courts, post
-from pipelines.docs import nw
-from pipelines.exporters import as_html, fp_lzma
 from src.output import output
+from pipelines.formatters import AZsPipeline, DatesPipeline, CourtsPipeline
+from pipelines.texts import TextsPipeline
+from pipelines.exporters import ExportAsHtmlPipeline, FingerprintExportPipeline
 
 class SpdrNW(scrapy.Spider):
     name = "spider_nw"
     base_url = "https://www.justiz.nrw.de/BS/nrwe2/index.php"
     custom_settings = {
         "ITEM_PIPELINES": { 
-            pre.PrePipeline: 100,
-            courts.CourtsPipeline: 200,
-            post.PostPipeline: 300,
-            nw.NWToTextPipeline: 400,
-            as_html.TextToHtmlExportPipeline: 500,
-            fp_lzma.FingerprintExportPipeline: 600
+            AZsPipeline: 100,
+            DatesPipeline: 200,
+            CourtsPipeline: 300,
+            TextsPipeline: 400,
+            ExportAsHtmlPipeline: 500,
+            FingerprintExportPipeline: 600
         }
     }
 

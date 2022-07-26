@@ -11,6 +11,7 @@ from twisted.internet import reactor
 from spiders import *
 import src.config
 from src.output import output
+from src.fingerprint import Fingerprint
 
 def main():
     cl_courts, cl_states, cl_domains = [], [], []
@@ -78,10 +79,7 @@ def main():
         if not os.path.exists(fp):
             output(f"file {fp} does not exist", "err")
         else:
-            rnr = scrapy.crawler.CrawlerRunner()
-            d = rnr.crawl(fgrprint.SpdrFP, path=path, fp=fp)
-            d.addBoth(lambda _: reactor.stop())
-            reactor.run()
+            fp_importer = Fingerprint(path, fp)
     else:  # fp als Flag / kein fp
         if args.fingerprint == True:
             fp = args.fingerprint

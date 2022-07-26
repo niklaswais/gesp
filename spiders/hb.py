@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
 import scrapy
-from pipelines import pre, courts, post
-from pipelines.exporters import as_pdf, fp_lzma
 from src.output import output
+from pipelines.formatters import AZsPipeline, DatesPipeline, CourtsPipeline
+from pipelines.exporters import ExportAsPdfPipeline, FingerprintExportPipeline
 
 class SpdrHB(scrapy.Spider):
     name = "spider_hb"
     custom_settings = {
-        "ITEM_PIPELINES": { 
-            pre.PrePipeline: 100,
-            courts.CourtsPipeline: 200,
-            post.PostPipeline: 300,
-            as_pdf.PdfExportPipeline: 400,
-            fp_lzma.FingerprintExportPipeline: 500
+        "ITEM_PIPELINES": {
+            AZsPipeline: 100,
+            DatesPipeline: 200,
+            CourtsPipeline: 300,
+            ExportAsPdfPipeline: 500,
+            FingerprintExportPipeline: 600
         }
     }
 

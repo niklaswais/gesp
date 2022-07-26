@@ -2,21 +2,23 @@
 import datetime
 import re
 import urllib
+import requests
 import scrapy
-from pipelines import pre, courts, post
-from pipelines.docs import sn
-from pipelines.exporters import as_pdf, fp_lzma
+import src.config
+from lxml import html
+from src.output import output
+from pipelines.formatters import AZsPipeline, DatesPipeline, CourtsPipeline
+from pipelines.exporters import ExportAsPdfPipeline, FingerprintExportPipeline
 
 class SpdrSN(scrapy.Spider):
     name = "spider_sn"
     custom_settings = {
         "ITEM_PIPELINES": { 
-            pre.PrePipeline: 100,
-            courts.CourtsPipeline: 200,
-            sn.SNPdfLinkPipeline: 300,
-            post.PostPipeline: 400,
-            as_pdf.PdfExportPipeline: 500,
-            fp_lzma.FingerprintExportPipeline: 600
+            AZsPipeline: 100,
+            DatesPipeline: 200,
+            CourtsPipeline: 300,
+            ExportAsPdfPipeline: 400,
+            FingerprintExportPipeline: 500
         }
     }
 
@@ -26,23 +28,7 @@ class SpdrSN(scrapy.Spider):
         self.states = states
         self.fp = fp
         self.domains = domains
-        self.headers = {
-            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
-            "Accept-Language": "de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7",
-            "Cache-Control": "max-age=0",
-            "Connection": "keep-alive",
-            "Content-Type": "application/x-www-form-urlencoded",
-            "Origin": "https://www.justiz.sachsen.de",
-            "Sec-Fetch-Dest": "document",
-            "Sec-Fetch-Mode": "navigate",
-            "Sec-Fetch-Site": "same-origin",
-            "Sec-Fetch-User": "?1",
-            "Upgrade-Insecure-Requests": "1",
-            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.53 Safari/537.36",
-            "sec-ch-ua": "\"Chromium\";v=\"103\", \".Not/A)Brand\";v=\"99\"",
-            "sec-ch-ua-mobile": "?0",
-            "sec-ch-ua-platform": "\"Linux\""
-        }
+        self.headers = src.config.sn_headers
         super().__init__(**kwargs)
 
     def start_requests(self):
@@ -91,10 +77,15 @@ class SpdrSN(scrapy.Spider):
             dv13_name = urllib.parse.quote_plus(dv13_name)
             dv13_c16 = urllib.parse.quote_plus(response.xpath("//input[@id='DV13_C16']/@value").get())
             body = f"__EVENTTARGET=&__EVENTARGUMENT=&__VIEWSTATE={viewstate}&__VIEWSTATEGENERATOR={viewstategen}&__SCROLLPOSITIONX=0&__SCROLLPOSITIONY=0&DV1_C44=&DV1_C45={dv1_c45}&DV1_C46=&DV1_C47=&DV1_C48=&DV13_C16={dv13_c16}&{dv13_name}={dv13_value}&BOX_RETURN_VALUE=-1"
+            url = "https://www.justiz.sachsen.de/esamosplus/pages/treffer.aspx"
+            headers = self.headers
+            headers["Referer"] = "Referer: https://www.justiz.sachsen.de/esamosplus/pages/suchen.aspx"
             yield {
                 "date": tr.xpath(".//td[2]/div/input/@value").get(),
                 "az":  tr.xpath(".//td[3]/div/input/@value").get(),
                 "court": tr.xpath(".//td[4]/div/input/@value").get(),
+                "link": url,
+                "headers": headers,
                 "body": body
             }
         if response.xpath("//input[@value='Vorwärts']") and not response.xpath("//input[@value='Vorwärts']/@disabled").get() == "disabled":
@@ -104,16 +95,21 @@ class SpdrSN(scrapy.Spider):
             dv13c16_value = urllib.parse.quote_plus(response.xpath("//input[@id='DV13_C16']/@value").get())
             body = f"__EVENTTARGET=&__EVENTARGUMENT=&__VIEWSTATE={viewstate}&__VIEWSTATEGENERATOR{viewstategen}&__SCROLLPOSITIONX=0&__SCROLLPOSITIONY=0&DV1_C44=&DV1_C45=Oberlandesgericht+Dresden&DV1_C46=&DV1_C47=&DV1_C48=&DV13_C16={dv13c16_value}&ctl21=Vorw%C3%A4rts&BOX_RETURN_VALUE=-1"
             yield scrapy.Request(url=url, method="POST", headers=headers, body=body, dont_filter=True, callback=self.parse_results)
-            
+    
     def parse_results_ovg(self, response):
         for table in response.xpath("//table"):
-            link = table.xpath(".//td[2]/a/@href").get()
-            link = re.findall(r"'([^']*)'", link)
-            link = "https://www.justiz.sachsen.de/ovgentschweb/document.phtml?id=" + link[0]
+            tmp_link = table.xpath(".//td[2]/a/@href").get()
+            tmp_link = re.findall(r"'([^']*)'", link)
+            tmp_link = "https://www.justiz.sachsen.de/ovgentschweb/document.phtml?id=" + tmp_link[0]
             data = table.xpath(".//td[2]/a/text()").get()[15:]
-            yield {
-                "date": data[-11:-1],
-                "az": data.split("(")[0].strip(),
-                "court": "ovg",
-                "link": link
-            }
+            try: # Zwischengeschaltete Seite, von der aus erst der Filelink kopiert werden muss
+                tree = html.fromstring(requests.get(tmp_link).text)
+            except:
+                output("could not retrieve " + tmp_link, "err")
+            else:
+                yield {
+                    "date": data[-11:-1],
+                    "az": data.split("(")[0].strip(),
+                    "court": "ovg",
+                    "link": "https://www.justiz.sachsen.de/ovgentschweb/" + tree.xpath("//a[@target='_blank']/@href")[0]
+                }

@@ -1,20 +1,20 @@
 # -*- coding: utf-8 -*-
 import scrapy
-from pipelines import pre, courts, post
-from pipelines.docs import sh
-from pipelines.exporters import as_html, fp_lzma
+from pipelines.formatters import AZsPipeline, DatesPipeline, CourtsPipeline
+from pipelines.texts import TextsPipeline
+from pipelines.exporters import ExportAsHtmlPipeline, FingerprintExportPipeline
 
 class SpdrSH(scrapy.Spider):
     name = "spider_sh"
     headers = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:101.0) Gecko/20100101 Firefox/101.0"}
     custom_settings = {
         "ITEM_PIPELINES": { 
-            pre.PrePipeline: 100,
-            courts.CourtsPipeline: 200,
-            post.PostPipeline: 300,
-            sh.SHToTextPipeline: 400,
-            as_html.TextToHtmlExportPipeline: 500,
-            fp_lzma.FingerprintExportPipeline: 600 
+            AZsPipeline: 100,
+            DatesPipeline: 200,
+            CourtsPipeline: 300,
+            TextsPipeline: 400,
+            ExportAsHtmlPipeline: 500,
+            FingerprintExportPipeline: 600
         }
     }
     def __init__(self, path, courts="", states="", fp=False, domains="", **kwargs):

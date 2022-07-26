@@ -1,9 +1,8 @@
+# -*- coding: utf-8 -*-
+
 __version__ = "0.1"
 __author__ = "Niklas Wais"
 __licence__ = "MIT"
-
-import json
-
 
 UMLAUTE = {ord('ä'):'ae', ord('ö'):'oe', ord('ß'):'ss', ord('ü'):'ue'}
 COURTS = ["ag", "arbg", "bgh", "bfh", "bverwg", "bverfg", "bpatg", "bag", "bsg", "fg", "lag", "lg", "lsg", "olg", "ovg", "sg", "vg"] # vgh = ovg
@@ -87,6 +86,24 @@ sl_cookies = {
     "r3autologin": "\"bssl\""
 }
 sl_body = '{"clientID":"bssl","clientVersion":"bssl - V06_07_00 - 23.06.2022 11:20","r3ID":"%sT%sZ"}'
+
+sn_headers = {
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
+    "Accept-Language": "de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7",
+    "Cache-Control": "max-age=0",
+    "Connection": "keep-alive",
+    "Content-Type": "application/x-www-form-urlencoded",
+    "Origin": "https://www.justiz.sachsen.de",
+    "Sec-Fetch-Dest": "document",
+    "Sec-Fetch-Mode": "navigate",
+    "Sec-Fetch-Site": "same-origin",
+    "Sec-Fetch-User": "?1",
+    "Upgrade-Insecure-Requests": "1",
+    "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.53 Safari/537.36",
+    "sec-ch-ua": "\"Chromium\";v=\"103\", \".Not/A)Brand\";v=\"99\"",
+    "sec-ch-ua-mobile": "?0",
+    "sec-ch-ua-platform": "\"Linux\""
+}
 
 st_headers = json_headers_base | {
     "Origin": "https://www.landesrecht.sachsen-anhalt.de",
