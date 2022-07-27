@@ -78,6 +78,8 @@ def main():
         fp = args.fingerprint
         if not os.path.exists(fp):
             output(f"file {fp} does not exist", "err")
+        elif not os.path.isfile(fp):
+            output(f"file {fp} is a folder, not a file", "err")
         else:
             fp_importer = Fingerprint(path, fp)
     else:  # fp als Flag / kein fp
@@ -132,4 +134,4 @@ if __name__ == "__main__":
     main()
 
 
-# TODO: Länder: Verfassungsgerichtshöfe (verfgh)? ++ Bremen +++
+# TODO: Länder: Verfassungsgerichtshöfe (verfgh)?
