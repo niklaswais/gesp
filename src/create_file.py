@@ -7,8 +7,6 @@ from zipfile import ZipFile
 def info(item):
     if "link" in item:
         output("downloading " + item["link"] + "...")
-    elif "req" in item:
-        output("downloading " + item["req"].url + "...")
     return item
 
 def save_as_html(item, spider_name, spider_path): # spider.name, spider.path
@@ -26,7 +24,7 @@ def save_as_html(item, spider_name, spider_path): # spider.name, spider.path
         else:
             return item
     else:
-        if "text" in item:
+        if "text" in item and "court" in item and "date" in item and "az" in item and "filetype" in item:
             filename = spider_path + spider_name + "/" + item["court"] + "_" + item["date"] + "_" + item["az"] + "." + item["filetype"]
             try:
                 with open(filename, "w") as f:
@@ -39,23 +37,23 @@ def save_as_html(item, spider_name, spider_path): # spider.name, spider.path
             output("could not retrieve " + item["link"], "err")
 
 def save_as_pdf(item, spider_name, spider_path): # spider.name, spider.path
-    if "link" in item: # Bremen / Sachsen
-        if "headers" in item and "body" in item : # Sachsen: AG/LG/OLG-Supportal
-            try:
-                req = requests.post(url=item["link"], headers=item["headers"], data=item["body"])
-            except:
-                output("could not retrieve " + item["link"], "err")
+    info(item)
+    content = ""
+    if "link" in item and not "body" in item: # Bremen / Sachsen (OVG)
+        try:
+            content = requests.get(url=item["link"]).content
+        except:
+            output("could not retrieve " + item["link"], "err")
+    elif "body" in item: # Sachsen (AG/LG/OLG)
+        content = item["body"]
+    if content and "court" in item and "date" in item and "az" in item:
+        filename = spider_path + spider_name + "/" + item["court"] + "_" + item["date"] + "_" + item["az"] + ".pdf"
+        try:
+            with open(filename, "wb") as f:
+                f.write(content)
+        except:
+            output(f"could not create file {filename}", "err")
         else:
-            try:
-                req = requests.get(url=item["link"])
-            except:
-                output("could not retrieve " + item["link"], "err")
-    info(item) # Erst hier, da req.url benötigt wird
-    filename = spider_path + spider_name + "/" + item["court"] + "_" + item["date"] + "_" + item["az"] + ".pdf"
-    try:
-        with open(filename, "wb") as f:
-            f.write(req.content)
-    except:
-        output(f"could not create file {filename}", "err")
+            return item
     else:
-        return item
+        output("missing information " + item["link"], "err")

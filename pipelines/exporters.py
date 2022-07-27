@@ -41,12 +41,10 @@ class FingerprintExportPipeline:
     def process_item(self, item, spider):
         if spider.fp:
             entry = '{"s":"%s","c":"%s","d":"%s","az":"%s"' % (spider.name[7:], item["court"], item["date"], item["az"])
-            if "link" in item and not "docId" in item and not "body" in item: # "Klassisch" über Link
+            if "link" in item and not "docId" in item: # "Klassisch" über Link
                 entry = entry + ',"link":"%s"}' % (item["link"])
             elif "docId" in item: # JSON-Post (BE, HH, ....)
                 entry = entry + ',"docId":"%s"}' % (item["docId"])
-            elif "body" in item: # Sachsen (zum Teil)
-                entry = entry + ',"body":"%s"}' % (item["body"])
             entry = entry + "|" # Ende-Zeichen für Deocder
             self.file.write(self.lzmac.compress(entry.encode()))
             return item
