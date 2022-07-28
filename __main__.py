@@ -5,6 +5,7 @@ import datetime
 import logging
 import os
 import scrapy
+import sys
 from scrapy.shell import inspect_response
 from tldextract import extract       ### !!nur in DEV!!
 from twisted.internet import reactor
@@ -14,6 +15,15 @@ from src.output import output
 from src.fingerprint import Fingerprint
 
 def main():
+    output("Due to the terms of use governing the databases accessed by gesp, the use of gesp is only permitted for non-commercial purposes. Do you use gesp exclusively for non-commercial purposes?")
+    inp = input("[Y]es/[N]o: ")
+    try:
+        inp = inp.lower()
+    except:
+        sys.exit()
+    else:
+        if inp != "y" and inp != "yes":
+            sys.exit()
     cl_courts, cl_states, cl_domains = [], [], []
     cl_parser = argparse.ArgumentParser(prog="gesp", description="scraping of german court decisions")
     cl_parser.add_argument("-c", "--courts", type=str.lower, help="individual selection of the included courts (ag/lg/olg/...)")
