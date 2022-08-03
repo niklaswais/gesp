@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from fileinput import filename
+import os
 import requests
 from io import BytesIO
 from src.output import output
@@ -18,19 +20,20 @@ def save_as_html(item, spider_name, spider_path): # spider.name, spider.path
                 for zipinfo in zip_ref.infolist(): # Teilweise auch Bilder in .zip enthalten
                     if (zipinfo.filename.endswith(".xml")):
                         zipinfo.filename = filename
-                        zip_ref.extract(zipinfo, spider_path + "bund/")
+                        zip_ref.extract(zipinfo, os.path.join(spider_path, "bund"))
         except:
             output(f"could not create file {filename}", "err")
         else:
             return item
     else:
         if "text" in item and "court" in item and "date" in item and "az" in item and "filetype" in item:
-            filename = spider_path + spider_name + "/" + item["court"] + "_" + item["date"] + "_" + item["az"] + "." + item["filetype"]
+            filename = item["court"] + "_" + item["date"] + "_" + item["az"] + "." + item["filetype"]
+            filepath = os.path.join(spider_path, spider_name, filename)
             try:
-                with open(filename, "w") as f:
+                with open(filepath, "w") as f:
                     f.write(item["text"])
             except:
-                output(f"could not create file {filename}", "err")
+                output(f"could not create file {filepath}", "err")
             else:
                 return item
         else:
@@ -47,12 +50,13 @@ def save_as_pdf(item, spider_name, spider_path): # spider.name, spider.path
     elif "body" in item: # Sachsen (AG/LG/OLG)
         content = item["body"]
     if content and "court" in item and "date" in item and "az" in item:
-        filename = spider_path + spider_name + "/" + item["court"] + "_" + item["date"] + "_" + item["az"] + ".pdf"
+        filename = item["court"] + "_" + item["date"] + "_" + item["az"] + ".pdf"
+        filepath = os.path.join(spider_path, spider_name, filename)
         try:
-            with open(filename, "wb") as f:
+            with open(filepath, "wb") as f:
                 f.write(content)
         except:
-            output(f"could not create file {filename}", "err")
+            output(f"could not create file {filepath}", "err")
         else:
             return item
     else:

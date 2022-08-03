@@ -8,11 +8,12 @@ from src.create_file import save_as_html, save_as_pdf
 
 class ExportPipeline:
     def open_spider(self, spider):
-        if (not os.path.exists(spider.path + spider.name[7:])):
+        spdr_folder = os.path.join(spider.path, spider.name[7:])
+        if (not os.path.exists(spdr_folder)):
             try:
-                os.makedirs(spider.path + spider.name[7:])
+                os.makedirs(spdr_folder)
             except:
-                output(f"could not create folder {spider.path}{spider.name[7:]}", "err")
+                output(f"could not create folder {spdr_folder}", "err")
 
 class ExportAsHtmlPipeline(ExportPipeline):
     def process_item(self, item, spider):
@@ -28,7 +29,7 @@ class FingerprintExportPipeline:
     def open_spider(self, spider):
         if spider.fp:
             self.lzmac = lzma.LZMACompressor()
-            self.path = spider.path + "fingerprint.xz"
+            self.path = os.path.join(spider.path, "fingerprint.xz")
             self.file = open(self.path, "wb")
             general_info = '{"version":"%s","date":"%s","args":{"c":"%s","s":"%s"}}|' % (src.config.__version__, str(datetime.timestamp(datetime.now())), ",".join(spider.courts), ",".join(spider.states))
             self.file.write(self.lzmac.compress(general_info.encode()))

@@ -19,11 +19,12 @@ class Fingerprint:
                 output("reconstructing from fingerprint %s (%s, %s, %s)" % (fp_path, i["version"], i["date"], i["args"]))
             else:
                 # Ordner erstellen
-                if (not os.path.exists(path + i["s"])):
+                results_subfolder = os.path.join(path, i["s"])
+                if (not os.path.exists(results_subfolder)):
                     try:
-                        os.makedirs(path + i["s"])
+                        os.makedirs(results_subfolder)
                     except:
-                        output("could not create folder %s%s" % (path, i["s"]), "err")
+                        output(f"could not create folder {results_subfolder}", "err")
                 # Umwandeln in item-Format
                 item = { "court": i["c"], "date": i["d"], "az": i["az"] }
                 if "link" in i:

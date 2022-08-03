@@ -34,7 +34,7 @@ def main():
     cl_parser.add_argument("-fp", "--fingerprint", nargs="?", const=True, help="creates (flag) or reads (argument, path) a fingerprint file")
     args = cl_parser.parse_args()
     # -p (path)
-    path = os.path.dirname(os.path.realpath(__file__)) + "/results/" + datetime.datetime.now().strftime("%Y-%m-%d_%H-%M")
+    path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "results", datetime.datetime.now().strftime("%Y-%m-%d_%H-%M"))
     if (args.path):
         if os.path.isdir(args.path):
             path = args.path
@@ -55,7 +55,7 @@ def main():
             os.makedirs(path)
         except:
             output(f"could not create folder {path}", "err")
-    if path[-1] != "/": path = path + "/"
+    #if path[-1] != "/": path = path + "/"
     # -c (courts)
     if (args.courts):
         for court in args.courts.split(","):
