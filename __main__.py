@@ -76,6 +76,8 @@ def main():
                 output(f"unknown state '{state}'", "err")
             else:
                 cl_states.append(state)
+    else: # Sachsen und Bremen (PDF) nur bei expliziter Nennung
+        cl_states.extend(src.config.HTML_STATES)
     # -d (domains)
     if (args.domains):
         for domain in args.domains.split(","):
