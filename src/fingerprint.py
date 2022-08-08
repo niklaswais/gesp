@@ -162,39 +162,3 @@ class Fingerprint:
                         input = json_lines[-1] # Rest an Input anhängen
                 elif json_lines[0] != "":
                     yield json.loads(json_lines[0])
-        
- #   def to_item(self, chunk_as_str):
- #       self.input = self.input + chunk_as_str
- #       json_lines = self.input.split("|")
- #       if json_lines[1]:
- #           for line in json_lines[:-1]:
- #               self.items.append(json.loads(line)) # string (json) -> item (dict)
- #           if not json_lines[-1] == "":
- #               self.input = json_lines[-1] # Rest an Input anhängen
- #       elif json_lines[0] != "":
- #           self.items.append(json.loads(json_lines[0]))
-
-#    def __init__(self, version, args, path):
-#        self.nr = 0
-#        self.lzmac = lzma.LZMACompressor()
-#        self.path = path + "fingerprint.json"
-#        self.file = open(self.path, "w")
-#        general_info = '{"version":"%s","args":{"c":"%s","s":"%s"}' % (version, args["c"], args["p"])
-#        self.file.write(self.lzmac.compress(general_info))
-#
-#    def __enter__(self):
-#        return self
-#
-#    def add(self, state, item):
-#        if "link" in item:
-#            data = '"%s"' % (item["link"])
-#        else:
-#            data = '"%s"' % (item["link"])
-#        entry = json.dumps(',"%s":{"c":"%s","d":"%s","a":"%s","f":%s}' % (self.nr, item["court"], item["date"], item["az"], data))
-#        self.file.write(self.lzmac.compress(entry))
-#        self.nr += 1
-#
-#    def __exit__(self, exc_type, exc_value, traceback):
-#        self.file.write(self.lzmac.compress("}"))
-#        self.file.write(self.lzmac.flush())
-#        self.file.close()
