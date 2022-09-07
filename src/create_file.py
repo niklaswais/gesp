@@ -13,7 +13,7 @@ def info(item):
 
 def save_as_html(item, spider_name, spider_path): # spider.name, spider.path
     info(item)
-    if spider_name == "spider_bund": # Sonderfall Bund: *.zip mit *.xml
+    if spider_name == "bund": # Sonderfall Bund: *.zip mit *.xml
         filename = item["court"] + "_" + item["date"] + "_" + item["az"] + ".xml"
         try:
             with ZipFile(BytesIO((requests.get(item["link"]).content))) as zip_ref: # Im RAM entpacken
