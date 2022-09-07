@@ -33,7 +33,7 @@ def be(item, headers, cookies): # spider.headers, spider.cookies
     else:
         data = req.json()
         doc = html.fromstring(f'<!doctype html><html><head><title>{item["az"]}</title></head><body>{data["head"]}{data["text"]}</body></html>')
-        item["text"] = html.tostring(doc, pretty_print=True, encoding="utf-8").decode("utf-8")
+        item["text"] = html.tostring(doc, pretty_print=True).decode("utf-8")
         item["filetype"] = "html"
         return item
 
@@ -78,7 +78,7 @@ def he(item, headers, cookies): # spider.headers, spider.cookies
     else:
         data = req.json()
         doc = html.fromstring(f'<!doctype html><html><head><title>{item["az"]}</title></head><body>{data["head"]}{data["text"]}</body></html>')
-        item["text"] = html.tostring(doc, pretty_print=True, encoding="utf-8").decode("utf-8")
+        item["text"] = html.tostring(doc, pretty_print=True).decode("utf-8")
         item["filetype"] = "html"
         return item
 
@@ -96,7 +96,7 @@ def hh(item, headers, cookies): # spider.headers, spider.cookies
     else:
         data = req.json()
         doc = html.fromstring(f'<!doctype html><html><head><title>{item["az"]}</title></head><body>{data["head"]}{data["text"]}</body></html>')
-        item["text"] = html.tostring(doc, pretty_print=True, encoding="utf-8").decode("utf-8")
+        item["text"] = html.tostring(doc, pretty_print=True).decode("utf-8")
         item["filetype"] = "html"
         return item
 
@@ -114,7 +114,7 @@ def mv(item, headers, cookies): # spider.headers, spider.cookies
     else:
         data = req.json()
         doc = html.fromstring(f'<!doctype html><html><head><title>{item["az"]}</title></head><body>{data["head"]}{data["text"]}</body></html>')
-        item["text"] = html.tostring(doc, pretty_print=True, encoding="utf-8").decode("utf-8")
+        item["text"] = html.tostring(doc, pretty_print=True).decode("utf-8")
         item["filetype"] = "html"
         return item
 
@@ -162,7 +162,7 @@ def rp(item, headers, cookies): # spider.headers, spider.cookies
     else:
         data = req.json()
         doc = html.fromstring(f'<!doctype html><html><head><title>{item["az"]}</title></head><body>{data["head"]}{data["text"]}</body></html>')
-        item["text"] = html.tostring(doc, pretty_print=True, encoding="utf-8").decode("utf-8")
+        item["text"] = html.tostring(doc, pretty_print=True).decode("utf-8")
         item["filetype"] = "html"
         return item
 
@@ -178,7 +178,7 @@ def sh(item):
             # Druckseite öffnen, Druckdialog entfernen
             tree = html.fromstring(requests.get(base + link, headers=src.config.HEADERS).text)
             tree.xpath("//script[last()]")[0].getparent().remove(tree.xpath("//script[last()]")[0])
-            item["text"] = html.tostring(tree, pretty_print=True, encoding="utf-8").decode("utf-8")
+            item["text"] = html.tostring(tree, pretty_print=True).decode("utf-8")
             item["filetype"] = "html"
             return item
         else:
@@ -198,7 +198,7 @@ def sl(item, headers, cookies): # spider.headers, spider.cookies
     else:
         data = req.json()
         doc = html.fromstring(f'<!doctype html><html><head><title>{item["az"]}</title></head><body>{data["head"]}{data["text"]}</body></html>')
-        item["text"] = html.tostring(doc, pretty_print=True, encoding="utf-8").decode("utf-8")
+        item["text"] = html.tostring(doc, pretty_print=True).decode("utf-8")
         item["filetype"] = "html"
         return item
 
@@ -236,7 +236,7 @@ def st(item, headers, cookies):
     else:
         data = req.json()
         doc = html.fromstring(f'<!doctype html><html><head><title>{item["az"]}</title></head><body>{data["head"]}{data["text"]}</body></html>')
-        item["text"] = html.tostring(doc, pretty_print=True, encoding="utf-8").decode("utf-8")
+        item["text"] = html.tostring(doc, pretty_print=True).decode("utf-8")
         item["filetype"] = "html"
         return item
 
@@ -254,6 +254,6 @@ def th(item, headers, cookies): # spider.headers, spider.cookies
     else:
         data = req.json()
         doc = html.fromstring(f'<!doctype html><html><head><title>{item["az"]}</title></head><body>{data["head"]}{data["text"]}</body></html>')
-        item["text"] = html.tostring(doc, pretty_print=True, encoding="utf-8").decode("utf-8")
+        item["text"] = html.tostring(doc, pretty_print=True).decode("utf-8")
         item["filetype"] = "html"
         return item
