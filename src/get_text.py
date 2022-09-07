@@ -58,7 +58,7 @@ def by(item):
         if txt[10] == "H": # Herausfiltern von leeren Seiten / bei leeren Seite ist text[10] == "h" / schnellere Version
             tree = etree.fromstring(txt.replace('\r\n', '\n'))
             tree.xpath("//script")[0].getparent().remove(tree.xpath("//script")[0]) # Druck-Dialog entfernen
-            item["text"] = etree.tostring(tree, pretty_print=True, xml_declaration=True, encoding="utf-8").decode("utf-8")
+            item["text"] = etree.tostring(tree, pretty_print=True, xml_declaration=True, encoding="ascii").decode("ascii")
             item["filetype"] = "xhtml"
             return item
         else:
