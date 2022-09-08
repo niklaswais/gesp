@@ -5,9 +5,18 @@ from lxml import etree, html
 import datetime
 import requests
 
+
 def bb(item):
     if not "tree" in item:
-        item["tree"] = html.fromstring(requests.get(item["link"]).text)
+        try:
+            txt = requests.get(item["link"]).text
+        except:
+            output("could not retrieve " + item["link"], "err")
+        else:
+            try:
+                item["tree"] = html.fromstring(txt)
+            except:
+                output("could not parse " + item["link"], "err")
     if not item["tree"].xpath("//h1[@id='header']/text()")[0].rstrip().strip() == "Entscheidung": # Herausfiltern von leeren Seiten
         # Dokument Aufräumen (nur bestimmte Bereiche übernehmen)...
         body_meta = html.tostring(item["tree"].xpath("//div[@id='metadata']")[0]).decode("utf-8")
