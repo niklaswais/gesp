@@ -9,7 +9,7 @@ import sys
 from scrapy.shell import inspect_response
 from tldextract import extract       ### !!nur in DEV!!
 from twisted.internet import reactor
-from spiders import *
+from spiders import bb, be, bund, bw, by, hb, hh, he, mv, ni, nw, rp, sh, sl, sn, st, th
 import src.config
 from src.output import output
 from src.fingerprint import Fingerprint
