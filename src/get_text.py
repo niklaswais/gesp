@@ -55,10 +55,10 @@ def by(item):
     except:
         output("could not retrieve " + item["link"], "err")
     else:
-        if txt[10] == "H": # Herausfiltern von leeren Seiten / bei leeren Seite ist text[10] == "h" / schnellere Version
+        if txt[154:160] != "Fehler": # Herausfiltern von leeren Seiten / bei leeren Seite ist text[10] == "h" / schnellere Version
             tree = etree.fromstring(txt.replace('\r\n', '\n'))
             tree.xpath("//script")[0].getparent().remove(tree.xpath("//script")[0]) # Druck-Dialog entfernen
-            item["text"] = etree.tostring(tree, pretty_print=True, xml_declaration=True, encoding="ascii").decode("ascii")
+            item["text"] = etree.tostring(tree, pretty_print=True, xml_declaration=True).decode("ascii")
             item["filetype"] = "xhtml"
             return item
         else:
@@ -140,7 +140,6 @@ def nw(item):
     except:
         output("could not retrieve " + item["link"], "err")
     else:
-        a = "<!DOCTYPE html>"
         if item["text"][14] == " ": # Herausfiltern von leeren Seiten / bei leeren Seite ist text[14] == " " / schnellere Version
             item["filetype"] = "html"
             return item
