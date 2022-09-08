@@ -29,8 +29,9 @@ def save_as_html(item, spider_name, spider_path): # spider.name, spider.path
         if "text" in item and "court" in item and "date" in item and "az" in item and "filetype" in item:
             filename = item["court"] + "_" + item["date"] + "_" + item["az"] + "." + item["filetype"]
             filepath = os.path.join(spider_path, spider_name, filename)
+            enc = "utf-8" if spider_name != "by" else "ascii"
             try:
-                with open(filepath, "w") as f:
+                with open(filepath, "w", encoding=enc) as f:
                     f.write(item["text"])
             except:
                 output(f"could not create file {filepath}", "err")
