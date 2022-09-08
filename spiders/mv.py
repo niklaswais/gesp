@@ -49,7 +49,8 @@ class SpdrMV(scrapy.Spider):
         yield scrapy.Request(url=url, method="POST", headers=self.headers, body=body, cookies=self.cookies, dont_filter=True, callback=self.parse)
 
     def parse(self, response):
-        yield self.extract_data(response)
+        for result in self.extract_data(response):
+            yield result
         url = "https://www.landesrecht-mv.de/jportal/wsrest/recherche3/search"
         self.headers["x-csrf-token"] = json.loads(response.body)["csrfToken"]
         date = str(datetime.date.today())
@@ -60,7 +61,8 @@ class SpdrMV(scrapy.Spider):
     def parse_scrolldown(self, response):
         results = json.loads(response.body)
         if "resultList" in results:
-            yield self.extract_data(response)
+            for result in self.extract_data(response):
+                yield result
             url = "https://www.landesrecht-mv.de/jportal/wsrest/recherche3/search"
             batch = response.meta["batch"]
             date = str(datetime.date.today())
@@ -84,6 +86,6 @@ class SpdrMV(scrapy.Spider):
                 if self.filter:
                     for f in self.filter:
                         if r["court"][0:len(f)].lower() == f:
-                            return r
+                            yield r
                 else:
-                    return r
+                    yield r

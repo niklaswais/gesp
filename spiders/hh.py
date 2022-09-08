@@ -6,6 +6,7 @@ import src.config
 from pipelines.formatters import AZsPipeline, DatesPipeline, CourtsPipeline
 from pipelines.texts import TextsPipeline
 from pipelines.exporters import ExportAsHtmlPipeline, FingerprintExportPipeline
+import time
 
 class SpdrHH(scrapy.Spider):
     name = "spider_hh"
@@ -49,7 +50,8 @@ class SpdrHH(scrapy.Spider):
         yield scrapy.Request(url=url, method="POST", headers=self.headers, body=body, cookies=self.cookies, dont_filter=True, callback=self.parse)
 
     def parse(self, response):
-        yield self.extract_data(response)
+        for result in self.extract_data(response):
+            yield result
         url = "https://www.landesrecht-hamburg.de/jportal/wsrest/recherche3/search"
         self.headers["x-csrf-token"] = json.loads(response.body)["csrfToken"]
         date = str(datetime.date.today())
@@ -60,7 +62,8 @@ class SpdrHH(scrapy.Spider):
     def parse_nextpage(self, response):
         results = json.loads(response.body)
         if "resultList" in results:
-            yield self.extract_data(response)
+            for result in self.extract_data(response):
+                yield result
             url = "https://www.landesrecht-hamburg.de/jportal/wsrest/recherche3/search"
             date = str(datetime.date.today())
             time = str(datetime.datetime.now(datetime.timezone.utc).time())[0:-3]
@@ -83,6 +86,6 @@ class SpdrHH(scrapy.Spider):
                 if self.filter:
                     for f in self.filter:
                         if r["court"][0:len(f)].lower() == f:
-                            return r
+                            yield r
                 else:
-                    return r
+                    yield r
