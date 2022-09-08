@@ -77,7 +77,7 @@ def main():
             else:
                 cl_states.append(state)
     else:
-        if set(cl_courts).issubset({"bgh", "bfh", "bverwg", "bverfg", "bpatg", "bag", "bsg"}):
+        if cl_courts and set(cl_courts).issubset({"bgh", "bfh", "bverwg", "bverfg", "bpatg", "bag", "bsg"}):
             cl_states.append("bund") # Nur Bundesgericht(e) angegebeben, aber nicht auf Bund eingegrenzt ("-s bund"): Eingrenzung auf Bundesportal
         else:
             cl_states.extend(src.config.HTML_STATES)  # Sachsen und Bremen (PDF) nur bei expliziter Nennung
