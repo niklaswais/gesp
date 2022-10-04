@@ -14,7 +14,10 @@ def info(item):
 def save_as_html(item, spider_name, spider_path): # spider.name, spider.path
     info(item)
     if spider_name == "bund": # Sonderfall Bund: *.zip mit *.xml
-        filename = item["court"] + "_" + item["date"] + "_" + item["az"] + ".xml"
+        filename = item["court"] + "_" + item["date"] + "_" + item["az"]
+        if item.get('docId'):
+            filename += "_" + item['docId']
+        filename += ".xml"
         try:
             with ZipFile(BytesIO((requests.get(item["link"]).content))) as zip_ref: # Im RAM entpacken
                 for zipinfo in zip_ref.infolist(): # Teilweise auch Bilder in .zip enthalten
@@ -27,7 +30,10 @@ def save_as_html(item, spider_name, spider_path): # spider.name, spider.path
             return item
     else:
         if "text" in item and "court" in item and "date" in item and "az" in item and "filetype" in item:
-            filename = item["court"] + "_" + item["date"] + "_" + item["az"] + "." + item["filetype"]
+            filename = item["court"] + "_" + item["date"] + "_" + item["az"]
+            if item.get('docId'):
+                filename += "_" + item['docId']
+            filename += "." + item["filetype"]
             filepath = os.path.join(spider_path, spider_name, filename)
             enc = "utf-8" if spider_name != "by" else "ascii"
             try:
