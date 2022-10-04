@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import urllib.parse
 import scrapy
 from pipelines.formatters import AZsPipeline, DatesPipeline, CourtsPipeline
 from pipelines.texts import TextsPipeline
@@ -58,11 +59,13 @@ class SpdrSH(scrapy.Spider):
             az = tr.xpath(".//td[3]/a/span/text()[2]").get()
             az = az.replace("\n", "")
             az = az.replace(" | ", "")
+            link = tr.xpath("//base/@href").get() + tr.xpath(".//td[3]/a[1]/@href").get()
             return {
                 "court": tr.xpath(".//td[3]/a/span/strong[1]/text()").get(),
                 "date": tr.xpath(".//td[2]/span/text()").get(),
-                "link": tr.xpath("//base/@href").get() + tr.xpath(".//td[3]/a[1]/@href").get(),
+                "link": link,
                 "az": az,
+                "docId": urllib.parse.parse_qs(urllib.parse.urlparse(link).query)['doc.id'][0]
             }
         for tr in response.xpath("//table[@class='TableSchnInnen']/tr[@valign='top']"):
             court = tr.xpath(".//td[3]/a/span/strong[1]/text()").get()

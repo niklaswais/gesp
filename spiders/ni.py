@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import scrapy
+import urllib.parse
 from src.output import output
 from pipelines.formatters import AZsPipeline, DatesPipeline, CourtsPipeline
 from pipelines.texts import TextsPipeline
@@ -76,11 +77,14 @@ class SpdrNI(scrapy.Spider):
                 az = tr.xpath(".//a/text()[2]").get()
                 az = az.replace("\n", "")
                 az = az.replace(" | ", "")
+                link = self.base_url + tr.xpath(".//a/@href").get()
                 yield {
                         "court": tr.xpath(".//strong[1]/text()").get(),
                         "date": tr.xpath(".//td[1]/text()").get().replace("\n", ""),
-                        "link": self.base_url + tr.xpath(".//a/@href").get(),
+                        "link": link,
                         "az": az,
+                        "docId": urllib.parse.parse_qs(urllib.parse.urlparse(link).query)['doc.id'][0]
+
                 }
             if response.xpath("//p[@class='skipNav']/strong[2]/following-sibling::a"):
                 yield response.follow(response.xpath("//p[@class='skipNav']/strong[2]/following-sibling::a/@href").get(), callback=self.parse)

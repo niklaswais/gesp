@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import re
 import scrapy
 from pipelines.formatters import AZsPipeline, CourtsPipeline
 from pipelines.exporters import ExportAsHtmlPipeline, FingerprintExportPipeline
@@ -31,11 +32,13 @@ class SpdrBund(scrapy.Spider):
     
     def parse(self, response):
         for item in response.xpath("//item"):
+            link = item.xpath("link/text()").get()
             y = {
                 "court": item.xpath("gericht/text()").get(),
                 "date": item.xpath("entsch-datum/text()").get(),
                 "az": item.xpath("aktenzeichen/text()").get(),
-                "link": item.xpath("link/text()").get()
+                "link": link,
+                "docId": re.fullmatch(r'.+/jb\-([0-9A-Z]+)\.zip', link)[1]
             }
             if self.courts:
                 for court in self.courts:
