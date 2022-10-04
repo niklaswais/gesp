@@ -16,12 +16,13 @@ class SpdrBund(scrapy.Spider):
         }
     }
 
-    def __init__(self, path, courts="", states="", fp=False, domains="", **kwargs):
+    def __init__(self, path, courts="", states="", fp=False, domains="", store_docId=False, **kwargs):
         self.path = path
         self.courts = courts
         self.states = states
         self.fp = fp
         self.domains = domains
+        self.store_docId = store_docId
         if ("zivil" in domains and not any(court in courts for court in ["bgh", "bpatg", "bag"])):
             courts.extend(["bgh", "bpatg", "bag"])
         if ("oeff" in domains and not any(court in courts for court in ["bfh", "bsg", "bverfg", "bverwg"])):

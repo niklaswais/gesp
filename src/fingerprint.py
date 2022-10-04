@@ -13,7 +13,7 @@ from src.get_text import bb, be, bw, by, he, hh, mv, ni, nw, rp, sh, sl, sn, st,
 from src.create_file import save_as_html, save_as_pdf
 
 class Fingerprint:
-    def __init__(self, path, fp_path):
+    def __init__(self, path, fp_path, store_docId):
         for i in self.load_file(fp_path): 
             if "version" in i and "date" in i and "args" in i: # Erste Zeile enthält noch keine Entscheidung
                 output("reconstructing from fingerprint %s (%s, %s, %s)" % (fp_path, i["version"], i["date"], i["args"]))
@@ -36,7 +36,7 @@ class Fingerprint:
                     output("sn: reconstruction for AG/LG/OLG decisions is not supported", "warn")
                 # Wenn keine To-Text-Umwandlung notwendig ist: Entscheidung herunterladen
                 elif i["s"] == "bund":
-                    save_as_html(item, i["s"], path)
+                    save_as_html(item, i["s"], path, store_docId)
                 elif i["s"] in ["hb", "sn"]:
                     save_as_pdf(item, i["s"], path)
                 # Ansonsten: Bei JSON-Portalen zunächst x-csrf-Token in die Header einfügen (Teil der Spider)
@@ -144,7 +144,7 @@ class Fingerprint:
                         else:
                             headers["x-csrf-token"] = json.loads(response.body)["csrfToken"]
                         item = th(item, headers, src.config.th_cookies)
-                    save_as_html(item, i["s"], path)
+                    save_as_html(item, i["s"], path, store_docId)
    
     def load_file(self, fp):
         input = ""

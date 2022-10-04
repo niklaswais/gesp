@@ -11,11 +11,11 @@ def info(item):
         output("downloading " + item["link"] + "...")
     return item
 
-def save_as_html(item, spider_name, spider_path): # spider.name, spider.path
+def save_as_html(item, spider_name, spider_path, store_docId): # spider.name, spider.path
     info(item)
     if spider_name == "bund": # Sonderfall Bund: *.zip mit *.xml
         filename = item["court"] + "_" + item["date"] + "_" + item["az"]
-        if item.get('docId'):
+        if store_docId and item.get('docId'):
             filename += "_" + item['docId']
         filename += ".xml"
         try:
@@ -31,7 +31,7 @@ def save_as_html(item, spider_name, spider_path): # spider.name, spider.path
     else:
         if "text" in item and "court" in item and "date" in item and "az" in item and "filetype" in item:
             filename = item["court"] + "_" + item["date"] + "_" + item["az"]
-            if item.get('docId'):
+            if store_docId and item.get('docId'):
                 filename += "_" + item['docId']
             filename += "." + item["filetype"]
             filepath = os.path.join(spider_path, spider_name, filename)

@@ -23,12 +23,13 @@ class SpdrSN(scrapy.Spider):
         "AUTOTHROTTLE_ENABLED": True
     }
 
-    def __init__(self, path, courts="", states="", fp=False, domains="", **kwargs):
+    def __init__(self, path, courts="", states="", fp=False, domains="", store_docId=False, **kwargs):
         self.path = path
         self.courts = courts
         self.states = states
         self.fp = fp
         self.domains = domains
+        self.store_docId = store_docId
         self.headers = src.config.sn_headers
         super().__init__(**kwargs)
 

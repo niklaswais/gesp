@@ -31,6 +31,7 @@ def main():
     cl_parser.add_argument("-p", "--path", type=str, help="sets the path where the results will be stored")
     cl_parser.add_argument("-s", "--states", type=str.lower, help="individual selection of the included states (bund/bb/be/bw/by/...)")
     cl_parser.add_argument("-v", "--version", action="version", version=f"gesp {src.config.__version__} by {src.config.__author__} (nwais.de)", help="version of this package")
+    cl_parser.add_argument('--docId', action='store_true', help="appends the docId, if present, to the filename")
     cl_parser.add_argument("-fp", "--fingerprint", nargs="?", const=True, help="creates (flag) or reads (argument, path) a fingerprint file")
     args = cl_parser.parse_args()
     # -p (path)
@@ -96,7 +97,7 @@ def main():
         elif not os.path.isfile(fp):
             output(f"file {fp} is a folder, not a file", "err")
         else:
-            fp_importer = Fingerprint(path, fp)
+            fp_importer = Fingerprint(path, fp, args.store_docId)
     else:  # fp als Flag / kein fp
         if args.fingerprint == True:
             fp = args.fingerprint
@@ -108,39 +109,39 @@ def main():
         logger.setLevel(logging.DEBUG)
         rnr = scrapy.crawler.CrawlerRunner()
         if ("bund" in cl_states or not cl_states):
-            rnr.crawl(bund.SpdrBund, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains)
+            rnr.crawl(bund.SpdrBund, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains, store_docId=args.docId)
         if ("bw" in cl_states or not cl_states):
-            rnr.crawl(bw.SpdrBW, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains)
+            rnr.crawl(bw.SpdrBW, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains, store_docId=args.docId)
         if ("by" in cl_states or not cl_states):
-            rnr.crawl(by.SpdrBY, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains)
+            rnr.crawl(by.SpdrBY, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains, store_docId=args.docId)
         if ("be" in cl_states or not cl_states):
-            rnr.crawl(be.SpdrBE, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains)
+            rnr.crawl(be.SpdrBE, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains, store_docId=args.docId)
         if ("bb" in cl_states or not cl_states):
-            rnr.crawl(bb.SpdrBB, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains)
+            rnr.crawl(bb.SpdrBB, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains, store_docId=args.docId)
         if ("hb" in cl_states or not cl_states):
-            rnr.crawl(hb.SpdrHB, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains)
+            rnr.crawl(hb.SpdrHB, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains, store_docId=args.docId)
         if ("hh" in cl_states or not cl_states):
-            rnr.crawl(hh.SpdrHH, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains)
+            rnr.crawl(hh.SpdrHH, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains, store_docId=args.docId)
         if ("he" in cl_states or not cl_states):
-            rnr.crawl(he.SpdrHE, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains)
+            rnr.crawl(he.SpdrHE, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains, store_docId=args.docId)
         if ("mv" in cl_states or not cl_states):
-            rnr.crawl(mv.SpdrMV, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains)
+            rnr.crawl(mv.SpdrMV, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains, store_docId=args.docId)
         if ("ni" in cl_states or not cl_states):
-            rnr.crawl(ni.SpdrNI, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains)
+            rnr.crawl(ni.SpdrNI, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains, store_docId=args.docId)
         if ("nw" in cl_states or not cl_states):
-            rnr.crawl(nw.SpdrNW, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains)
+            rnr.crawl(nw.SpdrNW, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains, store_docId=args.docId)
         if ("rp" in cl_states or not cl_states):
-            rnr.crawl(rp.SpdrRP, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains)
+            rnr.crawl(rp.SpdrRP, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains, store_docId=args.docId)
         if ("sh" in cl_states or not cl_states):
-            rnr.crawl(sh.SpdrSH, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains)
+            rnr.crawl(sh.SpdrSH, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains, store_docId=args.docId)
         if ("sl" in cl_states or not cl_states):
-            rnr.crawl(sl.SpdrSL, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains)
+            rnr.crawl(sl.SpdrSL, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains, store_docId=args.docId)
         if ("sn" in cl_states or not cl_states):
-            rnr.crawl(sn.SpdrSN, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains)
+            rnr.crawl(sn.SpdrSN, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains, store_docId=args.docId)
         if ("st" in cl_states or not cl_states):
-            rnr.crawl(st.SpdrST, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains)
+            rnr.crawl(st.SpdrST, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains, store_docId=args.docId)
         if ("th" in cl_states or not cl_states):
-            rnr.crawl(th.SpdrTH, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains)
+            rnr.crawl(th.SpdrTH, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains, store_docId=args.docId)
         d = rnr.join()
         d.addBoth(lambda _: reactor.stop())
         reactor.run()

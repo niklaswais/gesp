@@ -20,11 +20,12 @@ class SpdrBB(scrapy.Spider):
         }
     }
 
-    def __init__(self, path, courts="", states="", fp=False, domains="", **kwargs):
+    def __init__(self, path, courts="", states="", fp=False, domains="", store_docId=False, **kwargs):
         self.path = path
         self.courts = courts
         self.states = states
         self.domains = domains
+        self.store_docId = store_docId
         self.fp = fp
         super().__init__(**kwargs)
 
