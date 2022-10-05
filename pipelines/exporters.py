@@ -17,7 +17,7 @@ class ExportPipeline:
 
 class ExportAsHtmlPipeline(ExportPipeline):
     def process_item(self, item, spider):
-        save_as_html(item, spider.name[7:], spider.path)
+        save_as_html(item, spider.name[7:], spider.path, spider.store_docId)
         return item
 
 class ExportAsPdfPipeline(ExportPipeline):
