@@ -80,7 +80,8 @@ class SpdrNW(scrapy.Spider):
             yield scrapy.Request(url=self.base_url, method="POST", headers=self.headers, body=start_req_body, meta={"body":start_req_body, "page":1}, dont_filter=True, callback=self.parse)
     
     def parse(self, response):
-        yield self.extract_data(response)
+        for result in self.extract_data(response):
+                yield result
         if response.xpath("//input[@value='>']"): # Button für nächste Seite
             page = response.meta["page"] + 1
             body = "page" + str(page) + "=%3E&" + response.meta["body"]
@@ -95,6 +96,6 @@ class SpdrNW(scrapy.Spider):
                     "az": res_div.xpath("text()[3]").get().strip()[14:],
                     "link": res_div.xpath(".//a/@href").get(),
                 }
-                return r
+                yield r
         else:
             output(f"blank search results page {response.url}", "warn")
