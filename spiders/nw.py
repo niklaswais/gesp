@@ -81,7 +81,7 @@ class SpdrNW(scrapy.Spider):
     
     def parse(self, response):
         for result in self.extract_data(response):
-                yield result
+            yield result
         if response.xpath("//input[@value='>']"): # Button für nächste Seite
             page = response.meta["page"] + 1
             body = "page" + str(page) + "=%3E&" + response.meta["body"]
