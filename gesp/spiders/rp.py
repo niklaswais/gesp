@@ -2,13 +2,13 @@
 import datetime
 import json
 import scrapy
-import src.config
-from pipelines.formatters import AZsPipeline, DatesPipeline, CourtsPipeline
-from pipelines.texts import TextsPipeline
-from pipelines.exporters import ExportAsHtmlPipeline, FingerprintExportPipeline
+from ..src import config
+from ..pipelines.formatters import AZsPipeline, DatesPipeline, CourtsPipeline
+from ..pipelines.texts import TextsPipeline
+from ..pipelines.exporters import ExportAsHtmlPipeline, FingerprintExportPipeline
 
-class SpdrMV(scrapy.Spider):
-    name = "spider_mv"
+class SpdrRP(scrapy.Spider):
+    name = "spider_rp"
     custom_settings = {
         "ITEM_PIPELINES": { 
             AZsPipeline: 100,
@@ -41,36 +41,36 @@ class SpdrMV(scrapy.Spider):
         super().__init__(**kwargs)
 
     def start_requests(self):
-        url = "https://www.landesrecht-mv.de/jportal/wsrest/recherche3/init"
-        self.headers = src.config.mv_headers
-        self.cookies = src.config.mv_cookies
+        url = "https://www.landesrecht.rlp.de/jportal/wsrest/recherche3/init"
+        self.headers = config.rp_headers
+        self.cookies = config.rp_cookies
         date = str(datetime.date.today())
         time = str(datetime.datetime.now(datetime.timezone.utc).time())[0:-3]
-        body = src.config.mv_body % (date, time)
+        body = config.rp_body % (date, time)
         yield scrapy.Request(url=url, method="POST", headers=self.headers, body=body, cookies=self.cookies, dont_filter=True, callback=self.parse)
 
     def parse(self, response):
         for result in self.extract_data(response):
             yield result
-        url = "https://www.landesrecht-mv.de/jportal/wsrest/recherche3/search"
+        url = "https://www.landesrecht.rlp.de/jportal/wsrest/recherche3/search"
         self.headers["x-csrf-token"] = json.loads(response.body)["csrfToken"]
         date = str(datetime.date.today())
         time = str(datetime.datetime.now(datetime.timezone.utc).time())[0:-3]
-        body = '{"searchTasks":{"RESULT_LIST":{"start":1,"size":26,"sort":"date","addToHistory":true,"addCategory":true},"RESULT_LIST_CACHE":{"start":25,"size":27},"FAST_ACCESS":{},"SEARCH_WORD_HITS":{}},"filters":{"CATEGORY":["Rechtsprechung"]},"searches":[],"clientID":"bsmv","clientVersion":"bsmv - V06_07_00 - 23.06.2022 11:20","r3ID":"%sT%sZ"}' % (date, time)
-        yield scrapy.Request(url=url, method="POST", headers=self.headers, body=body, cookies=self.cookies, meta={"batch": 25}, dont_filter=True, callback=self.parse_scrolldown)
+        body = '{"searchTasks":{"RESULT_LIST":{"start":1,"size":26,"sort":"date","addToHistory":true,"addCategory":true},"RESULT_LIST_CACHE":{"start":25,"size":27},"FAST_ACCESS":{},"SEARCH_WORD_HITS":{}},"filters":{"CATEGORY":["Rechtsprechung"]},"searches":[],"clientID":"bsrp","clientVersion":"bsrp - V06_07_00 - 23.06.2022 11:20","r3ID":"%sT%sZ"}' % (date, time)
+        yield scrapy.Request(url=url, method="POST", headers=self.headers, body=body, cookies=self.cookies, meta={"batch": 25}, dont_filter=True, callback=self.parse_nextpage)
 
-    def parse_scrolldown(self, response):
+    def parse_nextpage(self, response):
         results = json.loads(response.body)
         if "resultList" in results:
             for result in self.extract_data(response):
                 yield result
-            url = "https://www.landesrecht-mv.de/jportal/wsrest/recherche3/search"
+            url = "https://www.landesrecht.rlp.de/jportal/wsrest/recherche3/search"
             batch = response.meta["batch"]
             date = str(datetime.date.today())
             time = str(datetime.datetime.now(datetime.timezone.utc).time())[0:-3]
-            body = '{"searchTasks":{"RESULT_LIST":{"start":%s,"size":27,"sort":"date","addToHistory":true,"addCategory":true},"RESULT_LIST_CACHE":{"start":%s,"size":27},"FAST_ACCESS":{}},"filters":{"CATEGORY":["Rechtsprechung"]},"searches":[],"clientID":"bshe","clientVersion":"bshe - V06_07_00 - 23.06.2022 11:20","r3ID":"%sT%sZ"}' % (batch, batch + 25, date, time)
+            body = '{"searchTasks":{"RESULT_LIST":{"start":%s,"size":27,"sort":"date","addToHistory":true,"addCategory":true},"RESULT_LIST_CACHE":{"start":%s,"size":27},"FAST_ACCESS":{}},"filters":{"CATEGORY":["Rechtsprechung"]},"searches":[],"clientID":"bshe","clientVersion":"bsrp - V06_07_00 - 23.06.2022 11:20","r3ID":"%sT%sZ"}' % (batch, batch + 25, date, time)
             batch += 25
-            yield scrapy.Request(url=url, method="POST", headers=self.headers, body=body, cookies=self.cookies, meta={"batch": batch}, dont_filter=True, callback=self.parse_scrolldown)
+            yield scrapy.Request(url=url, method="POST", headers=self.headers, body=body, cookies=self.cookies, meta={"batch": batch}, dont_filter=True, callback=self.parse_nextpage)
     
     def extract_data(self, response):
         results = json.loads(response.body)
@@ -80,7 +80,7 @@ class SpdrMV(scrapy.Spider):
                     "court": result["titleList"][0],
                     "date": result["date"],
                     "az": result["titleList"][1],
-                    "link": "https://www.landesrecht-mv.de/bsmv/document/" + result["docId"],
+                    "link": "https://www.landesrecht.rlp.de/bsrp/document/" + result["docId"],
                     "docId": result["docId"],
                     "xcsrft" : self.headers["x-csrf-token"] 
                 }

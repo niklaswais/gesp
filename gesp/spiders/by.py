@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 import re
 import scrapy
-from src.output import output
-from pipelines.formatters import AZsPipeline, DatesPipeline, CourtsPipeline
-from pipelines.texts import TextsPipeline
-from pipelines.exporters import ExportAsHtmlPipeline, FingerprintExportPipeline
+from ..src.output import output
+from ..pipelines.formatters import AZsPipeline, DatesPipeline, CourtsPipeline
+from ..pipelines.texts import TextsPipeline
+from ..pipelines.exporters import ExportAsHtmlPipeline, FingerprintExportPipeline
 
 class SpdrBY(scrapy.Spider):
     name = "spider_by"

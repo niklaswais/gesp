@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 import urllib.parse
 import scrapy
-from pipelines.formatters import AZsPipeline, DatesPipeline, CourtsPipeline
-from pipelines.texts import TextsPipeline
-from pipelines.exporters import ExportAsHtmlPipeline, FingerprintExportPipeline
+from ..pipelines.formatters import AZsPipeline, DatesPipeline, CourtsPipeline
+from ..pipelines.texts import TextsPipeline
+from ..pipelines.exporters import ExportAsHtmlPipeline, FingerprintExportPipeline
 
 class SpdrSH(scrapy.Spider):
     name = "spider_sh"

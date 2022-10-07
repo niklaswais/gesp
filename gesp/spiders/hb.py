@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import scrapy
-from src.output import output
-from pipelines.formatters import AZsPipeline, DatesPipeline, CourtsPipeline
-from pipelines.exporters import ExportAsPdfPipeline, FingerprintExportPipeline
+from ..src.output import output
+from ..pipelines.formatters import AZsPipeline, DatesPipeline, CourtsPipeline
+from ..pipelines.exporters import ExportAsPdfPipeline, FingerprintExportPipeline
 
 class SpdrHB(scrapy.Spider):
     name = "spider_hb"

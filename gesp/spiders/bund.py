@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import re
 import scrapy
-from pipelines.formatters import AZsPipeline, CourtsPipeline
-from pipelines.exporters import ExportAsHtmlPipeline, FingerprintExportPipeline
+from ..pipelines.formatters import AZsPipeline, CourtsPipeline
+from ..pipelines.exporters import ExportAsHtmlPipeline, FingerprintExportPipeline
 
 class SpdrBund(scrapy.Spider):
     name = "spider_bund"

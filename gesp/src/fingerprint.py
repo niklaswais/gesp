@@ -5,12 +5,12 @@ import lzma
 import os
 import requests
 import scrapy # Sachsen (Subportal)
-import src.config
+from . import config
 from twisted.internet import reactor # Sachsen (Subportal)
-from spiders.sn import SpdrSN # Sachsen (Subportal)
-from src.output import output
-from src.get_text import bb, be, bw, by, he, hh, mv, ni, nw, rp, sh, sl, sn, st, th
-from src.create_file import save_as_html, save_as_pdf
+from ..spiders.sn import SpdrSN # Sachsen (Subportal)
+from .output import output
+from .get_text import bb, be, bw, by, he, hh, mv, ni, nw, rp, sh, sl, sn, st, th
+from .create_file import save_as_html, save_as_pdf
 
 class Fingerprint:
     def __init__(self, path, fp_path, store_docId):
@@ -48,102 +48,102 @@ class Fingerprint:
                         item = bb(item)
                     elif i["s"]  == "be":
                         url = "https://gesetze.berlin.de/jportal/wsrest/recherche3/init"
-                        headers = src.config.be_headers
-                        body = src.config.be_body % (date, time)
+                        headers = config.be_headers
+                        body = config.be_body % (date, time)
                         try:
-                            response = requests.post(url=url, headers=headers, cookies=src.config.be_cookies, data=body)
+                            response = requests.post(url=url, headers=headers, cookies=config.be_cookies, data=body)
                         except:
                             output("be: could not get x-csrf-token", "err")
                         else:
                             headers["x-csrf-token"] = json.loads(response.body)["csrfToken"]
-                        item = be(item, headers, src.config.be_cookies)
+                        item = be(item, headers, config.be_cookies)
                     elif i["s"] == "bw":
                         item = bw(item)
                     elif i["s"] == "by":
                         item = by(item)
                     elif i["s"]  == "he":
                         url = "https://www.lareda.hessenrecht.hessen.de/jportal/wsrest/recherche3/init"
-                        headers = src.config.he_headers
-                        body = src.config.he_body % (date, time)
+                        headers = config.he_headers
+                        body = config.he_body % (date, time)
                         try:
-                            response = requests.post(url=url, headers=headers, cookies=src.config.he_cookies, data=body)
+                            response = requests.post(url=url, headers=headers, cookies=config.he_cookies, data=body)
                         except:
                             output("he: could not get x-csrf-token", "err")
                         else:
                             headers["x-csrf-token"] = json.loads(response.body)["csrfToken"]
-                        item = he(item, headers, src.config.he_cookies)
+                        item = he(item, headers, config.he_cookies)
                     elif i["s"]  == "hh":
                         url = "https://www.landesrecht-hamburg.de/jportal/wsrest/recherche3/init"
-                        headers = src.config.hh_headers
-                        body = src.config.hh_body % (date, time)
+                        headers = config.hh_headers
+                        body = config.hh_body % (date, time)
                         try:
-                            response = requests.post(url=url, headers=headers, cookies=src.config.hh_cookies, data=body)
+                            response = requests.post(url=url, headers=headers, cookies=config.hh_cookies, data=body)
                         except:
                             output("hh: could not get x-csrf-token", "err")
                         else:
                             headers["x-csrf-token"] = json.loads(response.body)["csrfToken"]
-                        item = hh(item, headers, src.config.hh_cookies)
+                        item = hh(item, headers, config.hh_cookies)
                     elif i["s"]  == "mv":
                         url = "https://www.landesrecht-mv.de/jportal/wsrest/recherche3/init"
-                        headers = src.config.mv_headers
-                        body = src.config.mv_body % (date, time)
+                        headers = config.mv_headers
+                        body = config.mv_body % (date, time)
                         try:
-                            response = requests.post(url=url, headers=headers, cookies=src.config.mv_cookies, data=body)
+                            response = requests.post(url=url, headers=headers, cookies=config.mv_cookies, data=body)
                         except:
                             output("mv: could not get x-csrf-token", "err")
                         else:
                             headers["x-csrf-token"] = json.loads(response.body)["csrfToken"]
-                        item = mv(item, headers, src.config.mv_cookies)
+                        item = mv(item, headers, config.mv_cookies)
                     elif i["s"] == "ni":
                         item = ni(item)
                     elif i["s"] == "nw":
                         item = nw(item)
                     elif i["s"]  == "rp":
                         url = "https://www.landesrecht.rlp.de/jportal/wsrest/recherche3/init"
-                        headers = src.config.rp_headers
-                        body = src.config.rp_body % (date, time)
+                        headers = config.rp_headers
+                        body = config.rp_body % (date, time)
                         try:
-                            response = requests.post(url=url, headers=headers, cookies=src.config.rp_cookies, data=body)
+                            response = requests.post(url=url, headers=headers, cookies=config.rp_cookies, data=body)
                         except:
                             output("rp: could not get x-csrf-token", "err")
                         else:
                             headers["x-csrf-token"] = json.loads(response.body)["csrfToken"]
-                        item = rp(item, headers, src.config.rp_cookies)
+                        item = rp(item, headers, config.rp_cookies)
                     elif i["s"]  == "sh":
                         item = sh(item)
                     elif i["s"]  == "sl":
                         url = "https://recht.saarland.de/jportal/wsrest/recherche3/init"
-                        headers = src.config.sl_headers
-                        body = src.config.sl_body % (date, time)
+                        headers = config.sl_headers
+                        body = config.sl_body % (date, time)
                         try:
-                            response = requests.post(url=url, headers=headers, cookies=src.config.sl_cookies, data=body)
+                            response = requests.post(url=url, headers=headers, cookies=config.sl_cookies, data=body)
                         except:
                             output("sl: could not get x-csrf-token", "err")
                         else:
                             headers["x-csrf-token"] = json.loads(response.body)["csrfToken"]
-                        item = sl(item, headers, src.config.sl_cookies)
+                        item = sl(item, headers, config.sl_cookies)
                     elif i["s"]  == "st":
                         url = "https://www.landesrecht.sachsen-anhalt.de/jportal/wsrest/recherche3/init"
-                        headers = src.config.st_headers
-                        body = src.config.st_body % (date, time)
+                        headers = config.st_headers
+                        body = config.st_body % (date, time)
                         try:
-                            response = requests.post(url=url, headers=headers, cookies=src.config.st_cookies, data=body)
+                            response = requests.post(url=url, headers=headers, cookies=config.st_cookies, data=body)
                         except:
                             output("st: could not get x-csrf-token", "err")
                         else:
                             headers["x-csrf-token"] = json.loads(response.body)["csrfToken"]
-                        item = st(item, headers, src.config.st_cookies)
+                        item = st(item, headers, config.st_cookies)
                     elif i["s"]  == "th":
                         url = "https://landesrecht.thueringen.de/jportal/wsrest/recherche3/init"
-                        headers = src.config.th_headers
-                        body = src.config.th_body % (date, time)
+                        headers = config.th_headers
+                        body = config.th_body % (date, time)
                         try:
-                            response = requests.post(url=url, headers=headers, cookies=src.config.th_cookies, data=body)
+                            response = requests.post(url=url, headers=headers, cookies=config.th_cookies, data=body)
                         except:
                             output("th: could not get x-csrf-token", "err")
                         else:
                             headers["x-csrf-token"] = json.loads(response.body)["csrfToken"]
-                        item = th(item, headers, src.config.th_cookies)
+                        item = th(item, headers, config.th_cookies)
                     save_as_html(item, i["s"], path, store_docId)
    
     def load_file(self, fp):

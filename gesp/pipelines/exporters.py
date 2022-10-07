@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 import lzma
 import os
-import src.config
+from ..src import config
 from datetime import datetime
-from src.output import output
-from src.create_file import save_as_html, save_as_pdf
+from ..src.output import output
+from ..src.create_file import save_as_html, save_as_pdf
 
 class ExportPipeline:
     def open_spider(self, spider):
@@ -31,7 +31,7 @@ class FingerprintExportPipeline:
             self.lzmac = lzma.LZMACompressor()
             self.path = os.path.join(spider.path, "fingerprint.xz")
             self.file = open(self.path, "wb")
-            general_info = '{"version":"%s","date":"%s","args":{"c":"%s","s":"%s"}}|' % (src.config.__version__, str(datetime.timestamp(datetime.now())), ",".join(spider.courts), ",".join(spider.states))
+            general_info = '{"version":"%s","date":"%s","args":{"c":"%s","s":"%s"}}|' % (config.__version__, str(datetime.timestamp(datetime.now())), ",".join(spider.courts), ",".join(spider.states))
             self.file.write(self.lzmac.compress(general_info.encode()))
 
     def close_spider(self, spider):

@@ -4,11 +4,11 @@ import re
 import urllib
 import requests
 import scrapy
-import src.config
+from ..src import config
 from lxml import html
-from src.output import output
-from pipelines.formatters import AZsPipeline, DatesPipeline, CourtsPipeline
-from pipelines.exporters import ExportAsPdfPipeline, FingerprintExportPipeline
+from ..src.output import output
+from ..pipelines.formatters import AZsPipeline, DatesPipeline, CourtsPipeline
+from ..pipelines.exporters import ExportAsPdfPipeline, FingerprintExportPipeline
 
 class SpdrSN(scrapy.Spider):
     name = "spider_sn"
@@ -30,7 +30,7 @@ class SpdrSN(scrapy.Spider):
         self.fp = fp
         self.domains = domains
         self.store_docId = store_docId
-        self.headers = src.config.sn_headers
+        self.headers = config.sn_headers
         super().__init__(**kwargs)
 
     def start_requests(self):

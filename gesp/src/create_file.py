@@ -3,7 +3,7 @@ from fileinput import filename
 import os
 import requests
 from io import BytesIO
-from src.output import output
+from .output import output
 from zipfile import ZipFile
 
 def info(item):

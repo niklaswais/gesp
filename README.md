@@ -21,7 +21,7 @@ gesp.py -fp /path/to/fingerprint
 ```
 
 ### B. Results
-If no specific path is passed with "-p", gesp will create a folder for the results in the program folder. The name of the folder is based on the date and time of execution to avoid conflicts in subsequent runs. Decisions that are available as **html/xhtml** files are preferentially downloaded as such. However, some federal states unfortunately provide decisions only as pdf files. The editable documents are minimally cleaned up (e.g., print dialogs and navigation menus are removed), but **not pre-processed**.
+If no specific path is passed with "-p", gesp will create a folder for the results in the current working directory ("results/"). The name of the subfolder is based on the date and time of execution to avoid conflicts in subsequent runs. Decisions that are available as **html/xhtml** files are preferentially downloaded as such. However, some federal states unfortunately provide decisions only as pdf files. The editable documents are minimally cleaned up (e.g., print dialogs and navigation menus are removed), but **not pre-processed**.
 
 ### C. Reproducibility
 If you want to reconstruct the dataset of a previos run, e.g. because you are working on multiple machines or in a team, simply share the fingerprint file that gesp automatically creates in the folder with the results. Using the fingerprint file by means of the "-fp" argument will result in the assembly of an identical collection.

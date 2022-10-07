@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import datetime
 import re
-from src import config
+from ..src import config
 
 class AZsPipeline:
     def process_item(self, item, spider):                

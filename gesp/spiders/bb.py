@@ -2,9 +2,9 @@
 import requests
 import scrapy
 from lxml import html
-from pipelines.formatters import AZsPipeline, DatesPipeline, CourtsPipeline
-from pipelines.texts import TextsPipeline
-from pipelines.exporters import ExportAsHtmlPipeline, FingerprintExportPipeline
+from ..pipelines.formatters import AZsPipeline, DatesPipeline, CourtsPipeline
+from ..pipelines.texts import TextsPipeline
+from ..pipelines.exporters import ExportAsHtmlPipeline, FingerprintExportPipeline
 
 class SpdrBB(scrapy.Spider):
     name = "spider_bb"

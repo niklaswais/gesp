@@ -9,10 +9,10 @@ import sys
 from scrapy.shell import inspect_response
 from tldextract import extract       ### !!nur in DEV!!
 from twisted.internet import reactor
-from spiders import bb, be, bund, bw, by, hb, hh, he, mv, ni, nw, rp, sh, sl, sn, st, th
-import src.config
-from src.output import output
-from src.fingerprint import Fingerprint
+from .spiders import bb, be, bund, bw, by, hb, hh, he, mv, ni, nw, rp, sh, sl, sn, st, th
+from .src import config
+from .src.output import output
+from .src.fingerprint import Fingerprint
 
 def main():
     output("Due to the terms of use governing the databases accessed by gesp, the use of gesp is only permitted for non-commercial purposes. Do you use gesp exclusively for non-commercial purposes?")
@@ -30,12 +30,12 @@ def main():
     cl_parser.add_argument("-d", "--domains", type=str.lower, help="individual selection of the included legal domains (oeff/zivil/straf)")
     cl_parser.add_argument("-p", "--path", type=str, help="sets the path where the results will be stored")
     cl_parser.add_argument("-s", "--states", type=str.lower, help="individual selection of the included states (bund/bb/be/bw/by/...)")
-    cl_parser.add_argument("-v", "--version", action="version", version=f"gesp {src.config.__version__} by {src.config.__author__} (nwais.de)", help="version of this package")
+    cl_parser.add_argument("-v", "--version", action="version", version=f"gesp {config.__version__} by {config.__author__} (nwais.de)", help="version of this package")
     cl_parser.add_argument('--docId', action='store_true', help="appends the docId, if present, to the filename")
     cl_parser.add_argument("-fp", "--fingerprint", nargs="?", const=True, help="creates (flag) or reads (argument, path) a fingerprint file")
     args = cl_parser.parse_args()
     # -p (path)
-    path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "results", datetime.datetime.now().strftime("%Y-%m-%d_%H-%M"))
+    path = os.path.join(os.getcwd(), "results", datetime.datetime.now().strftime("%Y-%m-%d_%H-%M"))
     if (args.path):
         if os.path.isdir(args.path):
             path = args.path
@@ -60,7 +60,7 @@ def main():
     # -c (courts)
     if (args.courts):
         for court in args.courts.split(","):
-            if (not court in src.config.COURTS and court != "larbg" and court != "vgh"):
+            if (not court in config.COURTS and court != "larbg" and court != "vgh"):
                 output(f"unknown court '{court}'", "err")
             elif (court == "larbg"): # larbg = lag
                 output(f"court '{court}' is interpreted as 'lag'", "warn")
@@ -73,7 +73,7 @@ def main():
     # -s (states)
     if (args.states):
         for state in args.states.split(","):
-            if (not state in src.config.STATES):
+            if (not state in config.STATES):
                 output(f"unknown state '{state}'", "err")
             else:
                 cl_states.append(state)
@@ -81,11 +81,11 @@ def main():
         if cl_courts and set(cl_courts).issubset({"bgh", "bfh", "bverwg", "bverfg", "bpatg", "bag", "bsg"}):
             cl_states.append("bund") # Nur Bundesgericht(e) angegebeben, aber nicht auf Bund eingegrenzt ("-s bund"): Eingrenzung auf Bundesportal
         else:
-            cl_states.extend(src.config.HTML_STATES)  # Sachsen und Bremen (PDF) nur bei expliziter Nennung
+            cl_states.extend(config.HTML_STATES)  # Sachsen und Bremen (PDF) nur bei expliziter Nennung
     # -d (domains)
     if (args.domains):
         for domain in args.domains.split(","):
-            if (not domain in src.config.DOMAINS):
+            if (not domain in config.DOMAINS):
                 output(f"unknown legal domain '{domain}'", "err")
             else:
                 cl_domains.append(domain)

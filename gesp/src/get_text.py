@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-import src.config
-from src.output import output
+from . import config
+from .output import output
 from lxml import etree, html
 import datetime
 import requests
@@ -48,7 +48,7 @@ def be(item, headers, cookies): # spider.headers, spider.cookies
 
 def bw(item):
     try:
-        item["text"] = requests.get(item["link"], headers=src.config.HEADERS).text
+        item["text"] = requests.get(item["link"], headers=config.HEADERS).text
     except:
         output("could not retrieve " + item["link"], "err")
     else:
@@ -60,7 +60,7 @@ def bw(item):
 
 def by(item):
     try:
-        txt = requests.get(item["link"], headers=src.config.HEADERS).text
+        txt = requests.get(item["link"], headers=config.HEADERS).text
     except:
         output("could not retrieve " + item["link"], "err")
     else:
@@ -150,7 +150,7 @@ def ni(item):
 
 def nw(item):
     try:
-        item["text"] = requests.get(item["link"], headers=src.config.HEADERS).text
+        item["text"] = requests.get(item["link"], headers=config.HEADERS).text
     except:
         output("could not retrieve " + item["link"], "err")
     else:
@@ -181,7 +181,7 @@ def rp(item, headers, cookies): # spider.headers, spider.cookies
 
 def sh(item):
     try: # Urteilsseite laden
-        tree = html.fromstring(requests.get(item["link"], headers=src.config.HEADERS).text)
+        tree = html.fromstring(requests.get(item["link"], headers=config.HEADERS).text)
     except:
         output("could not retrieve " + item["link"], "err")
     else:
@@ -189,7 +189,7 @@ def sh(item):
         link = tree.xpath("//a[@name='dokument.drucken']/@href")[0]
         if link:
             # Druckseite öffnen, Druckdialog entfernen
-            tree = html.fromstring(requests.get(base + link, headers=src.config.HEADERS).text)
+            tree = html.fromstring(requests.get(base + link, headers=config.HEADERS).text)
             tree.xpath("//script[last()]")[0].getparent().remove(tree.xpath("//script[last()]")[0])
             item["text"] = html.tostring(tree, pretty_print=True).decode("utf-8")
             item["filetype"] = "html"

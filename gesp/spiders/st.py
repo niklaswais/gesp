@@ -2,13 +2,13 @@
 import datetime
 import json
 import scrapy
-import src.config
-from pipelines.formatters import AZsPipeline, DatesPipeline, CourtsPipeline
-from pipelines.texts import TextsPipeline
-from pipelines.exporters import ExportAsHtmlPipeline, FingerprintExportPipeline
+from ..src import config
+from ..pipelines.formatters import AZsPipeline, DatesPipeline, CourtsPipeline
+from ..pipelines.texts import TextsPipeline
+from ..pipelines.exporters import ExportAsHtmlPipeline, FingerprintExportPipeline
 
-class SpdrSL(scrapy.Spider):
-    name = "spider_sl"
+class SpdrST(scrapy.Spider):
+    name = "spider_st"
     custom_settings = {
         "ITEM_PIPELINES": { 
             AZsPipeline: 100,
@@ -34,29 +34,29 @@ class SpdrSL(scrapy.Spider):
         if "lag" in self.courts: self.filter.append("landesarbeitsgericht")
         if "lg" in self.courts: self.filter.append("lg")
         if "lsg" in self.courts: self.filter.append("landessozialgericht")
-        if "olg" in self.courts: self.filter.append("saarländisches oberlandesgericht")
+        if "olg" in self.courts: self.filter.append("oberlandesgericht")
         if "ovg" in self.courts: self.filter.append("oberverwaltungsgericht")
-        if "sg" in self.courts: self.filter.append("sozialgericht")
-        if "vg" in self.courts: self.filter.append("verwaltungsgericht")
+        if "sg" in self.courts: self.filter.append("sg")
+        if "vg" in self.courts: self.filter.append("vg")
         super().__init__(**kwargs)
 
     def start_requests(self):
-        url = "https://recht.saarland.de/jportal/wsrest/recherche3/init"
-        self.headers = src.config.sl_headers
-        self.cookies = src.config.sl_cookies
+        url = "https://www.landesrecht.sachsen-anhalt.de/jportal/wsrest/recherche3/init"
+        self.headers = config.st_headers
+        self.cookies = config.st_cookies
         date = str(datetime.date.today())
         time = str(datetime.datetime.now(datetime.timezone.utc).time())[0:-3]
-        body = src.config.be_body % (date, time)
+        body = config.st_body % (date, time)
         yield scrapy.Request(url=url, method="POST", headers=self.headers, body=body, cookies=self.cookies, dont_filter=True, callback=self.parse)
 
     def parse(self, response):
         for result in self.extract_data(response):
             yield result
-        url = "https://recht.saarland.de/jportal/wsrest/recherche3/search"
+        url = "https://www.landesrecht.sachsen-anhalt.de/jportal/wsrest/recherche3/search"
         self.headers["x-csrf-token"] = json.loads(response.body)["csrfToken"]
         date = str(datetime.date.today())
         time = str(datetime.datetime.now(datetime.timezone.utc).time())[0:-3]
-        body = '{"searchTasks":{"RESULT_LIST":{"start":1,"size":26,"sort":"date","addToHistory":true,"addCategory":true},"RESULT_LIST_CACHE":{"start":25,"size":27},"FAST_ACCESS":{},"SEARCH_WORD_HITS":{}},"filters":{"CATEGORY":["Rechtsprechung"]},"searches":[],"clientID":"bssl","clientVersion":"bssl - V06_07_00 - 23.06.2022 11:20","r3ID":"%sT%sZ"}' % (date, time)
+        body = '{"searchTasks":{"RESULT_LIST":{"start":1,"size":26,"sort":"date","addToHistory":true,"addCategory":true},"RESULT_LIST_CACHE":{"start":25,"size":27},"FAST_ACCESS":{},"SEARCH_WORD_HITS":{}},"filters":{"CATEGORY":["Rechtsprechung"]},"searches":[],"clientID":"bsst","clientVersion":"bsst - V06_07_00 - 23.06.2022 11:20","r3ID":"%sT%sZ"}' % (date, time)
         yield scrapy.Request(url=url, method="POST", headers=self.headers, body=body, cookies=self.cookies, meta={"batch": 25}, dont_filter=True, callback=self.parse_nextpage)
 
     def parse_nextpage(self, response):
@@ -64,11 +64,11 @@ class SpdrSL(scrapy.Spider):
         if "resultList" in results:
             for result in self.extract_data(response):
                 yield result
-            url = "https://recht.saarland.de/jportal/wsrest/recherche3/search"
+            url = "https://www.landesrecht.sachsen-anhalt.de/jportal/wsrest/recherche3/search"
             batch = response.meta["batch"]
             date = str(datetime.date.today())
             time = str(datetime.datetime.now(datetime.timezone.utc).time())[0:-3]
-            body = '{"searchTasks":{"RESULT_LIST":{"start":%s,"size":27,"sort":"date","addToHistory":true,"addCategory":true},"RESULT_LIST_CACHE":{"start":%s,"size":27},"FAST_ACCESS":{}},"filters":{"CATEGORY":["Rechtsprechung"]},"searches":[],"clientID":"bssl","clientVersion":"bssl - V06_07_00 - 23.06.2022 11:20","r3ID":"%sT%sZ"}' % (batch, batch + 25, date, time)
+            body = '{"searchTasks":{"RESULT_LIST":{"start":%s,"size":27,"sort":"date","addToHistory":true,"addCategory":true},"RESULT_LIST_CACHE":{"start":%s,"size":27},"FAST_ACCESS":{}},"filters":{"CATEGORY":["Rechtsprechung"]},"searches":[],"clientID":"bsst","clientVersion":"bsst - V06_07_00 - 23.06.2022 11:20","r3ID":"%sT%sZ"}' % (batch, batch + 25, date, time)
             batch += 25
             yield scrapy.Request(url=url, method="POST", headers=self.headers, body=body, cookies=self.cookies, meta={"batch": batch}, dont_filter=True, callback=self.parse_nextpage)
     
@@ -80,7 +80,7 @@ class SpdrSL(scrapy.Spider):
                     "court": result["titleList"][0],
                     "date": result["date"],
                     "az": result["titleList"][1],
-                    "link": "https://recht.saarland.de/bssl/document/" + result["docId"],
+                    "link": "https://www.landesrecht.sachsen-anhalt.de/bsst/document/" + result["docId"],
                     "docId": result["docId"],
                     "xcsrft" : self.headers["x-csrf-token"] 
                 }

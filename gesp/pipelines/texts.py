@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from src.get_text import bb, be, bw, by, he, hh, mv, ni, nw, rp, sh, sl, sn, st, th
+from ..src.get_text import bb, be, bw, by, he, hh, mv, ni, nw, rp, sh, sl, sn, st, th
 
 class TextsPipeline:
     def process_item(self, item, spider):

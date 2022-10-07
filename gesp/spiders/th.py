@@ -2,10 +2,10 @@
 import datetime
 import json
 import scrapy
-import src.config
-from pipelines.formatters import AZsPipeline, DatesPipeline, CourtsPipeline
-from pipelines.texts import TextsPipeline
-from pipelines.exporters import ExportAsHtmlPipeline, FingerprintExportPipeline
+from ..src import config
+from ..pipelines.formatters import AZsPipeline, DatesPipeline, CourtsPipeline
+from ..pipelines.texts import TextsPipeline
+from ..pipelines.exporters import ExportAsHtmlPipeline, FingerprintExportPipeline
 
 class SpdrTH(scrapy.Spider):
     name = "spider_th"
@@ -42,11 +42,11 @@ class SpdrTH(scrapy.Spider):
 
     def start_requests(self):
         url = "https://landesrecht.thueringen.de/jportal/wsrest/recherche3/init"
-        self.headers = src.config.th_headers
-        self.cookies = src.config.th_cookies
+        self.headers = config.th_headers
+        self.cookies = config.th_cookies
         date = str(datetime.date.today())
         time = str(datetime.datetime.now(datetime.timezone.utc).time())[0:-3]
-        body = src.config.th_body % (date, time)
+        body = config.th_body % (date, time)
         yield scrapy.Request(url=url, method="POST", headers=self.headers, body=body, cookies=self.cookies, dont_filter=True, callback=self.parse)
 
     def parse(self, response):
