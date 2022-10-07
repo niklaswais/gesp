@@ -4,31 +4,41 @@
 
 The federal and state governments in Germany make court decisions available for download on individual online platforms. In addition to the lack of uniformity, these platforms only allow individual retrieval out of the box. With gesp, decisions can be downloaded in large quantities in a filter-based and reproducible manner.
 
-### A. Basic Usage
+### A. Installation
+Download & build the package:
+```Shell
+git clone https://github.com/niklaswais/gesp && cd gesp && python -m build
+```
+Install the local .tar.gz:
+```Shell
+python -m pip install dist/gesp-0.1.tar.gz
+```
+
+### B. Basic Usage
 A call without command-line argument will result in the retrival of **all** available court decisions regardless of state or court type. If only a **subset** is to be downloaded, the arguments **"-s"** (followed by abbreviations of states) and **"-t"** (followed by abbreviations of court types) can be used. Multiple states or court types are separated by commas.
 ```Shell
-gesp.py -s bund,by,hh,nw -c bgh,ag,lg,olg
+python -m gesp -s bund,by,hh,nw -c bgh,ag,lg,olg
 ```
 
 A specific path under which the decisions are to be stored can be specified with the argument "-p". If the folder has not been created yet, gesp will take care of that. If the folder has already been created and contains the results of a previous execution, this will cause an **update** of the dataset.
 ```Shell
-gesp.py -p path/to/folder
+python -m gesp -p path/to/folder
 ```
 
 An existing fingerprint (see C.) can be used to **reconstruct** a dataset. To do so, the path to the fingerprint file must be passed as an argument using "-fp". Naturally, "-c" and "-s" arguments are not allowed in this case.
 ```Shell
-gesp.py -fp /path/to/fingerprint
+python -m gesp -fp /path/to/fingerprint
 ```
 
-### B. Results
+### C. Results
 If no specific path is passed with "-p", gesp will create a folder for the results in the current working directory ("results/"). The name of the subfolder is based on the date and time of execution to avoid conflicts in subsequent runs. Decisions that are available as **html/xhtml** files are preferentially downloaded as such. However, some federal states unfortunately provide decisions only as pdf files. The editable documents are minimally cleaned up (e.g., print dialogs and navigation menus are removed), but **not pre-processed**.
 
-### C. Reproducibility
+### D. Reproducibility
 If you want to reconstruct the dataset of a previos run, e.g. because you are working on multiple machines or in a team, simply share the fingerprint file that gesp automatically creates in the folder with the results. Using the fingerprint file by means of the "-fp" argument will result in the assembly of an identical collection.
 
 The fingerprinting feature of gesp can also be used to meet good scientific practice standards without the need to provide large collections of data. Since it is part of good scientific practice to disclose the data basis of the results obtained, publications on the empirical study of court decisions must be accompanied by relatively large data sets. Instead of making the entire collection of decisions available for retrieval online, simply share the fingerprint file that others may use to retrieve your data.
 
-### D. Appendix
+### E. Appendix
 #### 1. Abbreviations for "-s" (federal/states)
 | Name | Abbreviation |
 | --- | --- |
