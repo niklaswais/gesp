@@ -3,7 +3,7 @@ import urllib.parse
 import scrapy
 from ..pipelines.formatters import AZsPipeline, DatesPipeline, CourtsPipeline
 from ..pipelines.texts import TextsPipeline
-from ..pipelines.exporters import ExportAsHtmlPipeline, FingerprintExportPipeline
+from ..pipelines.exporters import ExportAsHtmlPipeline, FingerprintExportPipeline, RawExporter
 
 class SpdrSH(scrapy.Spider):
     name = "spider_sh"
@@ -15,16 +15,18 @@ class SpdrSH(scrapy.Spider):
             CourtsPipeline: 300,
             TextsPipeline: 400,
             ExportAsHtmlPipeline: 500,
-            FingerprintExportPipeline: 600
+            FingerprintExportPipeline: 600,
+            RawExporter : 900
         }
     }
-    def __init__(self, path, courts="", states="", fp=False, domains="", store_docId=False, **kwargs):
+    def __init__(self, path, courts="", states="", fp=False, domains="", store_docId=False, postprocess=False, **kwargs):
         self.path = path
         self.courts = courts
         self.states = states
         self.fp = fp
         self.domains = domains
         self.store_docId = store_docId
+        self.postprocess = postprocess
         self.filter = []
         if "ag" in self.courts: self.filter.append("ag")
         if "arbg" in self.courts: self.filter.append("arbg")
@@ -62,6 +64,7 @@ class SpdrSH(scrapy.Spider):
             az = az.replace(" | ", "")
             link = tr.xpath("//base/@href").get() + tr.xpath(".//td[3]/a[1]/@href").get()
             return {
+                "postprocess": self.postprocess,
                 "court": tr.xpath(".//td[3]/a/span/strong[1]/text()").get(),
                 "date": tr.xpath(".//td[2]/span/text()").get(),
                 "link": link,

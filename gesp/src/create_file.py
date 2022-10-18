@@ -13,7 +13,7 @@ def info(item):
 
 def save_as_html(item, spider_name, spider_path, store_docId): # spider.name, spider.path
     info(item)
-    if spider_name == "bund": # Sonderfall Bund: *.zip mit *.xml
+    if (spider_name == "bund") or (spider_name == "by"): # Sonderfall Bund und Bayern: *.zip mit *.xml
         filename = item["court"] + "_" + item["date"] + "_" + item["az"]
         if store_docId and item.get('docId'):
             filename += "_" + item['docId']
@@ -21,9 +21,11 @@ def save_as_html(item, spider_name, spider_path, store_docId): # spider.name, sp
         try:
             with ZipFile(BytesIO((requests.get(item["link"]).content))) as zip_ref: # Im RAM entpacken
                 for zipinfo in zip_ref.infolist(): # Teilweise auch Bilder in .zip enthalten
-                    if (zipinfo.filename.endswith(".xml")):
+                    if (zipinfo.filename.endswith(".xml") and ("manifest" not in zipinfo.filename)):
                         zipinfo.filename = filename
-                        zip_ref.extract(zipinfo, os.path.join(spider_path, "bund"))
+                        #bayportalrsp
+                        item["xmlfilename"] = os.path.join(spider_path, spider_name, zipinfo.filename)
+                        zip_ref.extract(zipinfo, os.path.join(spider_path, spider_name))
         except:
             output(f"could not create file {filename}", "err")
         else:
