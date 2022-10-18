@@ -4,7 +4,7 @@ import scrapy
 from lxml import html
 from ..pipelines.formatters import AZsPipeline, DatesPipeline, CourtsPipeline
 from ..pipelines.texts import TextsPipeline
-from ..pipelines.exporters import ExportAsHtmlPipeline, FingerprintExportPipeline
+from ..pipelines.exporters import ExportAsHtmlPipeline, FingerprintExportPipeline, RawExporter
 
 class SpdrBB(scrapy.Spider):
     name = "spider_bb"
@@ -16,17 +16,19 @@ class SpdrBB(scrapy.Spider):
             CourtsPipeline: 300,
             TextsPipeline: 400,
             ExportAsHtmlPipeline: 500,
-            FingerprintExportPipeline: 600
+            FingerprintExportPipeline: 600,
+            RawExporter : 900
         }
     }
 
-    def __init__(self, path, courts="", states="", fp=False, domains="", store_docId=False, **kwargs):
+    def __init__(self, path, courts="", states="", fp=False, domains="", store_docId=False, postprocess=False, **kwargs):
         self.path = path
         self.courts = courts
         self.states = states
         self.domains = domains
         self.store_docId = store_docId
         self.fp = fp
+        self.postprocess = postprocess
         super().__init__(**kwargs)
 
     def start_requests(self):
@@ -76,6 +78,7 @@ class SpdrBB(scrapy.Spider):
             tree = html.fromstring(requests.get(link).text)
             az = tree.xpath("//div[@id='metadata']/div/table/tbody/tr[2]/td[1]/text()")[0]
             yield {
+                    "postprocess": self.postprocess,
                     "court": result.xpath(".//td[5]/text()").get(),
                     "date": result.xpath(".//td[3]/text()").get(),
                     "link": link,

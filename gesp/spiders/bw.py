@@ -4,7 +4,7 @@ import scrapy
 from ..src.output import output
 from ..pipelines.formatters import AZsPipeline, DatesPipeline, CourtsPipeline
 from ..pipelines.texts import TextsPipeline
-from ..pipelines.exporters import ExportAsHtmlPipeline, FingerprintExportPipeline
+from ..pipelines.exporters import ExportAsHtmlPipeline, FingerprintExportPipeline, RawExporter
 
 class SpdrBW(scrapy.Spider):
     name = "spider_bw"
@@ -16,17 +16,19 @@ class SpdrBW(scrapy.Spider):
             CourtsPipeline: 300,
             TextsPipeline: 400,
             ExportAsHtmlPipeline: 500,
-            FingerprintExportPipeline: 600
+            FingerprintExportPipeline: 600,
+            RawExporter : 900
         }
     }
 
-    def __init__(self, path, courts="", states="", fp=False, domains="", store_docId=False, **kwargs):
+    def __init__(self, path, courts="", states="", fp=False, domains="", store_docId=False, postprocess=False, **kwargs):
         self.path = path
         self.courts = courts
         self.states = states
         self.fp = fp
         self.domains = domains
         self.store_docId = store_docId
+        self.postprocess = postprocess
         super().__init__(**kwargs)
 
     def start_requests(self):
@@ -67,6 +69,7 @@ class SpdrBW(scrapy.Spider):
                         output("filter (-s bw -d zivil) not yet implemented", "warn")
                         # Ausbauen ....            
                 yield {
+                    "postprocess": self.postprocess,
                     "court": doc_link.xpath("../../td[@class='EGericht']/text()").get(),
                     "date": doc_link.xpath("../../td[@class='EDatum']/text()").get(),
                     "az": doc_link.xpath("text()").get(),

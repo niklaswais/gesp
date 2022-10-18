@@ -23,13 +23,14 @@ class SpdrSN(scrapy.Spider):
         "AUTOTHROTTLE_ENABLED": True
     }
 
-    def __init__(self, path, courts="", states="", fp=False, domains="", store_docId=False, **kwargs):
+    def __init__(self, path, courts="", states="", fp=False, domains="", store_docId=False, postprocess=False, **kwargs):
         self.path = path
         self.courts = courts
         self.states = states
         self.fp = fp
         self.domains = domains
         self.store_docId = store_docId
+        self.postprocess = postprocess
         self.headers = config.sn_headers
         super().__init__(**kwargs)
 
@@ -154,6 +155,7 @@ class SpdrSN(scrapy.Spider):
                 output("could not retrieve " + tmp_link, "err")
             else:
                 yield {
+                    "postprocess": self.postprocess,
                     "date": data[-11:-1],
                     "az": data.split("(")[0].strip(),
                     "court": "ovg",

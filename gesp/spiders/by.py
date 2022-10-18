@@ -4,7 +4,7 @@ import scrapy
 from ..src.output import output
 from ..pipelines.formatters import AZsPipeline, DatesPipeline, CourtsPipeline
 from ..pipelines.texts import TextsPipeline
-from ..pipelines.exporters import ExportAsHtmlPipeline, FingerprintExportPipeline
+from ..pipelines.exporters import ExportAsHtmlPipeline, FingerprintExportPipeline, RawExporter
 
 class SpdrBY(scrapy.Spider):
     name = "spider_by"
@@ -14,19 +14,21 @@ class SpdrBY(scrapy.Spider):
             AZsPipeline: 100,
             DatesPipeline: 200,
             CourtsPipeline: 300,
-            TextsPipeline: 400,
+            #TextsPipeline: 400,
             ExportAsHtmlPipeline: 500,
-            FingerprintExportPipeline: 600 
+            FingerprintExportPipeline: 600,
+            RawExporter : 900
         }
     }
 
-    def __init__(self, path, courts="", states="", fp=False, domains="", store_docId=False, **kwargs):
+    def __init__(self, path, courts="", states="", fp=False, domains="", store_docId=False, postprocess=False, **kwargs):
         self.path = path
         self.courts = courts
         self.states = states
         self.fp = fp
         self.domains = domains
         self.store_docId = store_docId
+        self.postprocess = postprocess
         super().__init__(**kwargs)
 
     def start_requests(self):
@@ -76,11 +78,14 @@ class SpdrBY(scrapy.Spider):
                 subtitel = item.xpath(".//div[@class='hlSubTitel']/text()").get()
                 date = re.search("([0-9]{2}\.[0-9]{2}\.[0-9]{4})", subtitel)[0]
                 az = subtitel.split(" – ")[1]
+                zipLink = self.base_url + item.xpath(".//a/@href").get()[:-8].replace("Document","Zip")
+                
                 yield {
+                    "postprocess": self.postprocess,
                     "court": court,
                     "date": date,
                     "az": az.rstrip(),
-                    "link": self.base_url + item.xpath(".//a/@href").get()[:-7] + "view=Print"
+                    "link": zipLink
                 }
 
         if response.xpath("//a[text()='→']"):

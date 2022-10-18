@@ -5,6 +5,7 @@ from ..src import config
 from datetime import datetime
 from ..src.output import output
 from ..src.create_file import save_as_html, save_as_pdf
+from ..src.htmlparser import parse_data_from_html
 
 class ExportPipeline:
     def open_spider(self, spider):
@@ -48,4 +49,12 @@ class FingerprintExportPipeline:
                 entry = entry + ',"docId":"%s"}' % (item["docId"])
             entry = entry + "|" # Ende-Zeichen für Deocder
             self.file.write(self.lzmac.compress(entry.encode()))
-            return item
+        return item ### items needs to be returned for further processing
+
+
+class RawExporter:
+    def process_item(self, item, spider):
+        if (item["postprocess"] == True):
+           parse_data_from_html(item,spider.name[7:], spider.path) 
+        return item
+

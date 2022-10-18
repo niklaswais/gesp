@@ -16,13 +16,14 @@ class SpdrHB(scrapy.Spider):
         }
     }
 
-    def __init__(self, path, courts="", states="", fp=False, domains="", store_docId=False, **kwargs):
+    def __init__(self, path, courts="", states="", fp=False, domains="", store_docId=False, postprocess=False, **kwargs):
         self.path = path
         self.courts = courts
         self.states = states
         self.fp = fp
         self.domains = domains
         self.store_docId = store_docId
+        self.postprocess = postprocess
         super().__init__(**kwargs)
 
     def start_requests(self):
@@ -47,6 +48,7 @@ class SpdrHB(scrapy.Spider):
         for td in response.xpath("//tr/td[@class='dotright'][1]"):
             link = "https://" + response.url.split("/")[2] + td.xpath(".//following-sibling::td/a[1]/@href").get()
             yield {
+                "postprocess": self.postprocess,
                 "court": response.meta["c"],
                 "date": td.xpath(".//em/text()").get(),
                 "az": td.xpath("text()").get(),

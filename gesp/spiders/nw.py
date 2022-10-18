@@ -4,7 +4,7 @@ import scrapy
 from ..src.output import output
 from ..pipelines.formatters import AZsPipeline, DatesPipeline, CourtsPipeline
 from ..pipelines.texts import TextsPipeline
-from ..pipelines.exporters import ExportAsHtmlPipeline, FingerprintExportPipeline
+from ..pipelines.exporters import ExportAsHtmlPipeline, FingerprintExportPipeline, RawExporter
 
 class SpdrNW(scrapy.Spider):
     name = "spider_nw"
@@ -16,17 +16,19 @@ class SpdrNW(scrapy.Spider):
             CourtsPipeline: 300,
             TextsPipeline: 400,
             ExportAsHtmlPipeline: 500,
-            FingerprintExportPipeline: 600
+            FingerprintExportPipeline: 600,
+            RawExporter : 900
         }
     }
 
-    def __init__(self, path, courts="", states="", fp=False, domains="", store_docId=False, **kwargs):
+    def __init__(self, path, courts="", states="", fp=False, domains="", store_docId=False, postprocess=False, **kwargs):
         self.path = path
         self.courts = courts
         self.states = states
         self.fp = fp
         self.domains = domains
         self.store_docId = store_docId
+        self.postprocess = postprocess
         super().__init__(**kwargs)
 
     def start_requests(self):
@@ -90,6 +92,7 @@ class SpdrNW(scrapy.Spider):
     def extract_data(self, response):
         if response.xpath("//div[@class='alleErgebnisse']"):
             for res_div in response.xpath("//div[@class='einErgebnis']"):
+<<<<<<< HEAD
                 link = res_div.xpath(".//a/@href").get()
                 court, date, az, = "", "", ""
                 for el in res_div.xpath("text()"):
@@ -104,6 +107,14 @@ class SpdrNW(scrapy.Spider):
                     "date": date,
                     "az": az,
                     "link": link,
+=======
+                r = {
+                    "postprocess": self.postprocess,
+                    "court": res_div.xpath("text()[1]").get().strip()[9:],
+                    "date": res_div.xpath("text()[5]").get().strip()[21:],
+                    "az": res_div.xpath("text()[3]").get().strip()[14:],
+                    "link": res_div.xpath(".//a/@href").get(),
+>>>>>>> eec73d7 (Postprocessing)
                 }
         else:
             output(f"blank search results page {response.url}", "warn")
