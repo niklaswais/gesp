@@ -86,6 +86,7 @@ class DecisionHTMLParser(HTMLParser):
     utf8_reader = codecs.getreader("utf-8")
     csvfile = csv.reader(utf8_reader(eclistream))
     for land,gerichtsname,code in csvfile:
+        if gerichtsname in ecli_codes: continue ### LG FFM has two abbreviations ...
         ecli_codes[gerichtsname] = code.strip()
         ecli_codes[code.strip()] = code.strip()
         gerichts_code_land[code.strip()] = land
@@ -138,6 +139,9 @@ class DecisionHTMLParser(HTMLParser):
                     'schwurgericht' in block.lower() or 'ausschuss' == block.lower()
                     or 'präsident' == block.lower() or 'generalstaatsanwalt' == block.lower()
                     or 'einzelrichter' == block.lower() 
+                    or 'abt.' == block.lower() 
+                    or 'abteilung' == block.lower() 
+                    or 'v.' == block.lower() 
                     or 'kein' == block.lower())): nochGerichtsname = False
             if 'der' == block.lower():
                 derRueckgestellt = True
@@ -616,10 +620,22 @@ class DecisionHTMLParser(HTMLParser):
             else:
                 self.ecli += self.entscheidungsdatum.strftime('%m%d') + '.'
                 
-                format_aktenzeichen = self.aktenzeichen.upper().replace("Ä","AE").replace("Ö","OE").replace("Ü","UE")#.split(",", 1)[0]
+                format_aktenzeichen = self.aktenzeichen.upper().replace("Ä","AE").replace("Ö","OE").replace("Ü","UE").split(",", 1)[0]
+                #if format_aktenzeichen.endswith(" OVG"): format_aktenzeichen = format_aktenzeichen.rsplit(' ', 1)[0] ## OVG MV
+                #if format_aktenzeichen.endswith(" HGW"): format_aktenzeichen = format_aktenzeichen.rsplit(' ', 1)[0] ## VG Greifswald
+                #if format_aktenzeichen.endswith(" SN"): format_aktenzeichen = format_aktenzeichen.rsplit(' ', 1)[0] ## VG Schwerin
                 prev = ' '
                 azblock = ''
-                for block in re.split('[^a-zA-Z0-9]', format_aktenzeichen):
+                if self.ecli_codes[self.gericht] == "VERFGHT": azblock = "VERFGH" # Verfassungsbericht Thürigen fügt Gerichtsnamen ins AZ intu anders ...
+                if self.ecli_codes[self.gericht] == "STGHNI": azblock = "STGH" # Verfassungsbericht Thürigen fügt Gerichtsnamen ins AZ intu anders ...
+                
+                splitstring = '[^a-zA-Z0-9.]'
+                if self.ecli_codes[self.gericht] == "OVGNRW": splitstring = '[^a-zA-Z0-9]'
+                if self.ecli_codes[self.gericht] == "VGK": splitstring = '[^a-zA-Z0-9]'
+                if self.ecli_codes[self.gericht] == "VGD": splitstring = '[^a-zA-Z0-9]'
+                if self.ecli_codes[self.gericht] == "VFGHNRW": splitstring = '[^a-zA-Z0-9]'
+                
+                for block in re.split(splitstring, format_aktenzeichen): ## if the AZ contains a dot, this seems to be kept usually
                     if len(block) == 0: continue
                     if (block[0].isalpha() and prev[-1].isalpha()): azblock += '.'
                     if (block[0].isnumeric() and prev[-1].isnumeric()): azblock += '.'
@@ -749,4 +765,4 @@ def parse_data_from_html(item, spider_name, spider_path):
         except Exception as e:
             print(e)
             traceback.print_exc()
-            os._exit(1)
+            #os._exit(1)
