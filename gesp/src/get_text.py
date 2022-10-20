@@ -4,6 +4,7 @@ from .output import output
 from lxml import etree, html
 import datetime
 import requests
+import os
 
 
 def bb(item):
@@ -270,3 +271,20 @@ def th(item, headers, cookies): # spider.headers, spider.cookies
         item["text"] = html.tostring(doc, pretty_print=True).decode("utf-8")
         item["filetype"] = "html"
         return item
+
+def judicialis(item):
+    try:
+        txt = requests.get(item["link"]).text
+    except:
+        output("could not retrieve " + item["link"], "err")
+    else:
+        try:
+            tree = html.fromstring(txt)
+        except:
+            output("could not parse " + item["link"], "err")
+        else:
+            body_content = html.tostring(tree.xpath("//div[@class='fs-5']")[0]).decode("utf-8")
+            doc = "<html><head><title>%s</title></head><body>%s</body></html>" % (item["az"], body_content)
+            item["text"] = doc
+            item["filetype"] = "html"
+            return item
