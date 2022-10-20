@@ -9,7 +9,7 @@ import sys
 from scrapy.shell import inspect_response
 from tldextract import extract       ### !!nur in DEV!!
 from twisted.internet import reactor
-from .spiders import bb, be, bund, bw, by, hb, hh, he, mv, ni, nw, rp, sh, sl, sn, st, th
+from .spiders import bb, be, bund, bw, by, hb, hh, he, mv, ni, nw, rp, sh, sl, sn, st, th, judicialis
 from .src import config
 from .src.output import output
 from .src.fingerprint import Fingerprint
@@ -109,6 +109,9 @@ def main():
         logger.propagate = False
         logger.setLevel(logging.DEBUG)
         rnr = scrapy.crawler.CrawlerRunner()
+
+        if args.postprocess != True: args.postprocess = False
+
         if ("bund" in cl_states or not cl_states):
             rnr.crawl(bund.SpdrBund, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains, store_docId=args.docId, postprocess = args.postprocess)
         if ("bw" in cl_states or not cl_states):
@@ -143,6 +146,8 @@ def main():
             rnr.crawl(st.SpdrST, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains, store_docId=args.docId, postprocess = args.postprocess)
         if ("th" in cl_states or not cl_states):
             rnr.crawl(th.SpdrTH, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains, store_docId=args.docId, postprocess = args.postprocess)
+        if ("judicialis" in cl_states or not cl_states):
+            rnr.crawl(judicialis.SpdrJudicialis, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains, store_docId=args.docId, postprocess = args.postprocess)
         d = rnr.join()
         d.addBoth(lambda _: reactor.stop())
         reactor.run()

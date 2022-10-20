@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from ..src.get_text import bb, be, bw, by, he, hh, mv, ni, nw, rp, sh, sl, sn, st, th
+from ..src.get_text import bb, be, bw, by, he, hh, mv, ni, nw, rp, sh, sl, sn, st, th, judicialis
 
 class TextsPipeline:
     def process_item(self, item, spider):
@@ -33,3 +33,5 @@ class TextsPipeline:
             return st(item, spider.headers, spider.cookies)
         elif spider.name[7:] == "th":
             return th(item, spider.headers, spider.cookies)
+        elif spider.name[7:] == "judicialis":
+            return judicialis(item)

@@ -344,7 +344,11 @@ class DecisionHTMLParser(HTMLParser):
             elif tag in ('hr','p','a','div'):
                 if len(self.aktenzeichen) > 0 and not self.endeDerEntscheidung:
                     if 'Diese Entscheidung enthält keinen zur Veröffentlichung bestimmten Leitsatz.' in data: return
-                    self.text += data.strip() + '\n'
+                    if len(self.text) > 0:
+                        if tag == 'a':
+                            self.text += ' '
+                        else: self.text += '\n'
+                    self.text += data.strip()
             elif tag == 'b':
                 if 'Ende der Entscheidung' in data: self.endeDerEntscheidung = True
         elif self.mode in ('bb'):
