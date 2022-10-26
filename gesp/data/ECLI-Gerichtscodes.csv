@@ -347,6 +347,7 @@ Bayern,Verwaltungsgericht Würzburg,VGWUERZ
 Bayern,Schiffahrtsobergericht Nürnberg,SCHFFNUERN
 Bayern,Kirchliches Arbeitsgericht Augsburg,KARBGAUGS
 Bayern,Truppendienstgericht Süd München,TRUPPDGSUED
+Bayern,DienstGH München,TRUPPDGSUED
 Berlin,Amtsgericht Charlottenburg,AGBECH
 Berlin,Amtsgericht Köpenick,AGBEKP
 Berlin,Amtsgericht Lichtenberg,AGBELB
@@ -365,6 +366,7 @@ Berlin,Anwaltsgerichtshof Berlin,AWGHBE
 Berlin,Arbeitsgericht Berlin,ARBGBE
 Berlin,Kammergericht,KG
 Berlin,Kammergericht Berlin,KG
+Berlin,Schiffahrtsobergericht Berlin,KG
 Berlin,Landesarbeitsgericht Berlin-Brandenburg,LAGBEBB
 Berlin,Landesarbeitsgericht Berlin,LAGBEBB
 Berlin,Landgericht Berlin,LGBE
@@ -429,6 +431,7 @@ Brandenburg,Finanzgericht Brandenburg,FGBEBB
 Brandenburg,Landessozialgericht Berlin-Brandenburg,LSGBEBB
 Brandenburg,Landessozialgericht Potsdam,LSGBEBB
 Brandenburg,Landgericht Cottbus,LGCOTTB
+Brandenburg,Landgericht Cottbus Dienstgericht,LGCOTTB
 Brandenburg,Dienstgericht Cottbus,LGCOTTB
 Brandenburg,Landgericht Frankfurt (Oder),LGFRANK
 Brandenburg,Landgericht Neuruppin,LGNEURU
@@ -1374,6 +1377,7 @@ Thüringen,Thüringer Oberlandesgericht,OLGTH
 Thüringen,Thüringer Oberverwaltungsgericht,OVGTH
 Thüringen,Thüringer Verfassungsgerichtshof,VERFGHT
 Thüringen,Vergabekammer des Freistaates Thüringen,VKTH
+Thüringen,Vergabekammer Freistaat Thüringen,VKTH
 Thüringen,Verwaltungsgericht Gera,VGGERA
 Thüringen,Verwaltungsgericht Meiningen,VGMEINI
 Thüringen,Verwaltungsgericht Weimar,VGWEIMA

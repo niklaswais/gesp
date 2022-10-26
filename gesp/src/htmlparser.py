@@ -139,8 +139,17 @@ class DecisionHTMLParser(HTMLParser):
                     'schwurgericht' in block.lower() or 'ausschuss' == block.lower()
                     or 'präsident' == block.lower() or 'generalstaatsanwalt' == block.lower()
                     or 'einzelrichter' == block.lower() 
+                    or 'zivilabteilung' == block.lower() 
+                    or 'familiengericht' == block.lower() 
+                    or 'präsidium' == block.lower() 
+                    or 'rechtspfleger' == block.lower() 
+                    or 'schöffengericht' == block.lower() 
+                    or 'richter.' == block.lower() 
+                    or 'wertpapiererwerbs-' == block.lower() 
                     or 'abt.' == block.lower() 
                     or 'abteilung' == block.lower() 
+                    or 'disziplinarhof' == block.lower() 
+                    or 'flurbereinigungsgericht' == block.lower() 
                     or 'v.' == block.lower() 
                     or 'kein' == block.lower())): nochGerichtsname = False
             if 'der' == block.lower():
@@ -382,8 +391,8 @@ class DecisionHTMLParser(HTMLParser):
         if not os.path.exists(self.output_path):
             return False
         
-        gerichtsCode = MyHTMLParser.ecli.split(':')[2]
-        gerichtsland = MyHTMLParser.gerichts_code_land[gerichtsCode]
+        gerichtsCode = self.ecli.split(':')[2]
+        gerichtsland = self.gerichts_code_land[gerichtsCode]
         land_path = os.path.join(self.output_path, gerichtsland)
         if not os.path.exists(land_path):
             return False
@@ -392,7 +401,7 @@ class DecisionHTMLParser(HTMLParser):
         if not os.path.exists(gerichts_path):
             return False
 
-        file_name = MyHTMLParser.ecli + '.txt'
+        file_name = self.ecli + '.txt'
         file_path = os.path.join(gerichts_path, file_name)
         
         if os.path.exists(file_path):
@@ -507,13 +516,19 @@ class DecisionHTMLParser(HTMLParser):
         if (self.gerichtstyp == 'BFH'): self.gerichtstyp = 'Bundesfinanzhof'; gerichtstypgeändert = True
         if (self.gerichtstyp == 'VerfG'): self.gerichtstyp = 'Verfassungsgericht'; gerichtstypgeändert = True
         if (self.gerichtstyp == 'DGH'): self.gerichtstyp = 'Dienstgerichtshof'; gerichtstypgeändert = True
+        if (self.gerichtstyp == 'LGHE'): self.gerichtstyp = 'Landgericht Frankfurt'; gerichtstypgeändert = True
         
         if gerichtstypgeändert:
             if len(self.gerichtsort) > 0:
                 self.gericht = self.gerichtstyp + ' ' + self.gerichtsort
             else:
                 self.gericht = self.gerichtstyp
-        
+
+        ## Einige Hessische Urteile enthalten eine nicht korret geformte ECLI, die mit "ECLI:ECLI:" beginnt
+        if self.ecli.startswith("ECLI:ECLI"):
+            old = self.ecli[5:]
+            self.ecli = old
+
 
         ## Wenn wir keine ECLI erhalten, dann versuchen wir selbst eine zu konstruieren
         old = self.ecli.replace('/','.').replace(' ','');
@@ -612,7 +627,7 @@ class DecisionHTMLParser(HTMLParser):
                 if self.teste_ecli_datei():
                     i = 1
                     old = ''
-                    while mode != 'judicialis':
+                    while self.mode != 'judicialis':
                         temp = self.ecli
                         self.ecli += '.' + str(i)
                         if self.teste_ecli_datei():
@@ -624,8 +639,13 @@ class DecisionHTMLParser(HTMLParser):
 
             else:
                 self.ecli += self.entscheidungsdatum.strftime('%m%d') + '.'
-                
-                format_aktenzeichen = self.aktenzeichen.upper().replace("Ä","AE").replace("Ö","OE").replace("Ü","UE").split(",", 1)[0]
+               
+
+                az_splitted = self.aktenzeichen.upper().replace("Ä","AE").replace("Ö","OE").replace("Ü","UE").split(",", 1)
+                format_aktenzeichen = az_splitted[0]
+                if len(az_splitted) > 1: ### Finanzgerichte: 9 K 1828/11 K,G
+                    if len(az_splitted[1]) <=3:
+                        format_aktenzeichen += "," + az_splitted[1]
                 #if format_aktenzeichen.endswith(" OVG"): format_aktenzeichen = format_aktenzeichen.rsplit(' ', 1)[0] ## OVG MV
                 #if format_aktenzeichen.endswith(" HGW"): format_aktenzeichen = format_aktenzeichen.rsplit(' ', 1)[0] ## VG Greifswald
                 #if format_aktenzeichen.endswith(" SN"): format_aktenzeichen = format_aktenzeichen.rsplit(' ', 1)[0] ## VG Schwerin
@@ -634,11 +654,18 @@ class DecisionHTMLParser(HTMLParser):
                 if self.ecli_codes[self.gericht] == "VERFGHT": azblock = "VERFGH" # Verfassungsbericht Thürigen fügt Gerichtsnamen ins AZ intu anders ...
                 if self.ecli_codes[self.gericht] == "STGHNI": azblock = "STGH" # Verfassungsbericht Thürigen fügt Gerichtsnamen ins AZ intu anders ...
                 
+                if self.ecli_codes[self.gericht] == "OVGBEBB": ## Oberverwaltungsgericht Berlin Brandenburg
+                    if not (format_aktenzeichen.startswith("OVG")):
+                        azblock = "OVG"
+                
+                if self.ecli_codes[self.gericht] == "LSGNIHB": ## Oberverwaltungsgericht Berlin Brandenburg
+                    if not (format_aktenzeichen.startswith("L")):
+                        azblock = "L"
+
+
                 splitstring = '[^a-zA-Z0-9.]'
-                if self.ecli_codes[self.gericht] == "OVGNRW": splitstring = '[^a-zA-Z0-9]'
-                if self.ecli_codes[self.gericht] == "VGK": splitstring = '[^a-zA-Z0-9]'
-                if self.ecli_codes[self.gericht] == "VGD": splitstring = '[^a-zA-Z0-9]'
-                if self.ecli_codes[self.gericht] == "VFGHNRW": splitstring = '[^a-zA-Z0-9]'
+                if self.ecli_codes[self.gericht] in ["OVGNRW","VGK","VGD","VFGHNRW", "VGGE", "VGAC", "VGMI", "VGMS", "VGAR", "OLGHAM"]:
+                    splitstring = '[^a-zA-Z0-9]'
                 
                 for block in re.split(splitstring, format_aktenzeichen): ## if the AZ contains a dot, this seems to be kept usually
                     if len(block) == 0: continue

@@ -65,7 +65,7 @@ class SpdrJudicialis(scrapy.Spider):
         for item in response.xpath('//h5/a'):
             link = item.xpath('@href').get()
             if link.startswith('/'): link = 'https://www.judicialis.de' + link
-            if "Europäischer" in link: continue ## don't donwload EU decisions
+            if "Europäisch" in link: continue ## don't donwload EU decisions
 
             acceptLink = False
 
