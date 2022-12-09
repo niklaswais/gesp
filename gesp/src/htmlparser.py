@@ -299,7 +299,6 @@ class DecisionHTMLParser(HTMLParser):
             if data.isspace(): return
             
             if (tag == 'h1'):
-                print(data)
                 splitted = re.split(",|vom",data)
                             
                 ## Dokumententyp
@@ -314,7 +313,7 @@ class DecisionHTMLParser(HTMLParser):
                 self.entscheidungsdatum = datetime.strptime(datumsstring, '%d.%m.%Y')
 
                 self.aktenzeichen = ', '.join(splitted[2:]).strip()
-            elif (tag in ('p','td','em')):
+            elif (tag in ('p','td','em','rd')):
                 if len(self.gericht) == 0: return
                 if data.strip().isnumeric(): return
                 
