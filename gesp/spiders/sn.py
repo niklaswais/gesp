@@ -122,9 +122,12 @@ class SpdrSN(scrapy.Spider):
         date_us = slots[5]
         date_de = date_us[8:10] + "." + date_us[5:7] + "." + date_us[0:4]
         filename = slots[11]
+        az = slots[1]
+        if "" == filename:
+            output("sn: file missing for az " + az, "err")
+            return
         location = "https://www.justiz.sachsen.de/esaver/internet/" + slots[16]
         url = location + "/" + filename
-        az = slots[1]
         yield {
             "date": date_de,
             "az": az,
