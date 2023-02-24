@@ -76,6 +76,7 @@ The fingerprinting feature of gesp can also be used to meet good scientific prac
 | Landesarbeitsgerichte | *lag* |
 | Landgerichte | *lg* |
 | Landessozialgerichte | *lsg* |
+| Landesverfassungsgerichte | *verfgh* |
 | Oberlandesgerichte (incl. KG, BayObLG) | *olg* |
 | Oberverwaltungsgerichte (incl. vgh) | *ovg* |
 | Sozialgerichte | *sg* |
