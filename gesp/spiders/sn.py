@@ -51,8 +51,10 @@ class SpdrSN(scrapy.Spider):
             # VerfGH auch mit eigener Sub-Plattform
             url = "https://www.justiz.sachsen.de/esaver/index.php"
             self.headers["Referer"] = "https://www.justiz.sachsen.de/esaver/index.php"
-            body = f"aktion=suchen&verfart=Verfassungsbeschwerde&akz=&datumvon=&datumbis=&stichwort=&set_grund=&feldgrund=&set_norm=&feldnorm="
-            yield scrapy.Request(url=url, method="POST", headers=self.headers, body=body, dont_filter=True, callback=self.parse_results_verfgh)
+            for year in range(1970, 2030):
+                subsequent = year + 1
+                body = f"aktion=suchen&verfart=&akz=&datumvon=01.01.{year}&datumbis=01.01.{subsequent}&stichwort=&set_grund=&feldgrund=&set_norm=&feldnorm="
+                yield scrapy.Request(url=url, method="POST", headers=self.headers, body=body, dont_filter=True, callback=self.parse_results_verfgh)
 
     def parse(self, response):
         url = "https://www.justiz.sachsen.de/esamosplus/pages/suchen.aspx"
