@@ -72,6 +72,8 @@ class SpdrBB(scrapy.Spider):
             yield scrapy.Request(url=url, callback=self.parse)
 
     def parse(self, response):
+        if response.xpath("//a[@aria-label='Weiter']"):
+            yield response.follow(response.xpath("//a[@aria-label='Weiter']/@href").get(), callback=self.parse)
         for result in response.xpath("//table[@id='resultlist']/tbody/tr"):
             link = self.base_url + result.xpath(".//a/@href").get()
             # Herausfinden des AZ...
@@ -85,5 +87,3 @@ class SpdrBB(scrapy.Spider):
                     "az": az,
                     "tree": tree # Wenn ohnehin schon verarbeitet...
             }
-        if response.xpath("//a[@aria-label='Weiter']"):
-            yield response.follow(response.xpath("//a[@aria-label='Weiter']/@href").get(), callback=self.parse)

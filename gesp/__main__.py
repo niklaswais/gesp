@@ -33,7 +33,7 @@ def main():
     cl_parser.add_argument("-v", "--version", action="version", version=f"gesp {config.__version__} by {config.__author__} (nwais.de)", help="version of this package")
     cl_parser.add_argument('--docId', action='store_true', help="appends the docId, if present, to the filename")
     cl_parser.add_argument("-fp", "--fingerprint", nargs="?", const=True, help="creates (flag) or reads (argument, path) a fingerprint file")
-    cl_parser.add_argument("-P", "--postprocess", action=argparse.BooleanOptionalAction, help="turns on postprocessing of the downloaded decisions. This will remove all html elements and transform them into a more easily machine readable format.")
+    cl_parser.add_argument("-pp", "--postprocess", action=argparse.BooleanOptionalAction, help="turns on postprocessing of the downloaded decisions. This will remove all html elements and transform them into a more easily machine readable format.")
     args = cl_parser.parse_args()
     # -p (path)
     path = os.path.join(os.getcwd(), "results", datetime.datetime.now().strftime("%Y-%m-%d_%H-%M"))
@@ -90,6 +90,8 @@ def main():
                 output(f"unknown legal domain '{domain}'", "err")
             else:
                 cl_domains.append(domain)
+    # -pp (Post-Processing)
+    if args.postprocess != True: args.postprocess = False
     # -fp (fingerprint)
     if isinstance(args.fingerprint, str): # fp als Argument
         fp = args.fingerprint

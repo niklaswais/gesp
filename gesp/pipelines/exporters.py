@@ -54,7 +54,9 @@ class FingerprintExportPipeline:
 
 class RawExporter:
     def process_item(self, item, spider):
-        if (item["postprocess"] == True):
-           parse_data_from_html(item,spider.name[7:], spider.path) 
+        if (item is None): return
+        if ("postprocess" in item):
+            if (item["postprocess"] is not None):
+                if (item["postprocess"] == True):
+                   parse_data_from_html(item,spider.name[7:], spider.path)
         return item
-
