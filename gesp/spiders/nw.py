@@ -92,7 +92,6 @@ class SpdrNW(scrapy.Spider):
     def extract_data(self, response):
         if response.xpath("//div[@class='alleErgebnisse']"):
             for res_div in response.xpath("//div[@class='einErgebnis']"):
-<<<<<<< HEAD
                 link = res_div.xpath(".//a/@href").get()
                 court, date, az, = "", "", ""
                 for el in res_div.xpath("text()"):
@@ -103,18 +102,11 @@ class SpdrNW(scrapy.Spider):
                     if el.get().strip()[:len("Aktenzeichen")] == "Aktenzeichen":
                         az = el.get().strip()[14:]
                 yield {
+                    "postprocess": self.postprocess,
                     "court": court,
                     "date": date,
                     "az": az,
                     "link": link,
-=======
-                r = {
-                    "postprocess": self.postprocess,
-                    "court": res_div.xpath("text()[1]").get().strip()[9:],
-                    "date": res_div.xpath("text()[5]").get().strip()[21:],
-                    "az": res_div.xpath("text()[3]").get().strip()[14:],
-                    "link": res_div.xpath(".//a/@href").get(),
->>>>>>> eec73d7 (Postprocessing)
                 }
         else:
             output(f"blank search results page {response.url}", "warn")
