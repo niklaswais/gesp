@@ -47,6 +47,14 @@ class SpdrSN(scrapy.Spider):
             date_until = datetime.datetime.today().strftime("%d.%m.%Y")
             body = f"aktenzeichen=&datum={date_from}-{date_until}&stichwort=+++++++++++++++++++++&rules=+++++++++++++++++++++&ok=Suche+starten"
             yield scrapy.Request(url=url, method="POST", headers=self.headers, body=body, dont_filter=True, callback=self.parse_results_ovg)
+        if not self.courts or "verfgh" in self.courts:
+            # VerfGH auch mit eigener Sub-Plattform
+            url = "https://www.justiz.sachsen.de/esaver/index.php"
+            self.headers["Referer"] = "https://www.justiz.sachsen.de/esaver/index.php"
+            for year in range(1970, 2030):
+                subsequent = year + 1
+                body = f"aktion=suchen&verfart=&akz=&datumvon=01.01.{year}&datumbis=01.01.{subsequent}&stichwort=&set_grund=&feldgrund=&set_norm=&feldnorm="
+                yield scrapy.Request(url=url, method="POST", headers=self.headers, body=body, dont_filter=True, callback=self.parse_results_verfgh)
 
     def parse(self, response):
         url = "https://www.justiz.sachsen.de/esamosplus/pages/suchen.aspx"
@@ -108,6 +116,31 @@ class SpdrSN(scrapy.Spider):
         item = response.meta["item"]
         item["body"] = response.body
         yield item
+
+    def parse_container(self, response):
+        slots = response.xpath("//result/node()").get().split("^")
+        date_us = slots[5]
+        date_de = date_us[8:10] + "." + date_us[5:7] + "." + date_us[0:4]
+        filename = slots[11]
+        az = slots[1]
+        if "" == filename:
+            output("sn: file missing for az " + az, "err")
+            return
+        location = "https://www.justiz.sachsen.de/esaver/internet/" + slots[16]
+        url = location + "/" + filename
+        yield {
+            "date": date_de,
+            "az": az,
+            "court": "verfgh",
+            "link": url
+        }
+
+    def parse_results_verfgh(self, response):
+        for anchor in response.xpath("//table/tr/td/a"):
+            retrieval = anchor.xpath("./@onclick").get()
+            container = retrieval.split("'")[1]
+            url = "https://www.justiz.sachsen.de/esaver/answers.php?funkt=get_satz&container=" + container
+            yield scrapy.Request(url=url, dont_filter=True, callback=self.parse_container)
 
     def parse_results_ovg(self, response):
         for table in response.xpath("//table"):

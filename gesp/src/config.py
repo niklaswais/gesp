@@ -5,7 +5,7 @@ __author__ = "Niklas Wais"
 __licence__ = "MIT"
 
 UMLAUTE = {ord('ä'):'ae', ord('ö'):'oe', ord('ß'):'ss', ord('ü'):'ue'}
-COURTS = ["ag", "arbg", "bgh", "bfh", "bverwg", "bverfg", "bpatg", "bag", "bsg", "fg", "lag", "lg", "lsg", "olg", "ovg", "sg", "vg"] # vgh = ovg
+COURTS = ["ag", "arbg", "bgh", "bfh", "bverwg", "bverfg", "bpatg", "bag", "bsg", "fg", "lag", "lg", "lsg", "olg", "ovg", "sg", "vg", "verfgh"] # vgh = ovg
 STATES = ["bund", "bw", "by", "be", "bb", "hb", "hh", "he", "mv", "ni", "nw", "rp", "sl", "sn", "st", "sh", "th"]
 HTML_STATES = ["bund", "bw", "by", "be", "bb", "hh", "he", "mv", "ni", "nw", "rp", "sl", "st", "sh", "th"]
 DOMAINS = ["oeff", "zivil", "straf"]
