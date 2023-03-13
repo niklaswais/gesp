@@ -180,23 +180,23 @@ def rp(item, headers, cookies): # spider.headers, spider.cookies
         item["filetype"] = "html"
         return item
 
-def sh(item):
-    try: # Urteilsseite laden
-        tree = html.fromstring(requests.get(item["link"], headers=config.HEADERS).text)
+def sh(item, headers, cookies):
+    # item["text"]: Schleswig-Holstein ist JSON-Post-Response
+    url = "https://www.gesetze-rechtsprechung.sh.juris.de/jportal/wsrest/recherche3/document"
+    headers["Referer"] = item["link"]
+    date = str(datetime.date.today())
+    time = str(datetime.datetime.now(datetime.timezone.utc).time())[0:-3]
+    body = '{"docId":"%s","format":"xsl","keyword":null,"docPart":"L","sourceParams":{"source":"TL","position":1,"sort":"date","category":"Rechtsprechung"},"searches":[],"clientID":"bssh","clientVersion":"bssh - V06_07_00 - 23.06.2022 11:20","r3ID":"%sT%sZ"}' % (item["docId"], date, time)
+    try:
+        req = requests.post(url=url, cookies=cookies, headers=headers, data=body)
     except:
         output("could not retrieve " + item["link"], "err")
     else:
-        base = tree.xpath("//base/@href")[0]
-        link = tree.xpath("//a[@name='dokument.drucken']/@href")[0]
-        if link:
-            # Druckseite öffnen, Druckdialog entfernen
-            tree = html.fromstring(requests.get(base + link, headers=config.HEADERS).text)
-            tree.xpath("//script[last()]")[0].getparent().remove(tree.xpath("//script[last()]")[0])
-            item["text"] = html.tostring(tree, pretty_print=True).decode("utf-8")
-            item["filetype"] = "html"
-            return item
-        else:
-            output("could not retrieve " + base + link, "err")
+        data = req.json()
+        doc = html.fromstring(f'<!doctype html><html><head><title>{item["az"]}</title></head><body>{data["head"]}{data["text"]}</body></html>')
+        item["text"] = html.tostring(doc, pretty_print=True).decode("utf-8")
+        item["filetype"] = "html"
+        return item
 
 def sl(item, headers, cookies): # spider.headers, spider.cookies
     # item["text"]: Saarland ist JSON-Post-Response

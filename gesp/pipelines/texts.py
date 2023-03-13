@@ -24,7 +24,7 @@ class TextsPipeline:
         elif spider.name[7:] == "rp":
             return rp(item, spider.headers, spider.cookies)
         elif spider.name[7:] == "sh":
-            return sh(item)
+            return sh(item, spider.headers, spider.cookies)
         elif spider.name[7:] == "sl":
             return sl(item, spider.headers, spider.cookies)
         elif spider.name[7:] == "sn":
