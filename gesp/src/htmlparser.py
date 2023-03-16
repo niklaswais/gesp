@@ -7,6 +7,7 @@ import re
 import csv
 import difflib
 import traceback
+from .output import output
 
 blanko = 'Gericht: {gericht}\nEntscheidungsdatum: {entscheidungsdatum}\nRechtskraft: {rechtskraft}\nAktenzeichen: {' \
          'aktenzeichen}\nECLI: {ecli}\nDokumenttyp: {dokumenttyp}\nQuelle:{quelle}\nNormen: {normen}\n' \
@@ -448,7 +449,7 @@ class DecisionHTMLParser(HTMLParser):
         
         if os.path.exists(file_path):
             #os.remove(file_path)
-            print("Datei existiert bereits!")
+            output("file already exists", "warn")
             self.reset_attributes()
             #input()
             return
@@ -779,7 +780,7 @@ def parse_data_from_html(item, spider_name, spider_path):
         except KeyError as e:
             print(e)
             traceback.print_exc()
-            print("ERROR")
+            output("invalid HTML @ sh", "err")
 
     else:
         try:
