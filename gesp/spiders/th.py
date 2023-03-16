@@ -17,7 +17,7 @@ class SpdrTH(scrapy.Spider):
             TextsPipeline: 400,
             ExportAsHtmlPipeline: 500,
             FingerprintExportPipeline: 600,
-            RawExporter : 900
+            RawExporter: 900
         }
     }
 

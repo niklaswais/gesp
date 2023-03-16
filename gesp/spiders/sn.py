@@ -8,7 +8,7 @@ from ..src import config
 from lxml import html
 from ..src.output import output
 from ..pipelines.formatters import AZsPipeline, DatesPipeline, CourtsPipeline
-from ..pipelines.exporters import ExportAsPdfPipeline, FingerprintExportPipeline
+from ..pipelines.exporters import ExportAsPdfPipeline, FingerprintExportPipeline, RawExporter
 
 class SpdrSN(scrapy.Spider):
     name = "spider_sn"
@@ -18,7 +18,8 @@ class SpdrSN(scrapy.Spider):
             DatesPipeline: 200,
             CourtsPipeline: 300,
             ExportAsPdfPipeline: 400,
-            FingerprintExportPipeline: 500
+            FingerprintExportPipeline: 500,
+            RawExporter: 900
         },
         "AUTOTHROTTLE_ENABLED": True
     }

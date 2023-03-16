@@ -2,7 +2,7 @@
 import scrapy
 from ..src.output import output
 from ..pipelines.formatters import AZsPipeline, DatesPipeline, CourtsPipeline
-from ..pipelines.exporters import ExportAsPdfPipeline, FingerprintExportPipeline
+from ..pipelines.exporters import ExportAsPdfPipeline, FingerprintExportPipeline, RawExporter
 
 class SpdrHB(scrapy.Spider):
     name = "spider_hb"
@@ -12,7 +12,8 @@ class SpdrHB(scrapy.Spider):
             DatesPipeline: 200,
             CourtsPipeline: 300,
             ExportAsPdfPipeline: 500,
-            FingerprintExportPipeline: 600
+            FingerprintExportPipeline: 600,
+            RawExporter: 900
         }
     }
 

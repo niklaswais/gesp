@@ -13,7 +13,7 @@ class SpdrBund(scrapy.Spider):
             CourtsPipeline: 200,
             ExportAsHtmlPipeline: 300,
             FingerprintExportPipeline: 400,
-            RawExporter : 900
+            RawExporter: 900
         }
     }
 
