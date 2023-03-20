@@ -1,6 +1,6 @@
 **Copyright notice**: Automated retrieval of decisions from federal and state databases is permitted for non-commercial purposes only. Since gesp accesses these databases, the use of gesp is also permitted for **non-commercial purposes only**.
 
-## gesp: Convenient scraping of German court decisions
+## gesp: convenient scraping of German court decisions
 
 The federal and state governments in Germany make court decisions available for download on individual online platforms. In addition to the lack of uniformity, these platforms only allow individual retrieval out of the box. With gesp, decisions can be downloaded in large quantities in a filter-based and reproducible manner.
 
@@ -15,7 +15,7 @@ python -m pip install dist/gesp-0.1.tar.gz
 ```
 
 ### B. Basic Usage
-A call without command-line argument will result in the retrival of **all** available court decisions regardless of state or court type. If only a **subset** is to be downloaded, the arguments **"-s"** (followed by abbreviations of states) and **"-t"** (followed by abbreviations of court types) can be used. Multiple states or court types are separated by commas.
+A call without command-line argument will result in the retrival of all **machine-readable** (= non-PDF) court decisions; this does not include Saxony and Bremen. If only a **subset** is to be downloaded, the arguments **"-s"** followed by abbreviations of states (the PDF-only decisions from Saxony and Bremen can be downloaded this way) and **"-t"** followed by abbreviations of court types can be used. Multiple states or court types are separated by commas.
 ```Shell
 python -m gesp -s bund,by,hh,nw -c bgh,ag,lg,olg
 ```
