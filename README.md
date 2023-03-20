@@ -15,10 +15,11 @@ python -m pip install dist/gesp-0.1.tar.gz
 ```
 
 ### B. Basic Usage
-A call without command-line argument will result in the retrival of all **machine-readable** (= non-PDF) court decisions; this does not include Saxony and Bremen. If only a **subset** is to be downloaded, the arguments **"-s"** followed by abbreviations of states (the PDF-only decisions from Saxony and Bremen can be downloaded this way) and **"-t"** followed by abbreviations of court types can be used. Multiple states or court types are separated by commas.
+A call without command-line arguments will result in the retrival of all **machine-readable** (= non-PDF) court decisions. If only a **subset** is to be downloaded, the arguments **"-s"** (followed by abbreviations of states) and **"-t"** (followed by abbreviations of court types) can be used. Multiple states or court types are separated by commas.
 ```Shell
 python -m gesp -s bund,by,hh,nw -c bgh,ag,lg,olg
 ```
+Since Saxony and Bremen provide court decisions only as PDF files, they are excluded when gesp is run without flags. An explicit call nevertheless makes the corresponding files available (-s sn,hb).
 
 A specific path under which the decisions are to be stored can be specified with the argument "-p". If the folder has not been created yet, gesp will take care of that. If the folder has already been created and contains the results of a previous execution, this will cause an **update** of the dataset.
 ```Shell
