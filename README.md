@@ -39,7 +39,10 @@ If you want to reconstruct the dataset of a previos run, e.g. because you are wo
 
 The fingerprinting feature of gesp can also be used to meet good scientific practice standards without the need to provide large collections of data. Since it is part of good scientific practice to disclose the data basis of the results obtained, publications on the empirical study of court decisions must be accompanied by relatively large data sets. Instead of making the entire collection of decisions available for retrieval online, simply share the fingerprint file that others may use to retrieve your data.
 
-### E. Appendix
+### E. Pre-Processing
+The use of "-pp" activates pre-processing. A separate subfolder is created in the "results" folder for the resulting outputs.
+
+### F. Appendix
 #### 1. Abbreviations for "-s" (federal/states)
 | Name | Abbreviation |
 | --- | --- |
