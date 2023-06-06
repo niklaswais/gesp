@@ -10,6 +10,8 @@ from ..pipelines.exporters import ExportAsHtmlPipeline, FingerprintExportPipelin
 class SpdrHH(scrapy.Spider):
     name = "spider_hh"
     custom_settings = {
+        'DOWNLOAD_DELAY': 2, # minimum download delay 
+        'AUTOTHROTTLE_ENABLED': True,
         "ITEM_PIPELINES": { 
             AZsPipeline: 100,
             DatesPipeline: 200,
