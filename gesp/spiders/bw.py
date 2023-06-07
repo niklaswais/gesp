@@ -23,7 +23,7 @@ class SpdrBW(scrapy.Spider):
         }
     }
 
-    def __init__(self, path, courts="", states="", fp=False, domains="", store_docId=False, postprocess=False, **kwargs):
+    def __init__(self, path, courts="", states="", fp=False, domains="", store_docId=False, postprocess=False, wait = False, **kwargs):
         self.path = path
         self.courts = courts
         self.states = states
@@ -31,12 +31,14 @@ class SpdrBW(scrapy.Spider):
         self.domains = domains
         self.store_docId = store_docId
         self.postprocess = postprocess
+        self.wait = wait
         super().__init__(**kwargs)
 
     def start_requests(self):
         start_urls = []
         base_url = self.base_url + "list.py?Gericht=bw&Art=en"
         add_years = lambda url : [url + str(y) for y in reversed(range(2007, datetime.date.today().year + 1))] # Urteilsdatenbank BW startet mit dem Jahr 2007
+        #add_years = lambda url : [url + str(y) for y in reversed(range(2021, datetime.date.today().year + 1))] # Urteilsdatenbank BW startet mit dem Jahr 2007
         if self.courts:
             if "ag" in self.courts: start_urls.extend(add_years(base_url + "&GerichtAuswahl=Amtsgerichte&Datum="))
             if "arbg" in self.courts: start_urls.extend(add_years(base_url + "&GerichtAuswahl=Arbeitsgerichte&Datum="))
@@ -72,6 +74,7 @@ class SpdrBW(scrapy.Spider):
                         # Ausbauen ....            
                 yield {
                     "postprocess": self.postprocess,
+                    "wait": self.wait,
                     "court": doc_link.xpath("../../td[@class='EGericht']/text()").get(),
                     "date": doc_link.xpath("../../td[@class='EDatum']/text()").get(),
                     "az": doc_link.xpath("text()").get(),

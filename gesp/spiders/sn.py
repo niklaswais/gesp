@@ -13,6 +13,8 @@ from ..pipelines.exporters import ExportAsPdfPipeline, FingerprintExportPipeline
 class SpdrSN(scrapy.Spider):
     name = "spider_sn"
     custom_settings = {
+        'DOWNLOAD_DELAY': 1, # minimum download delay 
+        'AUTOTHROTTLE_ENABLED': True,
         "ITEM_PIPELINES": { 
             AZsPipeline: 100,
             DatesPipeline: 200,
@@ -23,7 +25,7 @@ class SpdrSN(scrapy.Spider):
         "AUTOTHROTTLE_ENABLED": True
     }
 
-    def __init__(self, path, courts="", states="", fp=False, domains="", store_docId=False, postprocess=False, **kwargs):
+    def __init__(self, path, courts="", states="", fp=False, domains="", store_docId=False, postprocess=False, wait = False, **kwargs):
         self.path = path
         self.courts = courts
         self.states = states
@@ -31,6 +33,7 @@ class SpdrSN(scrapy.Spider):
         self.domains = domains
         self.store_docId = store_docId
         self.postprocess = postprocess
+        self.wait = wait
         self.headers = config.sn_headers
         super().__init__(**kwargs)
 
@@ -123,6 +126,7 @@ class SpdrSN(scrapy.Spider):
             else:
                 yield {
                     "postprocess": self.postprocess,
+                    "wait": self.wait,
                     "date": data[-11:-1],
                     "az": data.split("(")[0].strip(),
                     "court": "ovg",

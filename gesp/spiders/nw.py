@@ -10,6 +10,8 @@ class SpdrNW(scrapy.Spider):
     name = "spider_nw"
     base_url = "https://www.justiz.nrw.de/BS/nrwe2/index.php"
     custom_settings = {
+        'DOWNLOAD_DELAY': 0.5, # minimum download delay 
+        'AUTOTHROTTLE_ENABLED': True,
         "ITEM_PIPELINES": { 
             AZsPipeline: 100,
             DatesPipeline: 200,
@@ -21,7 +23,7 @@ class SpdrNW(scrapy.Spider):
         }
     }
 
-    def __init__(self, path, courts="", states="", fp=False, domains="", store_docId=False, postprocess=False, **kwargs):
+    def __init__(self, path, courts="", states="", fp=False, domains="", store_docId=False, postprocess=False, wait = False, **kwargs):
         self.path = path
         self.courts = courts
         self.states = states
@@ -29,6 +31,7 @@ class SpdrNW(scrapy.Spider):
         self.domains = domains
         self.store_docId = store_docId
         self.postprocess = postprocess
+        self.wait = wait
         super().__init__(**kwargs)
 
     def start_requests(self):
@@ -103,6 +106,7 @@ class SpdrNW(scrapy.Spider):
                         az = el.get().strip()[14:]
                 yield {
                     "postprocess": self.postprocess,
+                    "wait": self.wait,
                     "court": court,
                     "date": date,
                     "az": az,
