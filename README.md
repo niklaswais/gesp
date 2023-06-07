@@ -1,6 +1,6 @@
 **Copyright notice**: Automated retrieval of decisions from federal and state databases is permitted for non-commercial purposes only. Since gesp accesses these databases, the use of gesp is also permitted for **non-commercial purposes only**.
 
-## gesp: Convenient scraping of German court decisions
+## gesp: convenient scraping of German court decisions
 
 The federal and state governments in Germany make court decisions available for download on individual online platforms. In addition to the lack of uniformity, these platforms only allow individual retrieval out of the box. With gesp, decisions can be downloaded in large quantities in a filter-based and reproducible manner.
 
@@ -15,10 +15,11 @@ python -m pip install dist/gesp-0.1.tar.gz
 ```
 
 ### B. Basic Usage
-A call without command-line argument will result in the retrival of **all** available court decisions regardless of state or court type. If only a **subset** is to be downloaded, the arguments **"-s"** (followed by abbreviations of states) and **"-t"** (followed by abbreviations of court types) can be used. Multiple states or court types are separated by commas.
+A call without command-line arguments will result in the retrival of all **machine-readable** (= non-PDF) court decisions. If only a **subset** is to be downloaded, the arguments **"-s"** (followed by abbreviations of states) and **"-t"** (followed by abbreviations of court types) can be used. Multiple states or court types are separated by commas.
 ```Shell
 python -m gesp -s bund,by,hh,nw -c bgh,ag,lg,olg
 ```
+Since Saxony and Bremen provide court decisions only as PDF files, they are excluded when gesp is run without flags. An explicit call nevertheless makes the corresponding files available (-s sn,hb).
 
 A specific path under which the decisions are to be stored can be specified with the argument "-p". If the folder has not been created yet, gesp will take care of that. If the folder has already been created and contains the results of a previous execution, this will cause an **update** of the dataset.
 ```Shell
@@ -78,6 +79,7 @@ The fingerprinting feature of gesp can also be used to meet good scientific prac
 | Landesarbeitsgerichte | *lag* |
 | Landgerichte | *lg* |
 | Landessozialgerichte | *lsg* |
+| Landesverfassungsgerichte | *verfgh* |
 | Oberlandesgerichte (incl. KG, BayObLG) | *olg* |
 | Oberverwaltungsgerichte (incl. vgh) | *ovg* |
 | Sozialgerichte | *sg* |

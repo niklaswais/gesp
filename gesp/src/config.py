@@ -5,7 +5,7 @@ __author__ = "Niklas Wais"
 __licence__ = "MIT"
 
 UMLAUTE = {ord('ä'):'ae', ord('ö'):'oe', ord('ß'):'ss', ord('ü'):'ue'}
-COURTS = ["ag", "arbg", "bgh", "bfh", "bverwg", "bverfg", "bpatg", "bag", "bsg", "fg", "lag", "lg", "lsg", "olg", "ovg", "sg", "vg"] # vgh = ovg
+COURTS = ["ag", "arbg", "bgh", "bfh", "bverwg", "bverfg", "bpatg", "bag", "bsg", "fg", "lag", "lg", "lsg", "olg", "ovg", "sg", "vg", "verfgh"] # vgh = ovg
 STATES = ["bund", "bw", "by", "be", "bb", "hb", "hh", "he", "mv", "ni", "nw", "rp", "sl", "sn", "st", "sh", "th", "judicialis"]
 HTML_STATES = ["bund", "bw", "by", "be", "bb", "hh", "he", "mv", "ni", "nw", "rp", "sl", "st", "sh", "th", "judicialis"]
 DOMAINS = ["oeff", "zivil", "straf"]
@@ -78,6 +78,7 @@ rp_cookies = {
 }
 rp_body = '{"clientID":"bsrp","clientVersion":"bsrp - V06_07_00 - 23.06.2022 11:20","r3ID":"%sT%sZ"}'
 
+<<<<<<< HEAD
 sh_headers = json_headers_base | {
     "Origin": "www.gesetze-rechtsprechung.sh.juris.de",
     "Referer": "www.gesetze-rechtsprechung.sh.juris.de/bssh/search",
@@ -90,6 +91,19 @@ sh_body = '{"clientID":"bssl","clientVersion":"bssh - V06_07_00 - 23.06.2022 11:
 
 
 
+||||||| f557017
+=======
+sh_headers = json_headers_base | {
+    "Origin": "www.gesetze-rechtsprechung.sh.juris.de",
+    "Referer": "www.gesetze-rechtsprechung.sh.juris.de/bssh/search",
+    "juris-portalid": "bssh"
+}
+sh_cookies = {
+    "r3autologin": "\"bssh\""
+}
+sh_body = '{"clientID":"bssl","clientVersion":"bssh - V06_07_00 - 23.06.2022 11:20","r3ID":"%sT%sZ"}'
+
+>>>>>>> niklas/master
 sl_headers = json_headers_base | {
     "Origin": "https://recht.saarland.de",
     "Referer": "https://recht.saarland.de/bssl/search",
