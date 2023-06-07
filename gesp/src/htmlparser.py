@@ -65,9 +65,11 @@ class DecisionHTMLParser(HTMLParser):
     inTabelle = False
     tabellentiefe = 0
     bodyEnde = False
+    randnummerLink = False
 
     # Brandenburg
     aktuellerTH = ''
+    bbfooter = False
 
     # judicialis
     endeDerEntscheidung = False
@@ -105,6 +107,19 @@ class DecisionHTMLParser(HTMLParser):
         self.bssmall = ('class','bssmall') in attrs
         self.inTitle = ('class','title') in attrs or ('class','intro') in attrs
 
+        if tag == 'a':
+            self.randnummerLink = False
+            for (x,y) in attrs:
+                if x == 'name':
+                    self.randnummerLink = y.startswith("rd_")
+
+        if tag == 'span':
+            self.randnummerLink = False
+            for (x,y) in attrs:
+                if x == 'class':
+                    self.randnummerLink = y == "absatzRechts"
+
+        if tag == 'div' and ('id','bb-footer-bar') in attrs: self.bbfooter = True
 
         if tag == 'rechtsmittelinstanz': self.inRechtsmittelInstanz = True
         if tag == 'vorinstanz': self.vorInstanz = True
@@ -175,11 +190,19 @@ class DecisionHTMLParser(HTMLParser):
         if (self.printTagData): print("Some data [%s] : %s" % (tag,data))
         
         if self.mode in ('bund','by'):
+            #print(tag)
+            #print(data)
+            #print("====================================================================")
             if self.inRechtsmittelInstanz or self.vorInstanz: return ## einfach ignorieren
             if not tag or re.fullmatch(r"\s*", data):
                 return
             if tag == 'p' or tag == 'td' or tag == 'rd':
-                self.text += data + '\n'
+                self.text += '\n' + data
+            elif tag == 'verweis.norm' or tag == 'v.abk' or tag == 'span' or tag == 'sub' or tag == 'sup' or tag == 'strong' or tag == 'em' or tag == 'span' or tag == 'ul':
+                self.text += ' ' + data
+            elif (tag in ('a', 'span')):
+                if self.randnummerLink == False:
+                    self.text += ' ' + data.strip()
             elif tag == 'doknr':
                 self.dokumentnummer = data
             elif tag == 'ecli':
@@ -202,7 +225,7 @@ class DecisionHTMLParser(HTMLParser):
                 self.aktenzeichen = data
             elif tag == 'doktyp':
                 self.dokumenttyp = data
-            elif tag == 'norm':
+            elif tag == 'norm' or tag == 'enbez':
                 self.normen = data
             elif tag == 'vorinstanz':
                 if self.vorinstanz:
@@ -215,11 +238,19 @@ class DecisionHTMLParser(HTMLParser):
                 self.region_lang = data
             elif tag == 'mitwirkung':
                 self.mitwirkung = data
+            elif tag == 'periodikum':
+                self.quelle += data + ' ' 
+            elif tag == 'zitstelle':
+                self.quelle += data + ' '
             elif tag == 'titelzeile' or tag == 'title' or tag == 'h1':
                 if self.titelzeile:
                     self.titelzeile += '; ' + data
                 else:
                     self.titelzeile = data
+            elif tag in ['gerid', 'gerichtsbarkeit', 'schlagwort']:
+               pass 
+            else:
+                print(f"Unknown tag {tag}")
         ##
         elif self.mode == 'nw':    
             #print("TAG: %s %d\n%s" % (tag,self.NRWneu,data))
@@ -244,10 +275,14 @@ class DecisionHTMLParser(HTMLParser):
                 
 
                     self.feldname = ''
-            elif tag in ('p','b','strong') or ((self.NRWneu == True) and (tag in ('u','li','i'))):  ## links? aka a href?
+            elif tag in ('p','b','strong','span','em', 'sub', 'sup', 'ul', 'del', 'ins') or ((self.NRWneu == True) and (tag in ('u','li','i'))):  ## links? aka a href?
                 if (data.isspace()): return
                 if (data == '(Hier Freitext: Tatbestand, Gründe etc.)' and self.NRWneu == True): return
-                self.text += data + '\n'
+                if tag in ['span', 'em', 'sub', 'sup', 'ul', 'del', 'ins']:
+                    if tag != 'span' or self.randnummerLink == False:
+                        self.text += ' ' + data
+                else:
+                    self.text += '\n' + data
         elif self.mode in ('ni'):
             if (tag == 'p'):
                 if (self.bssmall):
@@ -283,11 +318,14 @@ class DecisionHTMLParser(HTMLParser):
                     self.text += data + '\n'
         elif self.mode in ('rp','sh', 'be', 'he', 'mv', 'sl', 'st', 'th', 'hh'):
             if data.isspace(): return
+            #print(tag)
+            #print(data)
+            #print("====================================================================")
             if (tag == 'strong'):
                 if self.inTabelle:
                     self.aktuellerStrong = data
                 elif len(self.gericht) > 0:
-                    self.text += data + '\n' ## Text, aber nur nach dem Header
+                    self.text += '\n' + data ## Text, aber nur nach dem Header
             elif tag == 'td':
                 if self.inTabelle:
                     if self.aktuellerStrong == 'Gericht:':
@@ -305,9 +343,15 @@ class DecisionHTMLParser(HTMLParser):
                     self.aktuellerStrong = '' ## verbraucht
                 elif len(self.gericht) > 0:
                     self.text += data + '\n' ## Text, aber nur nach dem Header
+            elif (tag in ('a', 'span')):
+                if self.randnummerLink == False and self.inTabelle == False and self.gericht != '' and not self.bodyEnde:
+                    self.text += ' ' + data.strip()
+            elif (tag in ('ul','sup', 'sub', 'em')):
+                if self.randnummerLink == False and self.inTabelle == False and self.gericht != '' and not self.bodyEnde:
+                    self.text += ' ' + data.strip()
             elif (tag in ('h4','br', 'p')):
                 if self.gericht != '' and not self.bodyEnde:
-                    self.text += data.strip() + '\n'
+                    self.text += '\n' + data.strip()
         elif self.mode in ('bw'):
             if data.isspace(): return
             
@@ -326,11 +370,14 @@ class DecisionHTMLParser(HTMLParser):
                 self.entscheidungsdatum = datetime.strptime(datumsstring, '%d.%m.%Y')
 
                 self.aktenzeichen = ', '.join(splitted[2:]).strip()
-            elif (tag in ('p','td','em','rd')):
+            elif (tag in ('p','td','em','rd', 'span', 'ul', 'sub', 'sup', 'strong', 'br')):
                 if len(self.gericht) == 0: return
                 if data.strip().isnumeric(): return
                 
-                self.text += data.strip() + '\n'
+                if tag in ['em', 'span', 'ul', 'sub', 'sup']:
+                    self.text += ' ' + data.strip()
+                else:
+                    self.text += '\n' + data.strip()
         elif self.mode in ('judicialis'):
             if data.isspace(): return
             if tag == 'h4':
@@ -365,6 +412,8 @@ class DecisionHTMLParser(HTMLParser):
                 if 'Ende der Entscheidung' in data: self.endeDerEntscheidung = True
         elif self.mode in ('bb'):
             if len(data) == 0 or data.isspace(): return
+            if tag == 'h6' and data == 'Service': self.bbfooter = True
+            if self.bbfooter == True: return
             if tag == 'th':
                 self.aktuellerTH = data.strip()
             elif tag == 'td':
@@ -381,9 +430,14 @@ class DecisionHTMLParser(HTMLParser):
                 elif self.aktuellerTH == 'Normen':
                     self.normen += data.strip()
                 self.aktuellerTH = '' ## verbraucht
-            elif tag in ('p','h4'):  
+            elif tag in ('sub', 'sup', 'a', 'span', 'strong', 'ul', 'em'):  
+                if tag in ('a','span'):
+                    if self.text == '': return
                 if (data.isspace()): return
-                self.text += data + '\n'
+                self.text += ' ' + data
+            elif tag in ('p','h4', 'br'):  
+                if (data.isspace()): return
+                self.text += '\n' + data
 
     ## testet ob es diese Datei schon gibt!
     def teste_ecli_datei(self):
