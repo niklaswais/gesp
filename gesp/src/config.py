@@ -78,7 +78,6 @@ rp_cookies = {
 }
 rp_body = '{"clientID":"bsrp","clientVersion":"bsrp - V06_07_00 - 23.06.2022 11:20","r3ID":"%sT%sZ"}'
 
-<<<<<<< HEAD
 sh_headers = json_headers_base | {
     "Origin": "www.gesetze-rechtsprechung.sh.juris.de",
     "Referer": "www.gesetze-rechtsprechung.sh.juris.de/bssh/search",
@@ -89,21 +88,6 @@ sh_cookies = {
 }
 sh_body = '{"clientID":"bssl","clientVersion":"bssh - V06_07_00 - 23.06.2022 11:20","r3ID":"%sT%sZ"}'
 
-
-
-||||||| f557017
-=======
-sh_headers = json_headers_base | {
-    "Origin": "www.gesetze-rechtsprechung.sh.juris.de",
-    "Referer": "www.gesetze-rechtsprechung.sh.juris.de/bssh/search",
-    "juris-portalid": "bssh"
-}
-sh_cookies = {
-    "r3autologin": "\"bssh\""
-}
-sh_body = '{"clientID":"bssl","clientVersion":"bssh - V06_07_00 - 23.06.2022 11:20","r3ID":"%sT%sZ"}'
-
->>>>>>> niklas/master
 sl_headers = json_headers_base | {
     "Origin": "https://recht.saarland.de",
     "Referer": "https://recht.saarland.de/bssl/search",
