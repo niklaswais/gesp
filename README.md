@@ -30,6 +30,8 @@ An existing fingerprint (see C.) can be used to **reconstruct** a dataset. To do
 python -m gesp -fp /path/to/fingerprint
 ```
 
+You can use the command line option "-w" to add a delay between two consecutive downloads of decisions from the same source. This reduces the server load for the provider of the decisions.
+
 ### C. Results
 If no specific path is passed with "-p", gesp will create a folder for the results in the current working directory ("results/"). The name of the subfolder is based on the date and time of execution to avoid conflicts in subsequent runs. Decisions that are available as **html/xhtml** files are preferentially downloaded as such. However, some federal states unfortunately provide decisions only as pdf files. The editable documents are minimally cleaned up (e.g., print dialogs and navigation menus are removed), but **not pre-processed**.
 
