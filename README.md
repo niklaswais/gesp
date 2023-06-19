@@ -32,17 +32,20 @@ python -m gesp -fp /path/to/fingerprint
 ```
 
 ### C. Results
-If no specific path is passed with "-p", gesp will create a folder for the results in the current working directory ("results/"). The name of the subfolder is based on the date and time of execution to avoid conflicts in subsequent runs. Decisions that are available as **html/xhtml** files are preferentially downloaded as such. However, some federal states unfortunately provide decisions only as pdf files. The editable documents are minimally cleaned up (e.g., print dialogs and navigation menus are removed), but **not pre-processed**.
+If no specific path is passed with "-p", gesp will create a folder for the results in the current working directory ("results/"). The name of the subfolder is based on the date and time of execution to avoid conflicts in subsequent runs. Decisions that are available as **html/xhtml** files are preferentially downloaded as such. However, some federal states unfortunately provide decisions only as pdf files. The editable documents are minimally cleaned up (e.g., print dialogs and navigation menus are removed), but **not pre-processed**, unless "-pp" is used (see E.).
 
 ### D. Reproducibility
-If you want to reconstruct the dataset of a previos run, e.g. because you are working on multiple machines or in a team, simply share the fingerprint file that gesp automatically creates in the folder with the results. Using the fingerprint file by means of the "-fp" argument will result in the assembly of an identical collection.
+To create a fingerprint file alongside the downloaded court decisions in the results folder ("fp.xz"), set the "-fp" **flag**. If you want to reconstruct the dataset of a previous run, e.g. because you are working on multiple machines or in a team, simply share the fingerprint file. Using the fingerprint file by means of "-fp" as an **argument** will result in the assembly of an identical collection.
 
 The fingerprinting feature of gesp can also be used to meet good scientific practice standards without the need to provide large collections of data. Since it is part of good scientific practice to disclose the data basis of the results obtained, publications on the empirical study of court decisions must be accompanied by relatively large data sets. Instead of making the entire collection of decisions available for retrieval online, simply share the fingerprint file that others may use to retrieve your data.
 
 ### E. Pre-Processing
 The use of "-pp" activates pre-processing. A separate subfolder is created in the "results" folder for the subsequent outputs.
 
-### F. Appendix
+### F. Delayed Retrieval
+You can use the argument "-w" to add a delay between two consecutive downloads of decisions from the same source. This reduces the server load for the provider of the decisions and can prevent bans.
+
+### G. Appendix
 #### 1. Abbreviations for "-s" (federal/states)
 | Name | Abbreviation |
 | --- | --- |
