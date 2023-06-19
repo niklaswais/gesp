@@ -6,8 +6,8 @@ __licence__ = "MIT"
 
 UMLAUTE = {ord('ä'):'ae', ord('ö'):'oe', ord('ß'):'ss', ord('ü'):'ue'}
 COURTS = ["ag", "arbg", "bgh", "bfh", "bverwg", "bverfg", "bpatg", "bag", "bsg", "fg", "lag", "lg", "lsg", "olg", "ovg", "sg", "vg", "verfgh"] # vgh = ovg
-STATES = ["bund", "bw", "by", "be", "bb", "hb", "hh", "he", "mv", "ni", "nw", "rp", "sl", "sn", "st", "sh", "th"]
-HTML_STATES = ["bund", "bw", "by", "be", "bb", "hh", "he", "mv", "ni", "nw", "rp", "sl", "st", "sh", "th"]
+STATES = ["bund", "bw", "by", "be", "bb", "hb", "hh", "he", "mv", "ni", "nw", "rp", "sl", "sn", "st", "sh", "th", "judicialis"]
+HTML_STATES = ["bund", "bw", "by", "be", "bb", "hh", "he", "mv", "ni", "nw", "rp", "sl", "st", "sh", "th", "judicialis"]
 DOMAINS = ["oeff", "zivil", "straf"]
 HEADERS = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:101.0) Gecko/20100101 Firefox/101.0"}
 

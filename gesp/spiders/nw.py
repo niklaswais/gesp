@@ -4,29 +4,34 @@ import scrapy
 from ..src.output import output
 from ..pipelines.formatters import AZsPipeline, DatesPipeline, CourtsPipeline
 from ..pipelines.texts import TextsPipeline
-from ..pipelines.exporters import ExportAsHtmlPipeline, FingerprintExportPipeline
+from ..pipelines.exporters import ExportAsHtmlPipeline, FingerprintExportPipeline, RawExporter
 
 class SpdrNW(scrapy.Spider):
     name = "spider_nw"
     base_url = "https://www.justiz.nrw.de/BS/nrwe2/index.php"
     custom_settings = {
+        'DOWNLOAD_DELAY': 0.5, # minimum download delay 
+        'AUTOTHROTTLE_ENABLED': True,
         "ITEM_PIPELINES": { 
             AZsPipeline: 100,
             DatesPipeline: 200,
             CourtsPipeline: 300,
             TextsPipeline: 400,
             ExportAsHtmlPipeline: 500,
-            FingerprintExportPipeline: 600
+            FingerprintExportPipeline: 600,
+            RawExporter : 900
         }
     }
 
-    def __init__(self, path, courts="", states="", fp=False, domains="", store_docId=False, **kwargs):
+    def __init__(self, path, courts="", states="", fp=False, domains="", store_docId=False, postprocess=False, wait = False, **kwargs):
         self.path = path
         self.courts = courts
         self.states = states
         self.fp = fp
         self.domains = domains
         self.store_docId = store_docId
+        self.postprocess = postprocess
+        self.wait = wait
         super().__init__(**kwargs)
 
     def start_requests(self):
@@ -100,6 +105,8 @@ class SpdrNW(scrapy.Spider):
                     if el.get().strip()[:len("Aktenzeichen")] == "Aktenzeichen":
                         az = el.get().strip()[14:]
                 yield {
+                    "postprocess": self.postprocess,
+                    "wait": self.wait,
                     "court": court,
                     "date": date,
                     "az": az,

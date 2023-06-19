@@ -4,29 +4,34 @@ import urllib.parse
 from ..src.output import output
 from ..pipelines.formatters import AZsPipeline, DatesPipeline, CourtsPipeline
 from ..pipelines.texts import TextsPipeline
-from ..pipelines.exporters import ExportAsHtmlPipeline, FingerprintExportPipeline
+from ..pipelines.exporters import ExportAsHtmlPipeline, FingerprintExportPipeline, RawExporter
 
 class SpdrNI(scrapy.Spider):
     name = "spider_ni"
     base_url = "https://www.rechtsprechung.niedersachsen.de/jportal/portal/"
     custom_settings = {
+        'DOWNLOAD_DELAY': 2, # minimum download delay 
+        'AUTOTHROTTLE_ENABLED': False,
         "ITEM_PIPELINES": { 
             AZsPipeline: 100,
             DatesPipeline: 200,
             CourtsPipeline: 300,
             TextsPipeline: 400,
             ExportAsHtmlPipeline: 500,
-            FingerprintExportPipeline: 600
+            FingerprintExportPipeline: 600,
+            RawExporter : 900
         }
     }
 
-    def __init__(self, path, courts="", states="", fp=False, domains="", store_docId=False, **kwargs):
+    def __init__(self, path, courts="", states="", fp=False, domains="", store_docId=False, postprocess=False, wait = False, **kwargs):
         self.path = path
         self.courts = courts
         self.states = states
         self.fp = fp
         self.domains = domains
         self.store_docId = store_docId
+        self.postprocess = postprocess
+        self.wait = wait
         self.base_url = "https://www.rechtsprechung.niedersachsen.de/jportal/portal/"
         super().__init__(**kwargs)
 
@@ -80,6 +85,8 @@ class SpdrNI(scrapy.Spider):
                 az = az.replace(" | ", "")
                 link = self.base_url + tr.xpath(".//a/@href").get()
                 yield {
+                       "postprocess": self.postprocess,
+                       "wait": self.wait,
                         "court": tr.xpath(".//strong[1]/text()").get(),
                         "date": tr.xpath(".//td[1]/text()").get().replace("\n", ""),
                         "link": link,

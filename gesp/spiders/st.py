@@ -5,28 +5,33 @@ import scrapy
 from ..src import config
 from ..pipelines.formatters import AZsPipeline, DatesPipeline, CourtsPipeline
 from ..pipelines.texts import TextsPipeline
-from ..pipelines.exporters import ExportAsHtmlPipeline, FingerprintExportPipeline
+from ..pipelines.exporters import ExportAsHtmlPipeline, FingerprintExportPipeline, RawExporter
 
 class SpdrST(scrapy.Spider):
     name = "spider_st"
     custom_settings = {
+        'DOWNLOAD_DELAY': 1, # minimum download delay 
+        'AUTOTHROTTLE_ENABLED': True,
         "ITEM_PIPELINES": { 
             AZsPipeline: 100,
             DatesPipeline: 200,
             CourtsPipeline: 300,
             TextsPipeline: 400,
             ExportAsHtmlPipeline: 500,
-            FingerprintExportPipeline: 600
+            FingerprintExportPipeline: 600,
+            RawExporter : 900
         }
     }
 
-    def __init__(self, path, courts="", states="", fp=False, domains="", store_docId=False, **kwargs):
+    def __init__(self, path, courts="", states="", fp=False, domains="", store_docId=False, postprocess=False, **kwargs):
         self.path = path
         self.courts = courts
         self.states = states
         self.fp = fp
         self.domains = domains
         self.store_docId = store_docId
+        self.postprocess = postprocess
+        self.wait = wait
         self.filter = []
         if "ag" in self.courts: self.filter.append("ag")
         if "arbg" in self.courts: self.filter.append("arbg")
@@ -77,6 +82,8 @@ class SpdrST(scrapy.Spider):
         if "resultList" in results:
             for result in results["resultList"]:
                 r = {
+                    "postprocess": self.postprocess,
+                    "wait": self.wait,
                     "court": result["titleList"][0],
                     "date": result["date"],
                     "az": result["titleList"][1],

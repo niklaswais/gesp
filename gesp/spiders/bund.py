@@ -2,7 +2,7 @@
 import re
 import scrapy
 from ..pipelines.formatters import AZsPipeline, CourtsPipeline
-from ..pipelines.exporters import ExportAsHtmlPipeline, FingerprintExportPipeline
+from ..pipelines.exporters import ExportAsHtmlPipeline, FingerprintExportPipeline, RawExporter
 
 class SpdrBund(scrapy.Spider):
     name = "spider_bund"
@@ -12,17 +12,19 @@ class SpdrBund(scrapy.Spider):
             AZsPipeline: 100,
             CourtsPipeline: 200,
             ExportAsHtmlPipeline: 300,
-            FingerprintExportPipeline: 400
+            FingerprintExportPipeline: 400,
+            RawExporter : 900
         }
     }
 
-    def __init__(self, path, courts="", states="", fp=False, domains="", store_docId=False, **kwargs):
+    def __init__(self, path, courts="", states="", fp=False, domains="", store_docId=False, postprocess=False, **kwargs):
         self.path = path
         self.courts = courts
         self.states = states
         self.fp = fp
         self.domains = domains
         self.store_docId = store_docId
+        self.postprocess = postprocess
         if ("zivil" in domains and not any(court in courts for court in ["bgh", "bpatg", "bag"])):
             courts.extend(["bgh", "bpatg", "bag"])
         if ("oeff" in domains and not any(court in courts for court in ["bfh", "bsg", "bverfg", "bverwg"])):
@@ -39,7 +41,8 @@ class SpdrBund(scrapy.Spider):
                 "date": item.xpath("entsch-datum/text()").get(),
                 "az": item.xpath("aktenzeichen/text()").get(),
                 "link": link,
-                "docId": re.fullmatch(r'.+/jb\-([0-9A-Z]+)\.zip', link)[1]
+                "docId": re.fullmatch(r'.+/jb\-([0-9A-Z]+)\.zip', link)[1],
+                "postprocess": self.postprocess
             }
             if self.courts:
                 for court in self.courts:

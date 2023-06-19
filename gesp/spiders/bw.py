@@ -4,35 +4,41 @@ import scrapy
 from ..src.output import output
 from ..pipelines.formatters import AZsPipeline, DatesPipeline, CourtsPipeline
 from ..pipelines.texts import TextsPipeline
-from ..pipelines.exporters import ExportAsHtmlPipeline, FingerprintExportPipeline
+from ..pipelines.exporters import ExportAsHtmlPipeline, FingerprintExportPipeline, RawExporter
 
 class SpdrBW(scrapy.Spider):
     name = "spider_bw"
     base_url = "https://lrbw.juris.de/cgi-bin/laender_rechtsprechung/"
     custom_settings = {
+        'DOWNLOAD_DELAY': 1, # minimum download delay 
+        'AUTOTHROTTLE_ENABLED': True,
         "ITEM_PIPELINES": { 
             AZsPipeline: 100,
             DatesPipeline: 200,
             CourtsPipeline: 300,
             TextsPipeline: 400,
             ExportAsHtmlPipeline: 500,
-            FingerprintExportPipeline: 600
+            FingerprintExportPipeline: 600,
+            RawExporter : 900
         }
     }
 
-    def __init__(self, path, courts="", states="", fp=False, domains="", store_docId=False, **kwargs):
+    def __init__(self, path, courts="", states="", fp=False, domains="", store_docId=False, postprocess=False, wait = False, **kwargs):
         self.path = path
         self.courts = courts
         self.states = states
         self.fp = fp
         self.domains = domains
         self.store_docId = store_docId
+        self.postprocess = postprocess
+        self.wait = wait
         super().__init__(**kwargs)
 
     def start_requests(self):
         start_urls = []
         base_url = self.base_url + "list.py?Gericht=bw&Art=en"
-        add_years = lambda url : [url + str(y) for y in range(2007, datetime.date.today().year + 1)] # Urteilsdatenbank BW startet mit dem Jahr 2007
+        add_years = lambda url : [url + str(y) for y in reversed(range(2007, datetime.date.today().year + 1))] # Urteilsdatenbank BW startet mit dem Jahr 2007
+        #add_years = lambda url : [url + str(y) for y in reversed(range(2021, datetime.date.today().year + 1))] # Urteilsdatenbank BW startet mit dem Jahr 2007
         if self.courts:
             if "ag" in self.courts: start_urls.extend(add_years(base_url + "&GerichtAuswahl=Amtsgerichte&Datum="))
             if "arbg" in self.courts: start_urls.extend(add_years(base_url + "&GerichtAuswahl=Arbeitsgerichte&Datum="))
@@ -67,6 +73,8 @@ class SpdrBW(scrapy.Spider):
                         output("filter (-s bw -d zivil) not yet implemented", "warn")
                         # Ausbauen ....            
                 yield {
+                    "postprocess": self.postprocess,
+                    "wait": self.wait,
                     "court": doc_link.xpath("../../td[@class='EGericht']/text()").get(),
                     "date": doc_link.xpath("../../td[@class='EDatum']/text()").get(),
                     "az": doc_link.xpath("text()").get(),

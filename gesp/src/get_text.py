@@ -4,9 +4,12 @@ from .output import output
 from lxml import etree, html
 import datetime
 import requests
+import os
+import time as timelib
 
 
 def bb(item):
+    if (item["wait"] == True): timelib.sleep(1.5)
     if not "tree" in item:
         try:
             txt = requests.get(item["link"]).text
@@ -35,6 +38,7 @@ def be(item, headers, cookies): # spider.headers, spider.cookies
     date = str(datetime.date.today())
     time = str(datetime.datetime.now(datetime.timezone.utc).time())[0:-3]
     body = '{"docId":"%s","format":"xsl","keyword":null,"sourceParams":{"source":"Unknown","category":"Alles"},"searches":[],"clientID":"bsbe","clientVersion":"bsbe - V06_07_00 - 23.06.2022 11:20","r3ID":"%sT%sZ"}' % (item["docId"], date, time)
+    if (item["wait"] == True): timelib.sleep(1.5)
     try:
         req = requests.post(url=url, cookies=cookies, headers=headers, data=body)
     except:
@@ -47,6 +51,7 @@ def be(item, headers, cookies): # spider.headers, spider.cookies
         return item
 
 def bw(item):
+    if (item["wait"] == True): timelib.sleep(1)
     try:
         item["text"] = requests.get(item["link"], headers=config.HEADERS).text
     except:
@@ -80,6 +85,7 @@ def he(item, headers, cookies): # spider.headers, spider.cookies
     date = str(datetime.date.today())
     time = str(datetime.datetime.now(datetime.timezone.utc).time())[0:-3]
     body = '{"docId":"%s","format":"xsl","keyword":null,"docPart":"L","sourceParams":{"source":"TL","position":1,"sort":"date","category":"Rechtsprechung"},"searches":[],"clientID":"bshe","clientVersion":"bshe - V06_07_00 - 23.06.2022 11:20","r3ID":"%sT%sZ"}' % (item["docId"], date, time)
+    if (item["wait"] == True): timelib.sleep(1.75)
     try:
         req = requests.post(url=url, cookies=cookies, headers=headers, data=body)
     except:
@@ -98,6 +104,7 @@ def hh(item, headers, cookies): # spider.headers, spider.cookies
     date = str(datetime.date.today())
     time = str(datetime.datetime.now(datetime.timezone.utc).time())[0:-3]
     body = '{"docId":"%s","format":"xsl","keyword":null,"docPart":"L","sourceParams":{"source":"TL","position":1,"sort":"date","category":"Rechtsprechung"},"searches":[],"clientID":"bsha","clientVersion":"bsha - V06_07_00 - 23.06.2022 11:20","r3ID":"%sT%sZ"}' % (item["docId"], date, time)
+    if (item["wait"] == True): timelib.sleep(1.75)
     try:
         req = requests.post(url=url, cookies=cookies, headers=headers, data=body)
     except:
@@ -116,6 +123,7 @@ def mv(item, headers, cookies): # spider.headers, spider.cookies
     date = str(datetime.date.today())
     time = str(datetime.datetime.now(datetime.timezone.utc).time())[0:-3]
     body = '{"docId":"%s","format":"xsl","keyword":null,"docPart":"L","sourceParams":{"source":"TL","position":1,"sort":"date","category":"Rechtsprechung"},"searches":[],"clientID":"bsmv","clientVersion":"bsmv - V06_07_00 - 23.06.2022 11:20","r3ID":"%sT%sZ"}' % (item["docId"], date, time)
+    if (item["wait"] == True): timelib.sleep(1.75)
     try:
         req = requests.post(url=url, cookies=cookies, headers=headers, data=body)
     except:
@@ -129,6 +137,7 @@ def mv(item, headers, cookies): # spider.headers, spider.cookies
 
 def ni(item):
     # Entscheidungstext bereinigen (kein Menü etc.)
+    if (item["wait"] == True): timelib.sleep(1.75)
     try:
         txt = requests.get(item["link"]).text
     except:
@@ -149,6 +158,7 @@ def ni(item):
                 output("empty page " + item["link"], "err")
 
 def nw(item):
+    if (item["wait"] == True): timelib.sleep(0.25)
     try:
         item["text"] = requests.get(item["link"], headers=config.HEADERS).text
     except:
@@ -168,6 +178,7 @@ def rp(item, headers, cookies): # spider.headers, spider.cookies
     date = str(datetime.date.today())
     time = str(datetime.datetime.now(datetime.timezone.utc).time())[0:-3]
     body = '{"docId":"%s","format":"xsl","keyword":null,"docPart":"L","sourceParams":{"source":"TL","position":1,"sort":"date","category":"Rechtsprechung"},"searches":[],"clientID":"bshe","clientVersion":"bsrp - V06_07_00 - 23.06.2022 11:20","r3ID":"%sT%sZ"}' % (item["docId"], date, time)
+    if (item["wait"] == True): timelib.sleep(1.75)
     try:
         req = requests.post(url=url, cookies=cookies, headers=headers, data=body)
     except:
@@ -186,6 +197,7 @@ def sh(item, headers, cookies):
     date = str(datetime.date.today())
     time = str(datetime.datetime.now(datetime.timezone.utc).time())[0:-3]
     body = '{"docId":"%s","format":"xsl","keyword":null,"docPart":"L","sourceParams":{"source":"TL","position":1,"sort":"date","category":"Rechtsprechung"},"searches":[],"clientID":"bssh","clientVersion":"bssh - V06_07_00 - 23.06.2022 11:20","r3ID":"%sT%sZ"}' % (item["docId"], date, time)
+    if (item["wait"] == True): timelib.sleep(1.75)
     try:
         req = requests.post(url=url, cookies=cookies, headers=headers, data=body)
     except:
@@ -204,6 +216,7 @@ def sl(item, headers, cookies): # spider.headers, spider.cookies
     date = str(datetime.date.today())
     time = str(datetime.datetime.now(datetime.timezone.utc).time())[0:-3]
     body = '{"docId":"%s","format":"xsl","keyword":null,"docPart":"L","sourceParams":{"source":"TL","position":1,"sort":"date","category":"Rechtsprechung"},"searches":[],"clientID":"bssl","clientVersion":"bssl - V06_07_00 - 23.06.2022 11:20","r3ID":"%sT%sZ"}' % (item["docId"], date, time)
+    if (item["wait"] == True): timelib.sleep(1.5)
     try:
         req = requests.post(url=url, cookies=cookies, headers=headers, data=body)
     except:
@@ -242,6 +255,7 @@ def st(item, headers, cookies):
     date = str(datetime.date.today())
     time = str(datetime.datetime.now(datetime.timezone.utc).time())[0:-3]
     body = '{"docId":"%s","format":"xsl","keyword":null,"docPart":"L","sourceParams":{"source":"TL","position":1,"sort":"date","category":"Rechtsprechung"},"searches":[],"clientID":"bsst","clientVersion":"bsst - V06_07_00 - 23.06.2022 11:20","r3ID":"%sT%sZ"}' % (item["docId"], date, time)
+    if (item["wait"] == True): timelib.sleep(1.5)
     try:
         req = requests.post(url=url, cookies=cookies, headers=headers, data=body)
     except:
@@ -260,6 +274,7 @@ def th(item, headers, cookies): # spider.headers, spider.cookies
     date = str(datetime.date.today())
     time = str(datetime.datetime.now(datetime.timezone.utc).time())[0:-3]
     body = '{"docId":"%s","format":"xsl","keyword":null,"docPart":"L","sourceParams":{"source":"TL","position":1,"sort":"date","category":"Rechtsprechung"},"searches":[],"clientID":"bsth","clientVersion":"bsth - V06_07_00 - 23.06.2022 11:20","r3ID":"%sT%sZ"}' % (item["docId"], date, time)
+    if (item["wait"] == True): timelib.sleep(1.5)
     try:
         req = requests.post(url=url, cookies=cookies, headers=headers, data=body)
     except:
@@ -270,3 +285,20 @@ def th(item, headers, cookies): # spider.headers, spider.cookies
         item["text"] = html.tostring(doc, pretty_print=True).decode("utf-8")
         item["filetype"] = "html"
         return item
+
+def judicialis(item):
+    try:
+        txt = requests.get(item["link"]).text
+    except:
+        output("could not retrieve " + item["link"], "err")
+    else:
+        try:
+            tree = html.fromstring(txt)
+        except:
+            output("could not parse " + item["link"], "err")
+        else:
+            body_content = html.tostring(tree.xpath("//div[@class='fs-5']")[0]).decode("utf-8")
+            doc = "<html><head><title>%s</title></head><body>%s</body></html>" % (item["az"], body_content)
+            item["text"] = doc
+            item["filetype"] = "html"
+            return item
