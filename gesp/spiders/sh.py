@@ -12,6 +12,8 @@ class SpdrSH(scrapy.Spider):
     name = "spider_sh"
     headers = {"User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:101.0) Gecko/20100101 Firefox/101.0"}
     custom_settings = {
+        "DOWNLOAD_DELAY": 2, # minimum download delay 
+        "AUTOTHROTTLE_ENABLED": False,
         "ITEM_PIPELINES": { 
             AZsPipeline: 100,
             DatesPipeline: 200,
@@ -23,13 +25,15 @@ class SpdrSH(scrapy.Spider):
         }
     }
 
-    def __init__(self, path, courts="", states="", fp=False, domains="", store_docId=False, **kwargs):
+    def __init__(self, path, courts="", states="", fp=False, domains="", store_docId=False, postprocess=False, wait = False, **kwargs):
         self.path = path
         self.courts = courts
         self.states = states
         self.fp = fp
         self.domains = domains
         self.store_docId = store_docId
+        self.postprocess = postprocess
+        self.wait = wait
         self.filter = []
         if "ag" in self.courts: self.filter.append("ag")
         if "arbg" in self.courts: self.filter.append("arbg")
@@ -81,6 +85,7 @@ class SpdrSH(scrapy.Spider):
             for result in results["resultList"]:
                 r = {
                     "postprocess": self.postprocess,
+                    "wait": self.wait,
                     "court": result["titleList"][0],
                     "date": result["date"],
                     "az": result["titleList"][1],

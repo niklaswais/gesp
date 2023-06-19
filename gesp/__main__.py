@@ -33,7 +33,8 @@ def main():
     cl_parser.add_argument("-v", "--version", action="version", version=f"gesp {config.__version__} by {config.__author__} (nwais.de)", help="version of this package")
     cl_parser.add_argument('--docId', action='store_true', help="appends the docId, if present, to the filename")
     cl_parser.add_argument("-fp", "--fingerprint", nargs="?", const=True, help="creates (flag) or reads (argument, path) a fingerprint file")
-    cl_parser.add_argument("-pp", "--postprocess", action=argparse.BooleanOptionalAction, help="turns on postprocessing of the downloaded decisions. This will remove all html elements and transform them into a more easily machine readable format.")
+    cl_parser.add_argument("-pp", "--postprocess", action=argparse.BooleanOptionalAction, help="turns on postprocessing of the downloaded decisions, removing all html elements and transforming them into a more easily machine readable format")
+    cl_parser.add_argument("-w", "--wait", action=argparse.BooleanOptionalAction, help="inserts a delay after downloading each decision, which can avoid a ban from the service providers (mainly juris)")
     args = cl_parser.parse_args()
     # -p (path)
     path = os.path.join(os.getcwd(), "results", datetime.datetime.now().strftime("%Y-%m-%d_%H-%M"))
@@ -90,8 +91,10 @@ def main():
                 output(f"unknown legal domain '{domain}'", "err")
             else:
                 cl_domains.append(domain)
-    # -pp (Post-Processing)
+    # -pp (postprocess)
     if args.postprocess != True: args.postprocess = False
+    # -w (wait)
+    if args.wait != True: args.wait = False
     # -fp (fingerprint)
     if isinstance(args.fingerprint, str): # fp als Argument
         fp = args.fingerprint
@@ -112,45 +115,42 @@ def main():
         logger.setLevel(logging.DEBUG)
         rnr = scrapy.crawler.CrawlerRunner()
         if ("bund" in cl_states or not cl_states):
-            rnr.crawl(bund.SpdrBund, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains, store_docId=args.docId, postprocess=args.postprocess)
+            rnr.crawl(bund.SpdrBund, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains, store_docId=args.docId, postprocess=args.postprocess, wait=args.wait)
         if ("bw" in cl_states or not cl_states):
-            rnr.crawl(bw.SpdrBW, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains, store_docId=args.docId, postprocess=args.postprocess)
+            rnr.crawl(bw.SpdrBW, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains, store_docId=args.docId, postprocess=args.postprocess, wait=args.wait)
         if ("by" in cl_states or not cl_states):
-            rnr.crawl(by.SpdrBY, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains, store_docId=args.docId, postprocess=args.postprocess)
+            rnr.crawl(by.SpdrBY, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains, store_docId=args.docId, postprocess=args.postprocess, wait=args.wait)
         if ("be" in cl_states or not cl_states):
-            rnr.crawl(be.SpdrBE, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains, store_docId=args.docId, postprocess=args.postprocess)
+            rnr.crawl(be.SpdrBE, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains, store_docId=args.docId, postprocess=args.postprocess, wait=args.wait)
         if ("bb" in cl_states or not cl_states):
-            rnr.crawl(bb.SpdrBB, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains, store_docId=args.docId, postprocess=args.postprocess)
+            rnr.crawl(bb.SpdrBB, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains, store_docId=args.docId, postprocess=args.postprocess, wait=args.wait)
         if ("hb" in cl_states or not cl_states):
-            rnr.crawl(hb.SpdrHB, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains, store_docId=args.docId, postprocess=args.postprocess)
+            rnr.crawl(hb.SpdrHB, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains, store_docId=args.docId, postprocess=args.postprocess, wait=args.wait)
         if ("hh" in cl_states or not cl_states):
-            rnr.crawl(hh.SpdrHH, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains, store_docId=args.docId, postprocess=args.postprocess)
+            rnr.crawl(hh.SpdrHH, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains, store_docId=args.docId, postprocess=args.postprocess, wait=args.wait)
         if ("he" in cl_states or not cl_states):
-            rnr.crawl(he.SpdrHE, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains, store_docId=args.docId, postprocess=args.postprocess)
+            rnr.crawl(he.SpdrHE, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains, store_docId=args.docId, postprocess=args.postprocess, wait=args.wait)
         if ("mv" in cl_states or not cl_states):
-            rnr.crawl(mv.SpdrMV, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains, store_docId=args.docId, postprocess=args.postprocess)
+            rnr.crawl(mv.SpdrMV, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains, store_docId=args.docId, postprocess=args.postprocess, wait=args.wait)
         if ("ni" in cl_states or not cl_states):
-            rnr.crawl(ni.SpdrNI, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains, store_docId=args.docId, postprocess=args.postprocess)
+            rnr.crawl(ni.SpdrNI, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains, store_docId=args.docId, postprocess=args.postprocess, wait=args.wait)
         if ("nw" in cl_states or not cl_states):
-            rnr.crawl(nw.SpdrNW, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains, store_docId=args.docId, postprocess=args.postprocess)
+            rnr.crawl(nw.SpdrNW, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains, store_docId=args.docId, postprocess=args.postprocess, wait=args.wait)
         if ("rp" in cl_states or not cl_states):
-            rnr.crawl(rp.SpdrRP, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains, store_docId=args.docId, postprocess=args.postprocess)
+            rnr.crawl(rp.SpdrRP, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains, store_docId=args.docId, postprocess=args.postprocess, wait=args.wait)
         if ("sh" in cl_states or not cl_states):
-            rnr.crawl(sh.SpdrSH, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains, store_docId=args.docId, postprocess=args.postprocess)
+            rnr.crawl(sh.SpdrSH, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains, store_docId=args.docId, postprocess=args.postprocess, wait=args.wait)
         if ("sl" in cl_states or not cl_states):
-            rnr.crawl(sl.SpdrSL, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains, store_docId=args.docId, postprocess=args.postprocess)
+            rnr.crawl(sl.SpdrSL, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains, store_docId=args.docId, postprocess=args.postprocess, wait=args.wait)
         if ("sn" in cl_states or not cl_states):
-            rnr.crawl(sn.SpdrSN, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains, store_docId=args.docId, postprocess=args.postprocess)
+            rnr.crawl(sn.SpdrSN, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains, store_docId=args.docId, postprocess=args.postprocess, wait=args.wait)
         if ("st" in cl_states or not cl_states):
-            rnr.crawl(st.SpdrST, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains, store_docId=args.docId, postprocess=args.postprocess)
+            rnr.crawl(st.SpdrST, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains, store_docId=args.docId, postprocess=args.postprocess, wait=args.wait)
         if ("th" in cl_states or not cl_states):
-            rnr.crawl(th.SpdrTH, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains, store_docId=args.docId, postprocess=args.postprocess)
+            rnr.crawl(th.SpdrTH, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains, store_docId=args.docId, postprocess=args.postprocess, wait=args.wait)
         d = rnr.join()
         d.addBoth(lambda _: reactor.stop())
         reactor.run()
 
 if __name__ == "__main__":
     main()
-
-
-# TODO: Länder: Verfassungsgerichtshöfe (verfgh)?

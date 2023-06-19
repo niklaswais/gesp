@@ -10,6 +10,8 @@ class SpdrBB(scrapy.Spider):
     name = "spider_bb"
     base_url = "https://gerichtsentscheidungen.brandenburg.de"
     custom_settings = {
+        "DOWNLOAD_DELAY": 1, # minimum download delay 
+        "AUTOTHROTTLE_ENABLED": True,
         "ITEM_PIPELINES": { 
             AZsPipeline: 100,
             DatesPipeline: 200,
@@ -21,7 +23,7 @@ class SpdrBB(scrapy.Spider):
         }
     }
 
-    def __init__(self, path, courts="", states="", fp=False, domains="", store_docId=False, postprocess=False, **kwargs):
+    def __init__(self, path, courts="", states="", fp=False, domains="", store_docId=False, postprocess=False, wait = False, **kwargs):
         self.path = path
         self.courts = courts
         self.states = states
@@ -29,6 +31,7 @@ class SpdrBB(scrapy.Spider):
         self.store_docId = store_docId
         self.fp = fp
         self.postprocess = postprocess
+        self.wait = wait
         super().__init__(**kwargs)
 
     def start_requests(self):
@@ -81,6 +84,7 @@ class SpdrBB(scrapy.Spider):
             az = tree.xpath("//div[@id='metadata']/div/table/tbody/tr[2]/td[1]/text()")[0]
             yield {
                     "postprocess": self.postprocess,
+                    "wait": self.wait,
                     "court": result.xpath(".//td[5]/text()").get(),
                     "date": result.xpath(".//td[3]/text()").get(),
                     "link": link,

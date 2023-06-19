@@ -23,7 +23,7 @@ class SpdrBW(scrapy.Spider):
         }
     }
 
-    def __init__(self, path, courts="", states="", fp=False, domains="", store_docId=False, postprocess=False, **kwargs):
+    def __init__(self, path, courts="", states="", fp=False, domains="", store_docId=False, postprocess=False, wait=False **kwargs):
         self.path = path
         self.courts = courts
         self.states = states
@@ -31,6 +31,7 @@ class SpdrBW(scrapy.Spider):
         self.domains = domains
         self.store_docId = store_docId
         self.postprocess = postprocess
+        self.wait = wait
         super().__init__(**kwargs)
 
     def start_requests(self):
@@ -72,6 +73,7 @@ class SpdrBW(scrapy.Spider):
                         # Ausbauen ....            
                 yield {
                     "postprocess": self.postprocess,
+                    "wait": self.wait,
                     "court": doc_link.xpath("../../td[@class='EGericht']/text()").get(),
                     "date": doc_link.xpath("../../td[@class='EDatum']/text()").get(),
                     "az": doc_link.xpath("text()").get(),

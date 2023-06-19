@@ -13,6 +13,8 @@ from ..pipelines.exporters import ExportAsPdfPipeline, FingerprintExportPipeline
 class SpdrSN(scrapy.Spider):
     name = "spider_sn"
     custom_settings = {
+        "DOWNLOAD_DELAY": 1, # minimum download delay 
+        "AUTOTHROTTLE_ENABLED": True,
         "ITEM_PIPELINES": { 
             AZsPipeline: 100,
             DatesPipeline: 200,
@@ -24,7 +26,7 @@ class SpdrSN(scrapy.Spider):
         "AUTOTHROTTLE_ENABLED": True
     }
 
-    def __init__(self, path, courts="", states="", fp=False, domains="", store_docId=False, postprocess=False, **kwargs):
+    def __init__(self, path, courts="", states="", fp=False, domains="", store_docId=False, postprocess=False, wait=False, **kwargs):
         self.path = path
         self.courts = courts
         self.states = states
@@ -32,6 +34,7 @@ class SpdrSN(scrapy.Spider):
         self.domains = domains
         self.store_docId = store_docId
         self.postprocess = postprocess
+        self.wait = wait
         self.headers = config.sn_headers
         super().__init__(**kwargs)
 
@@ -95,6 +98,7 @@ class SpdrSN(scrapy.Spider):
                 headers = self.headers
                 headers["Referer"] = "Referer: https://www.justiz.sachsen.de/esamosplus/pages/suchen.aspx"
                 item = {
+                    "wait": self.wait,
                     "date": tr.xpath(".//td[2]/div/input/@value").get(),
                     "az":  tr.xpath(".//td[3]/div/input/@value").get(),
                     "court": tr.xpath(".//td[4]/div/input/@value").get(),
@@ -131,6 +135,7 @@ class SpdrSN(scrapy.Spider):
         location = "https://www.justiz.sachsen.de/esaver/internet/" + slots[16]
         url = location + "/" + filename
         yield {
+            "wait": self.wait,
             "date": date_de,
             "az": az,
             "court": "verfgh",
@@ -156,7 +161,7 @@ class SpdrSN(scrapy.Spider):
                 output("could not retrieve " + tmp_link, "err")
             else:
                 yield {
-                    "postprocess": self.postprocess,
+                    "wait": self.wait,
                     "date": data[-11:-1],
                     "az": data.split("(")[0].strip(),
                     "court": "ovg",

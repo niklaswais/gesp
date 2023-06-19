@@ -11,7 +11,7 @@ class SpdrHE(scrapy.Spider):
     name = "spider_he"
     custom_settings = {
         "DOWNLOAD_DELAY": 2, # minimum download delay 
-        "AUTOTHROTTLE_ENABLED": True,
+        "AUTOTHROTTLE_ENABLED": False,
         "ITEM_PIPELINES": { 
             AZsPipeline: 100,
             DatesPipeline: 200,
@@ -23,7 +23,7 @@ class SpdrHE(scrapy.Spider):
         }
     }
 
-    def __init__(self, path, courts="", states="", fp=False, domains="", store_docId=False, postprocess=False, **kwargs):
+    def __init__(self, path, courts="", states="", fp=False, domains="", store_docId=False, postprocess=False, wait=False **kwargs):
         self.path = path
         self.courts = courts
         self.states = states
@@ -31,6 +31,7 @@ class SpdrHE(scrapy.Spider):
         self.domains = domains
         self.store_docId = store_docId
         self.postprocess = postprocess
+        self.wait = wait
         self.filter = []
         if "ag" in self.courts: self.filter.append("ag")
         if "arbg" in self.courts: self.filter.append("arbg")
@@ -82,6 +83,7 @@ class SpdrHE(scrapy.Spider):
             for result in results["resultList"]:
                 r = {
                     "postprocess": self.postprocess,
+                    "wait": self.wait,
                     "court": result["titleList"][0],
                     "date": result["date"],
                     "az": result["titleList"][1],
