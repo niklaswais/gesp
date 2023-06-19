@@ -10,6 +10,8 @@ class SpdrBW(scrapy.Spider):
     name = "spider_bw"
     base_url = "https://lrbw.juris.de/cgi-bin/laender_rechtsprechung/"
     custom_settings = {
+        "DOWNLOAD_DELAY": 1, # minimum download delay 
+        "AUTOTHROTTLE_ENABLED": True,
         "ITEM_PIPELINES": { 
             AZsPipeline: 100,
             DatesPipeline: 200,
@@ -34,7 +36,7 @@ class SpdrBW(scrapy.Spider):
     def start_requests(self):
         start_urls = []
         base_url = self.base_url + "list.py?Gericht=bw&Art=en"
-        add_years = lambda url : [url + str(y) for y in range(2007, datetime.date.today().year + 1)] # Urteilsdatenbank BW startet mit dem Jahr 2007
+        add_years = lambda url : [url + str(y) for y in reversed(range(2007, datetime.date.today().year + 1))] # Urteilsdatenbank BW startet mit dem Jahr 2007
         if self.courts:
             if "ag" in self.courts: start_urls.extend(add_years(base_url + "&GerichtAuswahl=Amtsgerichte&Datum="))
             if "arbg" in self.courts: start_urls.extend(add_years(base_url + "&GerichtAuswahl=Arbeitsgerichte&Datum="))
