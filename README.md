@@ -5,11 +5,16 @@
 The federal and state governments in Germany make court decisions available for download on individual online platforms. In addition to the lack of uniformity, these platforms only allow individual retrieval out of the box. With gesp, decisions can be downloaded in large quantities in a filter-based and reproducible manner.
 
 ### A. Installation
-Download & build the package:
+Using **pip**:
+```Shell
+python -m pip install gesp 
+```
+
+**Or** download & build the package...
 ```Shell
 git clone https://github.com/niklaswais/gesp && cd gesp && python -m build
 ```
-Install the local .tar.gz:
+... and install the local .tar.gz:
 ```Shell
 python -m pip install dist/gesp-0.1.tar.gz
 ```
