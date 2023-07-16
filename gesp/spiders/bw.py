@@ -23,7 +23,7 @@ class SpdrBW(scrapy.Spider):
         }
     }
 
-    def __init__(self, path, courts="", states="", fp=False, domains="", store_docId=False, postprocess=False, wait=False **kwargs):
+    def __init__(self, path, courts="", states="", fp=False, domains="", store_docId=False, postprocess=False, wait=False, **kwargs):
         self.path = path
         self.courts = courts
         self.states = states
