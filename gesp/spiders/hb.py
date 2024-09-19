@@ -47,6 +47,8 @@ class SpdrHB(scrapy.Spider):
     
     def parse(self, response):
         for td in response.xpath("//tr/td[@class='dotright'][1]"):
+            if not "(pdf" in td.xpath(".//following-sibling::td/a[1]/text()").get():
+                continue
             link = "https://" + response.url.split("/")[2] + td.xpath(".//following-sibling::td/a[1]/@href").get()
             yield {
                 "postprocess": self.postprocess,
