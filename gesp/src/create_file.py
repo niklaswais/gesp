@@ -13,7 +13,13 @@ def info(item):
 
 def save_as_html(item, spider_name, spider_path, store_docId): # spider.name, spider.path
     info(item)
-    if (spider_name == "bund") or (spider_name == "by"): # Sonderfall Bund und Bayern: *.zip mit *.xml
+    is_zip_xml = False
+    if spider_name == "bund":
+        if not item["link"].startswith("https://www.bundesverfassungsgericht.de/"):
+            is_zip_xml = True
+    if spider_name == "by":
+        is_zip_xml = True
+    if is_zip_xml: # Sonderfall Bund und Bayern: *.zip mit *.xml
         filename = item["court"] + "_" + item["date"] + "_" + item["az"]
         if store_docId and item.get('docId'):
             filename += "_" + item['docId']
@@ -45,6 +51,20 @@ def save_as_html(item, spider_name, spider_path, store_docId): # spider.name, sp
                 output(f"could not create file {filepath}", "err")
             else:
                 return item
+        elif "link" in item:
+            filename = item["court"] + "_" + item["date"] + "_" + item["az"]
+            if store_docId and item.get('docId'):
+                filename += "_" + item['docId']
+            filename += ".html"
+            filepath = os.path.join(spider_path, spider_name, filename)
+            enc = "utf-8"
+            try:
+            #while True:
+                with open(filepath, "w", encoding=enc) as f:
+                    f.write(requests.get(item["link"]).content.decode(enc))
+            #    break
+            except:
+                output(f"could not create file {filepath}", "err")
         else:
             output("could not retrieve " + item["link"], "err")
 
