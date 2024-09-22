@@ -162,12 +162,14 @@ class SpdrSN(scrapy.Spider):
             else:
                 url = None
                 for link in tree.xpath("//a[@target='_blank']"):
-                    if 0 == len(link.xpath("./text()")):
+                    maybe_url = link.xpath("./@href")[0]
+                    if not re.match("^documents/[^/]*[.]pdf", maybe_url):
                         continue
-                    url = link.xpath("./@href")[0]
+                    url = maybe_url
                     break
                 if not url:
                     continue
+                url = "".join(url.split("%3BVolltext+%28hier+klicken%29"))
                 yield {
                     "wait": self.wait,
                     "date": data[-11:-1],
