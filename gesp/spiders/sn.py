@@ -160,10 +160,18 @@ class SpdrSN(scrapy.Spider):
             except:
                 output("could not retrieve " + tmp_link, "err")
             else:
+                url = None
+                for link in tree.xpath("//a[@target='_blank']"):
+                    if 0 == len(link.xpath("./text()")):
+                        continue
+                    url = link.xpath("./@href")[0]
+                    break
+                if not url:
+                    continue
                 yield {
                     "wait": self.wait,
                     "date": data[-11:-1],
                     "az": data.split("(")[0].strip(),
                     "court": "ovg",
-                    "link": "https://www.justiz.sachsen.de/ovgentschweb/" + tree.xpath("//a[@target='_blank']/@href")[0]
+                    "link": "https://www.justiz.sachsen.de/ovgentschweb/" + url
                 }
