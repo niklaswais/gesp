@@ -59,7 +59,11 @@ def save_as_pdf(item, spider_name, spider_path): # spider.name, spider.path
     elif "body" in item: # Sachsen (AG/LG/OLG)
         content = item["body"]
     if content and "court" in item and "date" in item and "az" in item:
-        filename = item["court"] + "_" + item["date"] + "_" + item["az"] + ".pdf"
+        basename = item["court"] + "_" + item["date"] + "_" + item["az"]
+        if item["link"].endswith(".docx"):
+            filename = basename + ".docx"
+        else:
+            filename = basename + ".pdf"
         filepath = os.path.join(spider_path, spider_name, filename)
         try:
             with open(filepath, "wb") as f:

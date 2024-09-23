@@ -160,7 +160,7 @@ class SpdrSN(scrapy.Spider):
             except:
                 output("could not retrieve " + tmp_link, "err")
             else:
-                doc_pattern = "^(.*[/])?([^/]*[.]pdf)([^a-z].*)?$"
+                doc_pattern = "^(.*[/])?([^/]*[.](pdf|docx))([^a-z].*)?$"
                 file = None
                 for link in tree.xpath("//a[@target='_blank']"):
                     text = "".join(link.xpath("./text()"))
