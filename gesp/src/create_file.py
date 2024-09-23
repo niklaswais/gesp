@@ -59,10 +59,8 @@ def save_as_html(item, spider_name, spider_path, store_docId): # spider.name, sp
             filepath = os.path.join(spider_path, spider_name, filename)
             enc = "utf-8"
             try:
-            #while True:
                 with open(filepath, "w", encoding=enc) as f:
                     f.write(requests.get(item["link"]).content.decode(enc))
-            #    break
             except:
                 output(f"could not create file {filepath}", "err")
         else:
