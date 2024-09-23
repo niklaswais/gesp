@@ -160,16 +160,20 @@ class SpdrSN(scrapy.Spider):
             except:
                 output("could not retrieve " + tmp_link, "err")
             else:
-                url = None
+                doc_pattern = "^(.*[/])?([^/]*[.]pdf)([^a-z].*)?$"
+                file = None
                 for link in tree.xpath("//a[@target='_blank']"):
-                    maybe_url = link.xpath("./@href")[0]
-                    if not re.match("^documents/[^/]*[.]pdf", maybe_url):
-                        continue
-                    url = maybe_url
-                    break
-                if not url:
+                    text = "".join(link.xpath("./text()"))
+                    ref = link.xpath("./@href")[0]
+                    if re.match(doc_pattern, ref):
+                        file = re.sub(doc_pattern, "\\2", ref)
+                        break
+                    if re.match(doc_pattern, text):
+                        file = re.sub(doc_pattern, "\\2", text)
+                        break
+                if not file:
                     continue
-                url = "".join(url.split("%3BVolltext+%28hier+klicken%29"))
+                url = "documents/" + file
                 yield {
                     "wait": self.wait,
                     "date": data[-11:-1],
