@@ -160,10 +160,24 @@ class SpdrSN(scrapy.Spider):
             except:
                 output("could not retrieve " + tmp_link, "err")
             else:
+                doc_pattern = "^(.*[/])?([^/]*[.](pdf|docx))([^a-z].*)?$"
+                file = None
+                for link in tree.xpath("//a[@target='_blank']"):
+                    text = "".join(link.xpath("./text()"))
+                    ref = link.xpath("./@href")[0]
+                    if re.match(doc_pattern, ref):
+                        file = re.sub(doc_pattern, "\\2", ref)
+                        break
+                    if re.match(doc_pattern, text):
+                        file = re.sub(doc_pattern, "\\2", text)
+                        break
+                if not file:
+                    continue
+                url = "documents/" + file
                 yield {
                     "wait": self.wait,
                     "date": data[-11:-1],
                     "az": data.split("(")[0].strip(),
                     "court": "ovg",
-                    "link": "https://www.justiz.sachsen.de/ovgentschweb/" + tree.xpath("//a[@target='_blank']/@href")[0]
+                    "link": "https://www.justiz.sachsen.de/ovgentschweb/" + url
                 }
