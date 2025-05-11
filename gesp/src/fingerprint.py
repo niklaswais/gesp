@@ -58,7 +58,16 @@ class Fingerprint:
                             headers["x-csrf-token"] = json.loads(response.body)["csrfToken"]
                         item = be(item, headers, config.be_cookies)
                     elif i["s"] == "bw":
-                        item = bw(item)
+                        url = "https://www.landesrecht-bw.de/jportal/wsrest/recherche3/init"
+                        headers = config.bw_headers
+                        body = config.bw_body % (date, time)
+                        try:
+                            response = requests.post(url=url, headers=headers, cookies=config.bw_cookies, data=body)
+                        except:
+                            output("bw: could not get x-csrf-token", "err")
+                        else:
+                            headers["x-csrf-token"] = json.loads(response.body)["csrfToken"]
+                        item = bw(item, headers, config.bw_cookies)
                     elif i["s"] == "by":
                         item = by(item)
                     elif i["s"]  == "he":

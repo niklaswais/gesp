@@ -48,18 +48,24 @@ def be(item, headers, cookies): # spider.headers, spider.cookies
         item["filetype"] = "html"
         return item
 
-def bw(item):
-    if (item["wait"] == True): timelib.sleep(1)
+def bw(item, headers, cookies): # spider.headers, spider.cookies
+    # item["text"]: BW ist JSON-Post-Response
+    url = 'https://www.landesrecht-bw.de/jportal/wsrest/recherche3/document'
+    headers["Referer"] = "https://www.landesrecht-bw.de/bsbw/document/" + item["docId"]
+    date = str(datetime.date.today())
+    time = str(datetime.datetime.now(datetime.timezone.utc).time())[0:-3]
+    body = '{"docId":"%s","format":"xsl","keyword":null,"docPart":"L","sourceParams":{"source":"TL","position":1,"sort":"date","category":"Rechtsprechung"},"searches":[],"clientID":"bsbw","clientVersion":"bsbw - V08_18_00 - 24.04.2025 11:53","r3ID":"%sT%sZ"}' % (item["docId"], date, time)
+    if (item["wait"] == True): timelib.sleep(1.75)
     try:
-        item["text"] = requests.get(item["link"], headers=config.HEADERS).text
+        req = requests.post(url=url, cookies=cookies, headers=headers, data=body)
     except:
         output("could not retrieve " + item["link"], "err")
     else:
-        if item["text"][1] == "h": # Herausfiltern von leeren Seiten / bei leeren Seite ist text[1] == "!" / schnellere Version
-            item["filetype"] = "html"
-            return item
-        else:
-            output("empty page " + item["link"], "err")
+        data = req.json()
+        doc = html.fromstring(f'<!doctype html><html><head><title>{item["az"]}</title></head><body>{data["head"]}{data["text"]}</body></html>')
+        item["text"] = html.tostring(doc, pretty_print=True).decode("utf-8")
+        item["filetype"] = "html"
+        return item
 
 def by(item):
     try:

@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
 import datetime
+import json
 import scrapy
-from ..src.output import output
+from ..src import config
 from ..pipelines.formatters import AZsPipeline, DatesPipeline, CourtsPipeline
 from ..pipelines.texts import TextsPipeline
 from ..pipelines.exporters import ExportAsHtmlPipeline, FingerprintExportPipeline, RawExporter
 
 class SpdrBW(scrapy.Spider):
     name = "spider_bw"
-    base_url = "https://lrbw.juris.de/cgi-bin/laender_rechtsprechung/"
     custom_settings = {
-        "DOWNLOAD_DELAY": 1, # minimum download delay 
+        "DOWNLOAD_DELAY": 2, # minimum download delay 
         "AUTOTHROTTLE_ENABLED": True,
         "ITEM_PIPELINES": { 
             AZsPipeline: 100,
@@ -32,52 +32,67 @@ class SpdrBW(scrapy.Spider):
         self.store_docId = store_docId
         self.postprocess = postprocess
         self.wait = wait
+        self.filter = []
+        if "ag" in self.courts: self.filter.append("ag")
+        if "arbg" in self.courts: self.filter.append("arbg")
+        if "fg" in self.courts: self.filter.append("fg")
+        if "lag" in self.courts: self.filter.append("landesarbeitsgericht")
+        if "lg" in self.courts: self.filter.append("lg")
+        if "lsg" in self.courts: self.filter.append("landessozialgericht")
+        if "olg" in self.courts: self.filter.append("olg")
+        if "ovg" in self.courts: self.filter.append("verwaltungsgerichtshof")
+        if "sg" in self.courts: self.filter.append("sg")
+        if "vg" in self.courts: self.filter.append("vg")
         super().__init__(**kwargs)
 
     async def start(self):
-        start_urls = []
-        base_url = self.base_url + "list.py?Gericht=bw&Art=en"
-        add_years = lambda url : [url + str(y) for y in reversed(range(2007, datetime.date.today().year + 1))] # Urteilsdatenbank BW startet mit dem Jahr 2007
-        if self.courts:
-            if "ag" in self.courts: start_urls.extend(add_years(base_url + "&GerichtAuswahl=Amtsgerichte&Datum="))
-            if "arbg" in self.courts: start_urls.extend(add_years(base_url + "&GerichtAuswahl=Arbeitsgerichte&Datum="))
-            if "fg" in self.courts: start_urls.extend(add_years(base_url + "&GerichtAuswahl=Finanzgericht&Datum="))
-            if "lag" in self.courts: start_urls.extend(add_years(base_url + "&GerichtAuswahl=Arbeitsgerichte&Datum="))
-            if "lg" in self.courts: start_urls.extend(add_years(base_url + "&GerichtAuswahl=Landgerichte&Datum="))
-            if "lsg" in self.courts: start_urls.extend(add_years(base_url + "&GerichtAuswahl=Sozialgerichte&Datum="))
-            if "olg" in self.courts: start_urls.extend(add_years(base_url + "&GerichtAuswahl=Oberlandesgerichte&Datum="))
-            if "ovg" in self.courts: start_urls.extend(add_years(base_url + "&GerichtAuswahl=Verwaltungsgerichte&Datum="))
-            if "sg" in self.courts: start_urls.extend(add_years(base_url + "&GerichtAuswahl=Sozialgerichte&Datum="))
-            if "vg" in self.courts: start_urls.extend(add_years(base_url + "&GerichtAuswahl=Verwaltungsgerichte&Datum="))
-        else:
-            start_urls.extend(add_years(base_url + "&Datum="))
-        for url in start_urls:
-            yield scrapy.Request(url=url, callback=self.parse)
+        url = "https://www.landesrecht-bw.de/jportal/wsrest/recherche3/init"
+        self.headers = config.bw_headers
+        self.cookies = config.bw_cookies
+        date = str(datetime.date.today())
+        time = str(datetime.datetime.now(datetime.timezone.utc).time())[0:-3]
+        body = config.bw_body % (date, time)
+        yield scrapy.Request(url=url, method="POST", headers=self.headers, body=body, cookies=self.cookies, dont_filter=True, callback=self.parse)
 
     def parse(self, response):
-        if not response.xpath("//p[@class='FehlerMeldung']"): #  Hinweis-Seite ohne Suchergebnisse, d.h. alle Seiten für das Jahr wurden durchgegangen
-            for doc_link in response.xpath("//a[@class='doklink']"):
-                if self.courts:
-                    # Auswahl notwendig, da ArbG & LAG == Arbeitsgerichte, SG & LSG == Sozialgerichte, VG & VGH == Verwaltungserichte
-                    # Nur wenn self.courts, um Geschwindigkeit (XPath...) bei ungefiltertem Durchgang nicht zu bremsen
-                    doc_court = doc_link.xpath("../../td[@class='EGericht']/text()").get().split()[0].lower()
-                    if not doc_court in self.courts:
-                        continue
-                    # Wenn Rechtsgebiet ausgewählt weitere Unterscheidung notwendig, da ag + lg + olg == Straf UND Zivil
-                    # ggf. Filtern nach Aktenzeichen?
-                    if "straf" in self.domains and not "zivil" in self.domains:
-                        output("filter (-s bw -d straf) not yet implemented", "warn")
-                        # Ausbauen ....
-                    elif "zivil" in self.domains and not "straf" in self.domains:
-                        output("filter (-s bw -d zivil) not yet implemented", "warn")
-                        # Ausbauen ....            
-                yield {
+        for result in self.extract_data(response):
+            yield result
+        url = "https://www.landesrecht-bw.de/jportal/wsrest/recherche3/search"
+        self.headers["x-csrf-token"] = json.loads(response.body)["csrfToken"]
+        date = str(datetime.date.today())
+        time = str(datetime.datetime.now(datetime.timezone.utc).time())[0:-3]
+        body = '{"searchTasks":{"RESULT_LIST":{"start":1,"size":25,"sort":"date","addToHistory":true,"addCategory":true},"RESULT_LIST_CACHE":{"start":25,"size":27},"FAST_ACCESS":{},"SEARCH_WORD_HITS":{}},"filters":{"CATEGORY":["Rechtsprechung"]},"searches":[],"clientID":"bsbw","clientVersion":"bsbw - V08_18_00 - 24.04.2025 11:53","r3ID":"%sT%sZ"}' % (date, time)
+        yield scrapy.Request(url=url, method="POST", headers=self.headers, body=body, cookies=self.cookies, meta={"batch": 26}, dont_filter=True, callback=self.parse_nextpage)
+
+    def parse_nextpage(self, response):
+        results = json.loads(response.body)
+        if "resultList" in results:
+            for result in self.extract_data(response):
+                yield result
+            url = "https://www.landesrecht-bw.de/jportal/wsrest/recherche3/search"
+            date = str(datetime.date.today())
+            time = str(datetime.datetime.now(datetime.timezone.utc).time())[0:-3]
+            batch = response.meta["batch"]
+            body =  '{"searchTasks":{"RESULT_LIST":{"start":%s,"size":25,"sort":"date","addToHistory":true,"addCategory":true},"RESULT_LIST_CACHE":{"start":%s,"size":27},"FAST_ACCESS":{}},"filters":{"CATEGORY":["Rechtsprechung"]},"searches":[],"clientID":"bsbw","clientVersion":"bsbw - V08_18_00 - 24.04.2025 11:53","r3ID":"%sT%sZ"}' % (batch, batch + 25, date, time)
+            batch += 25
+            yield scrapy.Request(url=url, method="POST", headers=self.headers, body=body, cookies=self.cookies, meta={"batch": batch}, dont_filter=True, callback=self.parse_nextpage)
+    
+    def extract_data(self, response):
+        results = json.loads(response.body)
+        if "resultList" in results:
+            for result in results["resultList"]:
+                r = {
                     "postprocess": self.postprocess,
                     "wait": self.wait,
-                    "court": doc_link.xpath("../../td[@class='EGericht']/text()").get(),
-                    "date": doc_link.xpath("../../td[@class='EDatum']/text()").get(),
-                    "az": doc_link.xpath("text()").get(),
-                    "link": self.base_url + doc_link.xpath("@href").get() + "&Blank=1"
+                    "court": result["titleList"][0],
+                    "date": result["date"],
+                    "az": result["titleList"][1],
+                    "link": "https://www.landesrecht-bw.de/bsbw/document/" + result["docId"],
+                    "docId": result["docId"],
                 }
-        if response.xpath("//img[@title='nächste Seite']"):
-            yield response.follow(response.xpath("//img[@title='nächste Seite']/../@href").get(), callback=self.parse)
+                if self.filter:
+                    for f in self.filter:
+                        if r["court"][0:len(f)].lower() == f:
+                            yield r
+                else:
+                    yield r

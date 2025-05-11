@@ -317,7 +317,7 @@ class DecisionHTMLParser(HTMLParser):
             elif (tag in ('h4','strong','br')):
                 if self.inBody:
                     self.text += data + '\n'
-        elif self.mode in ('rp','sh', 'be', 'he', 'mv', 'sl', 'st', 'th', 'hh'):
+        elif self.mode in ('rp','sh', 'be', 'he', 'mv', 'sl', 'st', 'th', 'hh', 'bw'):
             if data.isspace(): return
             #print(tag)
             #print(data)
@@ -353,32 +353,32 @@ class DecisionHTMLParser(HTMLParser):
             elif (tag in ('h4','br', 'p')):
                 if self.gericht != '' and not self.bodyEnde:
                     self.text += '\n' + data.strip()
-        elif self.mode in ('bw'):
-            if data.isspace(): return
-            
-            if (tag == 'h1'):
-                splitted = re.split(",|vom",data)
-                            
-                ## Dokumententyp
-                ersteSplitted = [ x for x in splitted[0].split(" ") if len(x) > 0]
-                self.dokumenttyp = ersteSplitted[-1].strip()
-                   
-                ### Gerichtsname
-                gername = ersteSplitted[:-1]
-                self.trenne_gericht_und_kammer(' '.join(gername))
-                ### Datum und Urteilstyp 
-                datumsstring = splitted[1].strip()
-                self.entscheidungsdatum = datetime.strptime(datumsstring, '%d.%m.%Y')
-
-                self.aktenzeichen = ', '.join(splitted[2:]).strip()
-            elif (tag in ('p','td','em','rd', 'span', 'ul', 'sub', 'sup', 'strong', 'br')):
-                if len(self.gericht) == 0: return
-                if data.strip().isnumeric(): return
-                
-                if tag in ['em', 'span', 'ul', 'sub', 'sup']:
-                    self.text += ' ' + data.strip()
-                else:
-                    self.text += '\n' + data.strip()
+        #elif self.mode in ('bw'):
+        #    if data.isspace(): return
+        #    
+        #    if (tag == 'h1'):
+        #        splitted = re.split(",|vom",data)
+        #                    
+        #        ## Dokumententyp
+        #        ersteSplitted = [ x for x in splitted[0].split(" ") if len(x) > 0]
+        #        self.dokumenttyp = ersteSplitted[-1].strip()
+        #           
+        #        ### Gerichtsname
+        #        gername = ersteSplitted[:-1]
+        #        self.trenne_gericht_und_kammer(' '.join(gername))
+        #        ### Datum und Urteilstyp 
+        #        datumsstring = splitted[1].strip()
+        #        self.entscheidungsdatum = datetime.strptime(datumsstring, '%d.%m.%Y')
+        #
+        #        self.aktenzeichen = ', '.join(splitted[2:]).strip()
+        #    elif (tag in ('p','td','em','rd', 'span', 'ul', 'sub', 'sup', 'strong', 'br')):
+        #        if len(self.gericht) == 0: return
+        #        if data.strip().isnumeric(): return
+        #        
+        #        if tag in ['em', 'span', 'ul', 'sub', 'sup']:
+        #            self.text += ' ' + data.strip()
+        #        else:
+        #            self.text += '\n' + data.strip()
 #        elif self.mode in ('judicialis'):
 #            if data.isspace(): return
 #            if tag == 'h4':

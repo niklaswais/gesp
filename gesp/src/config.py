@@ -47,6 +47,16 @@ be_cookies = {
 }
 be_body = '{"clientID":"bsbe","clientVersion":"bsbe - V06_07_00 - 23.06.2022 11:20","r3ID":"%sT%sZ"}'
 
+bw_headers = json_headers_base | {
+    "Origin": "https://www.landesrecht-bw.de",
+    "Referer": "https://www.landesrecht-bw.de/bsbw/search",
+    "juris-portalid": "bsbw"
+}
+bw_cookies = {
+    "r3autologin": "\"bsbw\""
+}
+bw_body = '{"clientID":"bsbw","clientVersion":"bsbw - V08_18_00 - 24.04.2025 11:53","r3ID":"%sT%sZ"}'
+
 he_headers = json_headers_base | {
     "Origin": "https://www.lareda.hessenrecht.hessen.de",
     "Referer": "https://www.lareda.hessenrecht.hessen.de/bshe/search",
