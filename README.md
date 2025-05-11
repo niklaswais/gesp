@@ -10,13 +10,13 @@ Using **pip**:
 python -m pip install gesp 
 ```
 
-**Or** download & build the package...
+**Or** download & build the package (requires "build")...
 ```Shell
 git clone https://github.com/niklaswais/gesp && cd gesp && python -m build
 ```
 ... and install the local .tar.gz:
 ```Shell
-python -m pip install dist/gesp-0.2.tar.gz
+python -m pip install dist/gesp-0.2.0.tar.gz
 ```
 
 ### B. Basic Usage
