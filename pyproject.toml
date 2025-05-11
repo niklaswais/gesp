@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 name = "gesp"
 version = "0.2.0"
 authors = [
-  { name="Niklas Wais", email="niklas.wais@uni-leipzig.de" },
+  { name="Niklas Wais", email="niklas.wais@tum.de" },
 ]
 description = "convenient scraping of german court decisions"
 readme = "README.md"
