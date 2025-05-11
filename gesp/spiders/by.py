@@ -31,7 +31,7 @@ class SpdrBY(scrapy.Spider):
         self.postprocess = postprocess
         super().__init__(**kwargs)
 
-    def start_requests(self):
+    async def start(self):
         start_urls = []
         base_url = self.base_url + "/Search/Filter/"
         if self.courts:
@@ -75,8 +75,8 @@ class SpdrBY(scrapy.Spider):
                 court = item.xpath(".//a/b/text()").get()
                 if ":" in court: court = court.split(":")[0]
                 # AZ und Datum auftrennen
-                subtitel = item.xpath(".//div[@class='hlSubTitel']/text()").get()
-                date = re.search("([0-9]{2}\.[0-9]{2}\.[0-9]{4})", subtitel)[0]
+                subtitel = item.xpath(".//p[@class='hlSubTitel']/text()").get()
+                date = re.search(r"([0-9]{2}\.[0-9]{2}\.[0-9]{4})", subtitel)[0]
                 az = subtitel.split(" – ")[1]
                 zipLink = self.base_url + item.xpath(".//a/@href").get()[:-8].replace("Document","Zip")
                 

@@ -47,7 +47,7 @@ class SpdrSH(scrapy.Spider):
         if "vg" in self.courts: self.filter.append("schleswig-holsteinisches verwaltungsgericht")
         super().__init__(**kwargs)
     
-    def start_requests(self):
+    async def start(self):
         url = "https://www.gesetze-rechtsprechung.sh.juris.de/jportal/wsrest/recherche3/init"
         self.headers = config.sh_headers
         self.cookies = config.sh_cookies

@@ -27,7 +27,7 @@ class SpdrHB(scrapy.Spider):
         self.postprocess = postprocess
         super().__init__(**kwargs)
 
-    def start_requests(self):
+    async def start(self):
         # In Bremen nur vereinzelte Gerichte mit Online-Entscheidungen
         if not self.courts or "lag" in self.courts:
             url = "https://www.landesarbeitsgericht.bremen.de/entscheidungen/entscheidungsuebersicht-11508?max=100&skip=0"

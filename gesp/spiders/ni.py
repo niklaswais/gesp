@@ -35,7 +35,7 @@ class SpdrNI(scrapy.Spider):
         self.base_url = "https://www.rechtsprechung.niedersachsen.de/jportal/portal/"
         super().__init__(**kwargs)
 
-    def start_requests(self):
+    async def start(self):
         start_urls = [] 
         filter_url = self.base_url + "page/bsndprod.psml?nav=ger&node=BS-ND%5B%23%5D%4000"
         if self.courts:
@@ -60,7 +60,7 @@ class SpdrNI(scrapy.Spider):
                 start_urls.append(filter_url + "20%40Oberlandesgerichte%5B%23%5D")
             if "ovg" in self.courts:
                 n = "Niedersächsiches+Oberverwaltungsgericht"
-                start_urls.append(filter_url + f"50%40Verwaltungsgerichte%5B%23%5D%400001%40{n}%5B%24%5D{n}%7B.%7D%5B%23%5D")
+                start_urls.append(filter_url + f"50%40Verwaltungsgerichte%5B%23%5D%400002%40{n}%5B%24%5D{n}%7B.%7D%5B%23%5D")
             if "sg" in self.courts:
                 # Herausfiltern des lsg
                 sgs = ["Aurich", "Braunschweig", "Hannover", "Hildesheim", "Lüneburg", "Oldenburg+%28Oldenburg%29", "Osnabrück", "Stade"]
@@ -70,7 +70,7 @@ class SpdrNI(scrapy.Spider):
                 # Herausfiltern des ovg
                 vgs = ["Braunschweig", "Göttingen", "Hannover", "Lüneburg", "Oldenburg+%28Oldenburg%29", "Osnabrück", "Stade"]
                 for vg in vgs:
-                    start_urls.append(filter_url + f"50%40Verwaltungsgerichte%5B%23%5D%400002%40Verwaltungsgericht+{vg}%5B%24%5DVerwaltungsgericht+{vg}%7B.%7D%5B%23%5D")
+                    start_urls.append(filter_url + f"50%40Verwaltungsgerichte%5B%23%5D%400001%40{vg}%5B%24%5D{vg}%7B.%7D%5B%23%5D")
         else:
             start_urls.append(self.base_url + "page/bsndprod.psml/js_peid/FastSearch/media-type/html?form=bsIntFastSearch&sm=fs&query=")
 

@@ -34,7 +34,7 @@ class SpdrBW(scrapy.Spider):
         self.wait = wait
         super().__init__(**kwargs)
 
-    def start_requests(self):
+    async def start(self):
         start_urls = []
         base_url = self.base_url + "list.py?Gericht=bw&Art=en"
         add_years = lambda url : [url + str(y) for y in reversed(range(2007, datetime.date.today().year + 1))] # Urteilsdatenbank BW startet mit dem Jahr 2007

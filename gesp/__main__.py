@@ -7,12 +7,22 @@ import os
 import scrapy
 import sys
 from scrapy.shell import inspect_response
-from tldextract import extract       ### !!nur in DEV!!
+from tldextract import extract
+from scrapy.utils.reactor import install_reactor
+install_reactor("twisted.internet.asyncioreactor.AsyncioSelectorReactor")
 from twisted.internet import reactor
 from .spiders import bb, be, bund, bw, by, hb, hh, he, mv, ni, nw, rp, sh, sl, sn, st, th
 from .src import config
 from .src.output import output
 from .src.fingerprint import Fingerprint
+from .src.config import SCRAPY_SETTINGS
+from scrapy.settings import Settings
+
+# Scrapy-Einstellungen setzen
+settings = Settings()
+for setting, value in SCRAPY_SETTINGS.items():
+    settings.set(setting, value, priority='project')
+
 
 def main():
     output("Due to the terms of use governing the databases accessed by gesp, the use of gesp is only permitted for non-commercial purposes. Do you use gesp exclusively for non-commercial purposes?")
@@ -113,7 +123,7 @@ def main():
         logger = logging.getLogger('scrapy')
         logger.propagate = False
         logger.setLevel(logging.DEBUG)
-        rnr = scrapy.crawler.CrawlerRunner()
+        rnr = scrapy.crawler.CrawlerRunner(settings=settings)
         if ("bund" in cl_states or not cl_states):
             rnr.crawl(bund.SpdrBund, path=path, courts=cl_courts, states=cl_states, fp=fp, domains=cl_domains, store_docId=args.docId, postprocess=args.postprocess, wait=args.wait)
         if ("bw" in cl_states or not cl_states):

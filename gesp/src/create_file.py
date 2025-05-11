@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 from fileinput import filename
 import os
+import time
 import requests
+from requests.exceptions import RequestException
 from io import BytesIO
 from .output import output
 from zipfile import ZipFile
@@ -24,18 +26,30 @@ def save_as_html(item, spider_name, spider_path, store_docId): # spider.name, sp
         if store_docId and item.get('docId'):
             filename += "_" + item['docId']
         filename += ".xml"
-        try:
-            with ZipFile(BytesIO((requests.get(item["link"]).content))) as zip_ref: # Im RAM entpacken
-                for zipinfo in zip_ref.infolist(): # Teilweise auch Bilder in .zip enthalten
-                    if (zipinfo.filename.endswith(".xml") and ("manifest" not in zipinfo.filename)):
-                        zipinfo.filename = filename
-                        #bayportalrsp
-                        item["xmlfilename"] = os.path.join(spider_path, spider_name, zipinfo.filename)
-                        zip_ref.extract(zipinfo, os.path.join(spider_path, spider_name))
-        except:
-            output(f"could not create file {filename}", "err")
-        else:
-            return item
+
+        retries = 3 # Anzahl der Versuche
+        for attempt in range(retries):
+            try:
+                response = requests.get(item["link"], timeout=10)
+                response.raise_for_status()
+                with ZipFile(BytesIO(response.content)) as zip_ref: # Im RAM entpacken
+                    for zipinfo in zip_ref.infolist(): # Teilweise auch Bilder in .zip enthalten
+                        if (zipinfo.filename.endswith(".xml") and ("manifest" not in zipinfo.filename)):
+                            original_path = os.path.join(spider_path, spider_name, zipinfo.filename)
+                            target_path = os.path.join(spider_path, spider_name, filename)
+                            zip_ref.extract(zipinfo, os.path.join(spider_path, spider_name))
+                            os.rename(original_path, target_path)
+                            #bayportalrsp
+                            item["xmlfilename"] = target_path
+                            return item
+                output(f"could not create file {filename}: no suitable .xml found in zip", "err")
+                break
+            except RequestException as e:
+                output(f"Attempt {attempt + 1}/{retries} failed: {e}", "warn")
+                if attempt < retries - 1:
+                    time.sleep(2)  # Warte 2 Sekunden vor dem nächsten Versuch
+                else:
+                    output(f"could not create file {filename}: {e}", "err")
     else:
         if "text" in item and "court" in item and "date" in item and "az" in item and "filetype" in item:
             filename = item["court"] + "_" + item["date"] + "_" + item["az"]

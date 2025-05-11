@@ -45,7 +45,7 @@ class SpdrSL(scrapy.Spider):
         if "vg" in self.courts: self.filter.append("verwaltungsgericht")
         super().__init__(**kwargs)
 
-    def start_requests(self):
+    async def start(self):
         url = "https://recht.saarland.de/jportal/wsrest/recherche3/init"
         self.headers = config.sl_headers
         self.cookies = config.sl_cookies

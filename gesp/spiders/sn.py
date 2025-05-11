@@ -38,7 +38,7 @@ class SpdrSN(scrapy.Spider):
         self.headers = config.sn_headers
         super().__init__(**kwargs)
 
-    def start_requests(self):
+    async def start(self):
         supported_courts = ["ag", "lg", "olg"]
         if not self.courts or any(c in supported_courts for c in self.courts):
             url = "https://www.justiz.sachsen.de/esamosplus/pages/suchen.aspx"

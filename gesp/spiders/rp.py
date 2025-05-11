@@ -45,7 +45,7 @@ class SpdrRP(scrapy.Spider):
         if "vg" in self.courts: self.filter.append("vg")
         super().__init__(**kwargs)
 
-    def start_requests(self):
+    async def start(self):
         url = "https://www.landesrecht.rlp.de/jportal/wsrest/recherche3/init"
         self.headers = config.rp_headers
         self.cookies = config.rp_cookies

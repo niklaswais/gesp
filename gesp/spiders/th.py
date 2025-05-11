@@ -45,7 +45,7 @@ class SpdrTH(scrapy.Spider):
         if "vg" in self.courts: self.filter.append("vg")
         super().__init__(**kwargs)
 
-    def start_requests(self):
+    async def start(self):
         url = "https://landesrecht.thueringen.de/jportal/wsrest/recherche3/init"
         self.headers = config.th_headers
         self.cookies = config.th_cookies

@@ -8,7 +8,7 @@ from ..pipelines.exporters import ExportAsHtmlPipeline, FingerprintExportPipelin
 
 class SpdrNW(scrapy.Spider):
     name = "spider_nw"
-    base_url = "https://www.justiz.nrw.de/BS/nrwe2/index.php"
+    base_url = "https://nrwesuche.justiz.nrw.de/index.php"
     custom_settings = {
         "DOWNLOAD_DELAY": 0.5, # minimum download delay 
         "AUTOTHROTTLE_ENABLED": False,
@@ -34,30 +34,29 @@ class SpdrNW(scrapy.Spider):
         self.wait = wait
         super().__init__(**kwargs)
 
-    def start_requests(self):
+    async def start(self):
         start_req_bodies = []
         self.headers = {
-            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9",
-            "Accept-Language": "de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7",
-            "Cache-Control": "no-cache",
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+            "Accept-Language": "de,en;q=0.9",
+            "Cache-Control": "max-age=0",
             "Connection": "keep-alive",
             "Content-Type": "application/x-www-form-urlencoded",
-            "Origin": "https://www.justiz.nrw.de",
-            "Pragma": "no-cache",
-            "Referer": "https://www.justiz.nrw.de/BS/nrwe2/index.php",
+            "Origin": "https://nrwesuche.justiz.nrw.de",
+            "Referer": "https://nrwesuche.justiz.nrw.de/index.php",
             "Sec-Fetch-Dest": "document",
             "Sec-Fetch-Mode": "navigate",
             "Sec-Fetch-Site": "same-origin",
             "Sec-Fetch-User": "?1",
             "Upgrade-Insecure-Requests": "1",
-            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.53 Safari/537.36",
-            "sec-ch-ua": "\"Chromium\";v=\"103\", \".Not/A)Brand\";v=\"99\"",
+            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36",
+            "sec-ch-ua": "\"Not.A/Brand\";v=\"99\", \"Chromium\";v=\"136\"",
             "sec-ch-ua-mobile": "?0",
             "sec-ch-ua-platform": "\"Linux\""
         }
         date_from = "23.5.1949"
         date_until = datetime.datetime.today().strftime("%d.%m.%Y")
-        body = "gerichtstyp={}&gerichtsbarkeit={}&gerichtsort=Alle+Gerichtsorte&entscheidungsart=&date=&von={}&bis={}&validFrom=&von2=&bis2=&aktenzeichen=&schlagwoerter=&q=&method=stem&qSize=100&sortieren_nach=datum_absteigend&absenden=Suchen&advanced_search=true"
+        body = "gerichtstyp={}&gerichtsbarkeit={}&gerichtsort=&entscheidungsart=&date=&von={}&bis={}&validFrom=&von2=&bis2=&aktenzeichen=&schlagwoerter=&q=&method=stem&qSize=100&sortieren_nach=datum_absteigend&absenden=Suchen&advanced_search=false"
         if self.courts:
             if "ag" in self.courts:
                 start_req_bodies.append(body.format("Amtsgericht", "Ordentliche+Gerichtsbarkeit", date_from, date_until))

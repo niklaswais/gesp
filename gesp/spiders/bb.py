@@ -34,7 +34,7 @@ class SpdrBB(scrapy.Spider):
         self.wait = wait
         super().__init__(**kwargs)
 
-    def start_requests(self):
+    async def start(self):
         start_urls = []     
         base_url = self.base_url + "/suche?"
         if self.courts:
