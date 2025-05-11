@@ -16,7 +16,7 @@ git clone https://github.com/niklaswais/gesp && cd gesp && python -m build
 ```
 ... and install the local .tar.gz:
 ```Shell
-python -m pip install dist/gesp-0.1.tar.gz
+python -m pip install dist/gesp-0.2.tar.gz
 ```
 
 ### B. Basic Usage
