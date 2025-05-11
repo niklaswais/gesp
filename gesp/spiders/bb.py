@@ -10,7 +10,7 @@ class SpdrBB(scrapy.Spider):
     name = "spider_bb"
     base_url = "https://gerichtsentscheidungen.brandenburg.de"
     custom_settings = {
-        "DOWNLOAD_DELAY": 1, # minimum download delay 
+        "DOWNLOAD_DELAY": 5, # minimum download delay 
         "AUTOTHROTTLE_ENABLED": True,
         "ITEM_PIPELINES": { 
             AZsPipeline: 100,
