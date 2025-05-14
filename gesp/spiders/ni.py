@@ -32,11 +32,11 @@ class SpdrNI(scrapy.Spider):
         self.store_docId = store_docId
         self.postprocess = postprocess
         self.wait = wait
-        self.base_url = "https://voris.wolterskluwer-online.de/"
+        self.base_url = "https://voris.wolterskluwer-online.de"
         super().__init__(**kwargs)
 
     async def start(self):
-        filter_url = base_url + "search?query=&in_publication=&in_year=&in_edition=&voris_number=&issuer=&date=&end_date_range=&lawtaxonomy=&pit=&da_id=&issuer_label=&content_tree_nodes=&publicationtype=publicationform-ats-filter%21ATS_Rechtsprechung"
+        filter_url = self.base_url + "/search?query=&in_publication=&in_year=&in_edition=&voris_number=&issuer=&date=&end_date_range=&lawtaxonomy=&pit=&da_id=&issuer_label=&content_tree_nodes=&publicationtype=publicationform-ats-filter%21ATS_Rechtsprechung"
         start_urls = [] 
         if self.courts:
             if "ag" in self.courts:
@@ -86,7 +86,7 @@ class SpdrNI(scrapy.Spider):
                         #"court": court,
                         #"date": date,
                         #"az": az.rstrip(),
-                        "link": href
+                        "link": self.base_url + href
                     }
                 
         # Button für nächste Seite
