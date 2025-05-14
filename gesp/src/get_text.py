@@ -151,16 +151,23 @@ def ni(item):
             tree = html.fromstring(txt)
         except:
             output("could not parse " + item["link"], "err")
-        else:    
-            if txt.find("bsentscheidung") != -1: # Herausfiltern von leeren Seiten
-                body_content = html.tostring(tree.xpath("//div[@class='jurisText']")[0]).decode("utf-8")
-                doc = "<html><head><title>%s</title></head><body>%s</body></html>" % (item["az"], body_content)
+        else:
+
+            article = tree.xpath('//article')
+            if article:
+                # Extraktion der Meta-Daten
+                item["court"] = tree.xpath('//section[@class="wkde-bibliography"]//dt[text()="Gericht"]/following-sibling::dd[1]/text()')
+                item["date"] = tree.xpath('//section[@class="wkde-bibliography"]//dt[text()="Datum"]/following-sibling::dd[1]/text()')
+                item["az"] = tree.xpath('//section[@class="wkde-bibliography"]//dt[text()="Aktenzeichen"]/following-sibling::dd[1]/text()')
+
+                # Abspeichern des Texts
+                body = html.tostring(tree.xpath('//article')[0]).decode("utf-8")
+                doc = "<html><head><title>%s - %s - %s</title></head><body>%s</body></html>" % (item["court"], item["date"], item["az"], body)
                 item["text"] = doc
                 item["filetype"] = "html"
-                return item
-            else:
-                output("empty page " + item["link"], "err")
 
+                return item
+        
 def nw(item):
     if (item["wait"] == True): timelib.sleep(0.25)
     try:

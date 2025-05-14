@@ -8,15 +8,15 @@ from ..pipelines.exporters import ExportAsHtmlPipeline, FingerprintExportPipelin
 
 class SpdrNI(scrapy.Spider):
     name = "spider_ni"
-    base_url = "https://www.rechtsprechung.niedersachsen.de/jportal/portal/"
+    base_url = "https://voris.wolterskluwer-online.de/"
     custom_settings = {
         "DOWNLOAD_DELAY": 2, # minimum download delay 
         "AUTOTHROTTLE_ENABLED": False,
         "ITEM_PIPELINES": { 
-            AZsPipeline: 100,
-            DatesPipeline: 200,
-            CourtsPipeline: 300,
-            TextsPipeline: 400,
+            TextsPipeline: 100,
+            AZsPipeline: 200,
+            DatesPipeline: 300,
+            CourtsPipeline: 400,
             ExportAsHtmlPipeline: 500,
             FingerprintExportPipeline: 600,
             RawExporter: 900
@@ -32,69 +32,66 @@ class SpdrNI(scrapy.Spider):
         self.store_docId = store_docId
         self.postprocess = postprocess
         self.wait = wait
-        self.base_url = "https://www.rechtsprechung.niedersachsen.de/jportal/portal/"
+        self.base_url = "https://voris.wolterskluwer-online.de/"
         super().__init__(**kwargs)
 
     async def start(self):
+        filter_url = base_url + "search?query=&in_publication=&in_year=&in_edition=&voris_number=&issuer=&date=&end_date_range=&lawtaxonomy=&pit=&da_id=&issuer_label=&content_tree_nodes=&publicationtype=publicationform-ats-filter%21ATS_Rechtsprechung"
         start_urls = [] 
-        filter_url = self.base_url + "page/bsndprod.psml?nav=ger&node=BS-ND%5B%23%5D%4000"
         if self.courts:
             if "ag" in self.courts:
-                start_urls.append(filter_url + "40%40Amtsgerichte%5B%23%5D")
+                start_urls.append(filter_url + "_Strafgerichte_AG")
+                start_urls.append(filter_url + "_Zivilgerichte_AG")
             if "arbg" in self.courts:
-                # Herausfiltern des lag
-                arbgs = ["Braunschweig", "Celle", "Emden", "Göttingen", "Hannover", "Lingen", "Nienburg", "Oldenburg+%28Oldenburg%29", "Osnabrück", "Verden"]
-                for arbg in arbgs:
-                    start_urls.append(filter_url + f"70%40Arbeitsgerichte%5B%23%5D%400002%40ArbG+{arbg}%5B%24%5DArbG+{arbg}%7B.%7D%5B%23%5D")
+                start_urls.append(filter_url + "_Arbeitsgerichte_ArbG")
             if "fg" in self.courts:
-                start_urls.append(filter_url + "80%40Finanzgericht%7B.%7D%5B%23%5D")
+                start_urls.append(filter_url + "_Finanzgerichte")
             if "lag" in self.courts:
-                n = "Landesarbeitsgericht+Niedersachsen"
-                start_urls.append(filter_url + f"70%40Arbeitsgerichte%5B%23%5D%400001%40{n}%5B%24%5D{n}%7B.%7D%5B%23%5D")
+                start_urls.append(filter_url + "_Arbeitsgerichte_LAG")
             if "lg" in self.courts:
-                start_urls.append(filter_url + "30%40Landgerichte%5B%23%5D")
+                start_urls.append(filter_url + "_Strafgerichte_LG")
+                start_urls.append(filter_url + "_Zivilgerichte_LG")
             if "lsg" in self.courts:
-                n = "Landessozialgericht+Niedersachsen-Bremen"
-                start_urls.append(filter_url + f"60%40Sozialgerichte%5B%23%5D%400001%40{n}%5B%24%5D{n}%7B.%7D%5B%23%5D")
+                start_urls.append(filter_url + "_Sozialgerichte_LSG")
             if "olg" in self.courts:
-                start_urls.append(filter_url + "20%40Oberlandesgerichte%5B%23%5D")
+                start_urls.append(filter_url + "_Strafgerichte_OLG")
+                start_urls.append(filter_url + "_Zivilgerichte_OLG")
             if "ovg" in self.courts:
-                n = "Niedersächsiches+Oberverwaltungsgericht"
-                start_urls.append(filter_url + f"50%40Verwaltungsgerichte%5B%23%5D%400002%40{n}%5B%24%5D{n}%7B.%7D%5B%23%5D")
+                start_urls.append(filter_url + "_Verwaltungsgerichte_OVG_VGH")
             if "sg" in self.courts:
-                # Herausfiltern des lsg
-                sgs = ["Aurich", "Braunschweig", "Hannover", "Hildesheim", "Lüneburg", "Oldenburg+%28Oldenburg%29", "Osnabrück", "Stade"]
-                for sg in sgs:
-                    start_urls.append(filter_url + f"60%40Sozialgerichte%5B%23%5D%400002%40SG+{sg}%5B%24%5DSG+{sg}%7B.%7D%5B%23%5D")
+                start_urls.append(filter_url + "_Sozialgerichte_SG")
             if "vg" in self.courts:
-                # Herausfiltern des ovg
-                vgs = ["Braunschweig", "Göttingen", "Hannover", "Lüneburg", "Oldenburg+%28Oldenburg%29", "Osnabrück", "Stade"]
-                for vg in vgs:
-                    start_urls.append(filter_url + f"50%40Verwaltungsgerichte%5B%23%5D%400001%40{vg}%5B%24%5D{vg}%7B.%7D%5B%23%5D")
+                start_urls.append(filter_url + "_Verwaltungsgerichte_VG")
         else:
-            start_urls.append(self.base_url + "page/bsndprod.psml/js_peid/FastSearch/media-type/html?form=bsIntFastSearch&sm=fs&query=")
+            start_urls.append(filter_url)
 
-        for url in start_urls:
-            yield scrapy.Request(url=url, callback=self.parse)
+        for i, url in enumerate(start_urls):
+            yield scrapy.Request(url=url, meta={'cookiejar': i}, dont_filter=True, callback=self.parse)
 
     def parse(self, response):
-        if (response.xpath("//table")):
-            for tr in response.xpath("//tr"):
-                az = tr.xpath(".//a/text()[2]").get()
-                az = az.replace("\n", "")
-                az = az.replace(" | ", "")
-                link = self.base_url + tr.xpath(".//a/@href").get()
-                yield {
-                       "postprocess": self.postprocess,
-                       "wait": self.wait,
-                        "court": tr.xpath(".//strong[1]/text()").get(),
-                        "date": tr.xpath(".//td[1]/text()").get().replace("\n", ""),
-                        "link": link,
-                        "az": az,
-                        "docId": urllib.parse.parse_qs(urllib.parse.urlparse(link).query)['doc.id'][0]
-
-                }
-            if response.xpath("//p[@class='skipNav']/strong[2]/following-sibling::a"):
-                yield response.follow(response.xpath("//p[@class='skipNav']/strong[2]/following-sibling::a/@href").get(), callback=self.parse)
-        else:
-            output("empty search result list", "warn")
+       
+        #  Extract Text
+        if view_content = tree.xpath('//ul[@class="view-content"]')
+            items = view_content[0].xpath('./li[@class="views-row"]')
+            results = []
+            for item in items:c
+                # Extrahieren des Links
+                link_elem = item.xpath('.//h3/a')
+                if link_elem:
+                    href = link_elem[0].get('href')
+                    yield {
+                        "postprocess": self.postprocess,
+                        "wait": self.wait,
+                        # Veränderte Reihenfolge: Meta-Informationen werden aus Dokument extrahiert
+                        #"court": court,
+                        #"date": date,
+                        #"az": az.rstrip(),
+                        "link": href
+                    }
+                
+        # Button für nächste Seite
+        next_page = response.xpath("//a[@class='wk-pagination-link' and @title='Zur nächsten Seite']")
+        if next_page and next_page[0].get("aria-disabled") != "true":
+            href = next_page[0].get("href")
+            if href:
+                yield response.follow(self.base_url + href, dont_filter=True, meta={'cookiejar': response.meta['cookiejar']}, callback=self.parse)
