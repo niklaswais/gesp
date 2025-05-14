@@ -13,10 +13,10 @@ class SpdrNI(scrapy.Spider):
         "DOWNLOAD_DELAY": 2, # minimum download delay 
         "AUTOTHROTTLE_ENABLED": False,
         "ITEM_PIPELINES": { 
-            TextsPipeline: 100,
-            AZsPipeline: 200,
-            DatesPipeline: 300,
-            CourtsPipeline: 400,
+            AZsPipeline: 100,
+            DatesPipeline: 200,
+            CourtsPipeline: 300,
+            TextsPipeline: 400,
             ExportAsHtmlPipeline: 500,
             FingerprintExportPipeline: 600,
             RawExporter: 900
