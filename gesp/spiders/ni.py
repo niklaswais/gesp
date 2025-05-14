@@ -69,7 +69,7 @@ class SpdrNI(scrapy.Spider):
             yield scrapy.Request(url=url, meta={'cookiejar': i}, dont_filter=True, callback=self.parse)
 
     def parse(self, response):
-        #  Extract Text
+     
         view_content = response.xpath('//ul[@class="view-content"]')
         if view_content:
             items = view_content[0].xpath('./li[@class="views-row"]')
@@ -78,18 +78,33 @@ class SpdrNI(scrapy.Spider):
                 # Extrahieren des Links
                 href = item.xpath('.//h3/a/@href').get()
                 if href:
-                    court = item.xpath('.//div[@class="court-info"]/text()').get()
-                    date = item.xpath('.//div[@class="date-info"]/text()').get()
-                    az = item.xpath('.//div[@class="az-info"]/text()').get()
-                    yield {
-                        "postprocess": self.postprocess,
-                        "wait": self.wait,
-                        # Veränderte Reihenfolge: Meta-Informationen werden aus Dokument extrahiert
-                        #"court": court,
-                        #"date": date,
-                        #"az": az.rstrip(),
-                        "link": self.base_url + href
-                    }
+                    # Extrahieren der Meta-Informationen via Seiten-Aufruf
+                    try:
+                        txt = requests.get(self.base_url + href).text
+                    except:
+                        output("could not retrieve " + self.base_url + href, "err")
+                    else:
+                        try:
+                            tree = html.fromstring(txt)
+                        except:
+                            output("could not parse " + self.base_url + href, "err")
+                        else:
+                            article = tree.xpath('//article')
+                            if article:
+                                # Extraktion der Meta-Daten
+                                court = tree.xpath('//section[@class="wkde-bibliography"]//dt[text()="Gericht"]/following-sibling::dd[1]/text()')
+                                date = tree.xpath('//section[@class="wkde-bibliography"]//dt[text()="Datum"]/following-sibling::dd[1]/text()')
+                                az = tree.xpath('//section[@class="wkde-bibliography"]//dt[text()="Aktenzeichen"]/following-sibling::dd[1]/text()')
+                
+                                yield {
+                                    "postprocess": self.postprocess,
+                                    "wait": self.wait,
+                                    # Veränderte Reihenfolge: Meta-Informationen werden aus Dokument extrahiert
+                                    "court": court,
+                                    "date": date,
+                                    "az": az.rstrip(),
+                                    "link": self.base_url + href
+                                }
                 
         # Button für nächste Seite
         next_page = response.xpath("//a[@class='wk-pagination-link' and @title='Zur nächsten Seite']/@aria-disabled").get()

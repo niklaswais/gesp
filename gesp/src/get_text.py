@@ -141,7 +141,6 @@ def mv(item, headers, cookies): # spider.headers, spider.cookies
 
 def ni(item):
     if (item["wait"] == True): timelib.sleep(1.75)
-    # Entscheidungstext bereinigen (kein Menü etc.)
     try:
         txt = requests.get(item["link"]).text
     except:
@@ -152,21 +151,13 @@ def ni(item):
         except:
             output("could not parse " + item["link"], "err")
         else:
-
             article = tree.xpath('//article')
             if article:
-                # Extraktion der Meta-Daten
-                item["court"] = tree.xpath('//section[@class="wkde-bibliography"]//dt[text()="Gericht"]/following-sibling::dd[1]/text()')
-                item["date"] = tree.xpath('//section[@class="wkde-bibliography"]//dt[text()="Datum"]/following-sibling::dd[1]/text()')
-                item["az"] = tree.xpath('//section[@class="wkde-bibliography"]//dt[text()="Aktenzeichen"]/following-sibling::dd[1]/text()')
-
                 # Abspeichern des Texts
                 body = html.tostring(tree.xpath('//article')[0]).decode("utf-8")
                 doc = "<html><head><title>%s - %s - %s</title></head><body>%s</body></html>" % (item["court"], item["date"], item["az"], body)
                 item["text"] = doc
                 item["filetype"] = "html"
-
-                print(item["court"], item["date"], item["az"])
                 return item
         
 def nw(item):
