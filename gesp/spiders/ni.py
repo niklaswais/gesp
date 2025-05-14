@@ -69,7 +69,6 @@ class SpdrNI(scrapy.Spider):
             yield scrapy.Request(url=url, meta={'cookiejar': i}, dont_filter=True, callback=self.parse)
 
     def parse(self, response):
-     
         view_content = response.xpath('//ul[@class="view-content"]')
         if view_content:
             items = view_content[0].xpath('./li[@class="views-row"]')
@@ -82,7 +81,7 @@ class SpdrNI(scrapy.Spider):
                     try:
                         txt = requests.get(self.base_url + href).text
                     except:
-                        output("could not retrieve " + self.base_url + href, "err")
+                        output("could not retrieve X " + self.base_url + href, "err")
                     else:
                         try:
                             tree = html.fromstring(txt)
@@ -99,7 +98,6 @@ class SpdrNI(scrapy.Spider):
                                 yield {
                                     "postprocess": self.postprocess,
                                     "wait": self.wait,
-                                    # Veränderte Reihenfolge: Meta-Informationen werden aus Dokument extrahiert
                                     "court": court,
                                     "date": date,
                                     "az": az.rstrip(),
