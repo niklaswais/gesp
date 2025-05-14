@@ -95,9 +95,9 @@ class SpdrNI(scrapy.Spider):
                             article = tree.xpath('//article')
                             if article:
                                 # Extraktion der Meta-Daten
-                                court = tree.xpath('//section[@class="wkde-bibliography"]//dt[text()="Gericht"]/following-sibling::dd[1]/text()')
-                                date = tree.xpath('//section[@class="wkde-bibliography"]//dt[text()="Datum"]/following-sibling::dd[1]/text()')
-                                az = tree.xpath('//section[@class="wkde-bibliography"]//dt[text()="Aktenzeichen"]/following-sibling::dd[1]/text()')
+                                court = tree.xpath('//section[@class="wkde-bibliography"]//dt[text()="Gericht"]/following-sibling::dd[1]/text()')[0]
+                                date = tree.xpath('//section[@class="wkde-bibliography"]//dt[text()="Datum"]/following-sibling::dd[1]/text()')[0]
+                                az = tree.xpath('//section[@class="wkde-bibliography"]//dt[text()="Aktenzeichen"]/following-sibling::dd[1]/text()')[0]
                 
                                 yield {
                                     "postprocess": self.postprocess,
