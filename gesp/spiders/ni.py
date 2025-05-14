@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import scrapy
 import urllib.parse
+from ..src import config
 from ..src.output import output
 from ..pipelines.formatters import AZsPipeline, DatesPipeline, CourtsPipeline
 from ..pipelines.texts import TextsPipeline
@@ -33,6 +34,7 @@ class SpdrNI(scrapy.Spider):
         self.postprocess = postprocess
         self.wait = wait
         self.base_url = "https://voris.wolterskluwer-online.de"
+        self.headers = config.ni_headers
         super().__init__(**kwargs)
 
     async def start(self):
@@ -79,7 +81,7 @@ class SpdrNI(scrapy.Spider):
                 if href:
                     # Extrahieren der Meta-Informationen via Seiten-Aufruf
                     try:
-                        txt = requests.get(self.base_url + href).text
+                        txt = requests.get(self.base_url + href, headers=self.headers).text
                     except:
                         output("could not retrieve X " + self.base_url + href, "err")
                     else:

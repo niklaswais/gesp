@@ -87,6 +87,8 @@ mv_cookies = {
 }
 mv_body = '{"clientID":"bsmv","clientVersion":"bsmv - V06_07_00 - 23.06.2022 11:20","r3ID":"%sT%sZ"}'
 
+ni_headers = { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0 Safari/537.36" }
+
 rp_headers = json_headers_base | {
     "Origin": "https://www.landesrecht.rlp.de",
     "Referer": "https://www.landesrecht.rlp.de/bsrp/search",
