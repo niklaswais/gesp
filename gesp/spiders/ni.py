@@ -3,6 +3,7 @@ import scrapy
 import requests
 import urllib.parse
 from lxml import html
+import time as timelib
 from ..src import config
 from ..src.output import output
 from ..pipelines.formatters import AZsPipeline, DatesPipeline, CourtsPipeline
@@ -82,6 +83,7 @@ class SpdrNI(scrapy.Spider):
                 href = item.xpath('.//h3/a/@href').get()
                 if href:
                     # Extrahieren der Meta-Informationen via Seiten-Aufruf
+                    if (self.wait == True): timelib.sleep(1.75)
                     try:
                         txt = requests.get(self.base_url + href, headers=self.headers).text
                     except:
@@ -105,7 +107,9 @@ class SpdrNI(scrapy.Spider):
                                     "court": court,
                                     "date": date,
                                     "az": az.rstrip(),
-                                    "link": self.base_url + href
+                                    "link": self.base_url + href,
+                                    "docId": href.split("/browse/document/")[1]
+                                    "tree": tree, # wenn ohnehin schon verarbeitet...
                                 }
                 
         # Button für nächste Seite

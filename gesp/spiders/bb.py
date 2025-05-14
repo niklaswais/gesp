@@ -78,7 +78,8 @@ class SpdrBB(scrapy.Spider):
         if response.xpath("//a[@aria-label='Weiter']"):
             yield response.follow(response.xpath("//a[@aria-label='Weiter']/@href").get(), callback=self.parse)
         for result in response.xpath("//table[@id='resultlist']/tbody/tr"):
-            link = self.base_url + result.xpath(".//a/@href").get()
+            docid = result.xpath(".//a/@href").get()
+            link = self.base_url + docid
             # Herausfinden des AZ...
             tree = html.fromstring(requests.get(link).text)
             az = tree.xpath("//div[@id='metadata']/div/table/tbody/tr[2]/td[1]/text()")[0]
@@ -89,5 +90,6 @@ class SpdrBB(scrapy.Spider):
                     "date": result.xpath(".//td[3]/text()").get(),
                     "link": link,
                     "az": az,
+                    "docId": docid,
                     "tree": tree # Wenn ohnehin schon verarbeitet...
             }

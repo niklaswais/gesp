@@ -140,25 +140,18 @@ def mv(item, headers, cookies): # spider.headers, spider.cookies
         return item
 
 def ni(item):
-    if (item["wait"] == True): timelib.sleep(1.75)
-    try:
-        txt = requests.get(item["link"]).text
-    except:
-        output("could not retrieve " + item["link"], "err")
+    if not "tree" in item:
+        output("could not retrieve tree from " + item["link"], "err")
     else:
-        try:
-            tree = html.fromstring(txt)
-        except:
-            output("could not parse " + item["link"], "err")
-        else:
-            article = tree.xpath('//article')
-            if article:
-                # Abspeichern des Texts
-                body = html.tostring(tree.xpath('//article')[0]).decode("utf-8")
-                doc = "<html><head><title>%s - %s - %s</title></head><body>%s</body></html>" % (item["court"], item["date"], item["az"], body)
-                item["text"] = doc
-                item["filetype"] = "html"
-                return item
+        tree = item["tree"]
+        article = tree.xpath('//article')
+        if article:
+            # Abspeichern des Texts
+            body = html.tostring(tree.xpath('//article')[0]).decode("utf-8")
+            doc = "<html><head><title>%s - %s - %s</title></head><body>%s</body></html>" % (item["court"], item["date"], item["az"], body)
+            item["text"] = doc
+            item["filetype"] = "html"
+            return item
         
 def nw(item):
     if (item["wait"] == True): timelib.sleep(0.25)
