@@ -62,7 +62,7 @@ class SpdrBW(scrapy.Spider):
         date = str(datetime.date.today())
         time = str(datetime.datetime.now(datetime.timezone.utc).time())[0:-3]
         body = '{"searchTasks":{"RESULT_LIST":{"start":1,"size":25,"sort":"date","addToHistory":true,"addCategory":true},"RESULT_LIST_CACHE":{"start":25,"size":27},"FAST_ACCESS":{},"SEARCH_WORD_HITS":{}},"filters":{"CATEGORY":["Rechtsprechung"]},"searches":[],"clientID":"bsbw","clientVersion":"bsbw - V08_18_00 - 24.04.2025 11:53","r3ID":"%sT%sZ"}' % (date, time)
-        yield scrapy.Request(url=url, method="POST", headers=self.headers, body=body, cookies=self.cookies, meta={"batch": 26}, dont_filter=True, callback=self.parse_nextpage)
+        yield scrapy.Request(url=url, method="POST", headers=self.headers, body=body, cookies=self.cookies, meta={"batch": 25}, dont_filter=True, callback=self.parse_nextpage)
 
     def parse_nextpage(self, response):
         results = json.loads(response.body)
@@ -73,10 +73,10 @@ class SpdrBW(scrapy.Spider):
             date = str(datetime.date.today())
             time = str(datetime.datetime.now(datetime.timezone.utc).time())[0:-3]
             batch = response.meta["batch"]
-            body =  '{"searchTasks":{"RESULT_LIST":{"start":%s,"size":25,"sort":"date","addToHistory":true,"addCategory":true},"RESULT_LIST_CACHE":{"start":%s,"size":27},"FAST_ACCESS":{}},"filters":{"CATEGORY":["Rechtsprechung"]},"searches":[],"clientID":"bsbw","clientVersion":"bsbw - V08_18_00 - 24.04.2025 11:53","r3ID":"%sT%sZ"}' % (batch, batch + 25, date, time)
+            body = '{"searchTasks":{"RESULT_LIST":{"start":%s,"size":27,"sort":"date","addToHistory":true,"addCategory":true},"RESULT_LIST_CACHE":{"start":%s,"size":27},"FAST_ACCESS":{}},"filters":{"CATEGORY":["Rechtsprechung"]},"searches":[],"clientID":"bsbw","clientVersion":"bsbw - V08_18_00 - 24.04.2025 11:53","r3ID":"%sT%sZ"}' % (batch, batch + 25, date, time)
             batch += 25
             yield scrapy.Request(url=url, method="POST", headers=self.headers, body=body, cookies=self.cookies, meta={"batch": batch}, dont_filter=True, callback=self.parse_nextpage)
-    
+
     def extract_data(self, response):
         results = json.loads(response.body)
         if "resultList" in results:
