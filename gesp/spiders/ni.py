@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import scrapy
+import requests
 import urllib.parse
+from lxml import html
 from ..src import config
 from ..src.output import output
 from ..pipelines.formatters import AZsPipeline, DatesPipeline, CourtsPipeline
