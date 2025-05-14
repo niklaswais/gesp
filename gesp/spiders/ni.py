@@ -108,7 +108,7 @@ class SpdrNI(scrapy.Spider):
                                     "date": date,
                                     "az": az.rstrip(),
                                     "link": self.base_url + href,
-                                    "docId": href.split("/browse/document/")[1]
+                                    "docId": href.split("/browse/document/")[1],
                                     "tree": tree, # wenn ohnehin schon verarbeitet...
                                 }
                 
