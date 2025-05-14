@@ -71,7 +71,7 @@ class SpdrNI(scrapy.Spider):
     def parse(self, response):
        
         #  Extract Text
-        view_content = tree.xpath('//ul[@class="view-content"]')
+        view_content = response.xpath('//ul[@class="view-content"]')
         if view_content:
             items = view_content[0].xpath('./li[@class="views-row"]')
             results = []
