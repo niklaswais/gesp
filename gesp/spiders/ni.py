@@ -71,10 +71,10 @@ class SpdrNI(scrapy.Spider):
     def parse(self, response):
        
         #  Extract Text
-        if view_content == tree.xpath('//ul[@class="view-content"]')
+        if view_content == tree.xpath('//ul[@class="view-content"]'):
             items = view_content[0].xpath('./li[@class="views-row"]')
             results = []
-            for item in items:c
+            for item in items:
                 # Extrahieren des Links
                 link_elem = item.xpath('.//h3/a')
                 if link_elem:
