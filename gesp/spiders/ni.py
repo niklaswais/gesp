@@ -83,7 +83,7 @@ class SpdrNI(scrapy.Spider):
                     try:
                         txt = requests.get(self.base_url + href, headers=self.headers).text
                     except:
-                        output("could not retrieve X " + self.base_url + href, "err")
+                        output(f"could not retrieve {self.base_url + href}: {str(e)}", "err")
                     else:
                         try:
                             tree = html.fromstring(txt)
