@@ -114,7 +114,7 @@ class SpdrNI(scrapy.Spider):
                 
         # Button für nächste Seite
         next_page = response.xpath("//a[@class='wk-pagination-link' and @title='Zur nächsten Seite']/@aria-disabled").get()
-        if next_page and next_page != "true":
+        if not next_page or next_page != "true":
             href = response.xpath("//a[@class='wk-pagination-link' and @title='Zur nächsten Seite']/@href").get()
             if href:
                 yield response.follow(self.base_url + href, dont_filter=True, meta={'cookiejar': response.meta['cookiejar']}, callback=self.parse)
