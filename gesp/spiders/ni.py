@@ -77,9 +77,8 @@ class SpdrNI(scrapy.Spider):
             results = []
             for item in items:
                 # Extrahieren des Links
-                link_elem = item.xpath('.//h3/a')
+                link_elem = item.xpath('.//h3/a/@href').get()
                 if link_elem:
-                    href = link_elem[0].get('href')
                     yield {
                         "postprocess": self.postprocess,
                         "wait": self.wait,
