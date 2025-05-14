@@ -166,6 +166,7 @@ def ni(item):
                 item["text"] = doc
                 item["filetype"] = "html"
 
+                print(item["court"], item["date"], item["az"])
                 return item
         
 def nw(item):

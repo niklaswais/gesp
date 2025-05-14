@@ -69,7 +69,6 @@ class SpdrNI(scrapy.Spider):
             yield scrapy.Request(url=url, meta={'cookiejar': i}, dont_filter=True, callback=self.parse)
 
     def parse(self, response):
-       
         #  Extract Text
         view_content = response.xpath('//ul[@class="view-content"]')
         if view_content:
@@ -79,6 +78,9 @@ class SpdrNI(scrapy.Spider):
                 # Extrahieren des Links
                 href = item.xpath('.//h3/a/@href').get()
                 if href:
+                    court = item.xpath('.//div[@class="court-info"]/text()').get()
+                    date = item.xpath('.//div[@class="date-info"]/text()').get()
+                    az = item.xpath('.//div[@class="az-info"]/text()').get()
                     yield {
                         "postprocess": self.postprocess,
                         "wait": self.wait,
@@ -90,8 +92,8 @@ class SpdrNI(scrapy.Spider):
                     }
                 
         # Button für nächste Seite
-        next_page = response.xpath("//a[@class='wk-pagination-link' and @title='Zur nächsten Seite']")
-        if next_page and next_page[0].get("aria-disabled") != "true":
-            href = next_page[0].get("href")
+        next_page = response.xpath("//a[@class='wk-pagination-link' and @title='Zur nächsten Seite']/@aria-disabled").get()
+        if next_page and next_page != "true":
+            href = response.xpath("//a[@class='wk-pagination-link' and @title='Zur nächsten Seite']/@href").get()
             if href:
                 yield response.follow(self.base_url + href, dont_filter=True, meta={'cookiejar': response.meta['cookiejar']}, callback=self.parse)
