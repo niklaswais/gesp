@@ -86,7 +86,7 @@ class SpdrNI(scrapy.Spider):
                     if (self.wait == True): timelib.sleep(1.75)
                     try:
                         txt = requests.get(self.base_url + href, headers=self.headers).text
-                    except:
+                    except Exception as e:
                         output(f"could not retrieve {self.base_url + href}: {str(e)}", "err")
                     else:
                         try:
