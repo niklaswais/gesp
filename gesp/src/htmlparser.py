@@ -62,9 +62,7 @@ class DecisionHTMLParser(HTMLParser):
     NRWneu = False
 
     ## Niedersachsen und Hamburg
-    bssmall = False
     inTitle = False
-    bssmallNumber = 0
     inBody = False
 
     ## Rheinland-Pfalz
@@ -109,7 +107,6 @@ class DecisionHTMLParser(HTMLParser):
         self.start_tag = tag
         self.vorherigerFeldbezeichnungsModus = self.feldbezeichnungsModus
         self.feldbezeichnungsModus = ("class", "feldbezeichnung") in attrs
-        self.bssmall = ("class", "bssmall") in attrs
         self.inTitle = ("class", "title") in attrs or ("class", "intro") in attrs
 
         if tag == "a":
@@ -336,32 +333,7 @@ class DecisionHTMLParser(HTMLParser):
                     self.text += "\n" + data
         elif self.mode in ("ni"):
             if tag == "p":
-                if self.bssmall:
-                    self.bssmallNumber += 1
-
-                    if self.bssmallNumber == 1:
-                        splitted = data.split(",")
-                        ## Gerichtsname
-                        self.trenne_gericht_und_kammer(splitted[0])
-                        ## Datum und Urteilstyp
-                        self.dokumenttyp = splitted[1].split("vom", 1)[0].strip()
-                        datumsstring = splitted[1].split("vom", 1)[1].strip()
-                        if len(datumsstring) > 10:
-                            datumsstring = datumsstring[-10:]
-                        self.entscheidungsdatum = datetime.strptime(datumsstring, "%d.%m.%Y")
-
-                        self.aktenzeichen = splitted[2].strip()
-                        if "#" in self.aktenzeichen:
-                            self.aktenzeichen = self.aktenzeichen.split("#")[-1]
-
-                        for i in range(3, len(splitted)):
-                            if "ECLI" in splitted[i]:
-                                self.ecli = splitted[i].strip()
-                            else:
-                                if len(self.normen) > 0:
-                                    self.normen += ", "
-                                self.normen += splitted[i].strip()
-                elif not self.inTitle:  ## nicht bssmall
+                if not self.inTitle:
                     if data.isspace():
                         return
                     self.text += data + "\n"
@@ -943,7 +915,42 @@ class DecisionHTMLParser(HTMLParser):
 
         self.endeDerEntscheidung = False
 
-        self.bssmallNumber = 0
+
+def _populate_ni_metadata_from_tree(parser, tree):
+    # voris.wolterskluwer-online.de replaced the legacy bssmall block with a
+    # wkde-bibliography <dl>. CourtsPipeline has already slugified item["court"]
+    # by the time the parser runs, so we re-derive the original court name from
+    # the parsed tree the spider attached to the item.
+    section = tree.xpath('//section[@class="wkde-bibliography"]')
+    if not section:
+        return
+
+    def _read(label):
+        nodes = section[0].xpath(
+            f'.//dt[normalize-space(text())="{label}"]/following-sibling::dd[1]'
+        )
+        if not nodes:
+            return ""
+        return nodes[0].text_content().replace("\xa0", " ").strip()
+
+    court = _read("Gericht")
+    if court:
+        parser.trenne_gericht_und_kammer(court)
+
+    date = _read("Datum")
+    if date:
+        try:
+            parser.entscheidungsdatum = datetime.strptime(date, "%d.%m.%Y")
+        except ValueError:
+            pass
+
+    az = _read("Aktenzeichen")
+    if az:
+        parser.aktenzeichen = az
+
+    dokumenttyp = _read("Entscheidungsform")
+    if dokumenttyp:
+        parser.dokumenttyp = dokumenttyp
 
 
 def parse_data_from_html(item, spider_name, spider_path):
@@ -951,7 +958,11 @@ def parse_data_from_html(item, spider_name, spider_path):
     parser = DecisionHTMLParser()
 
     parser.mode = spider_name
-    if parser.mode in ("bund", "nw", "ni", "hh", "rp", "sh", "bb"):
+    if parser.mode == "by":
+        # gesetze-bayern.de ships UTF-8 XML with a BOM; utf-8-sig strips it
+        # and decodes identically when no BOM is present.
+        codec = "utf-8-sig"
+    elif parser.mode in ("bund", "nw", "ni", "hh", "rp", "sh", "bb"):
         codec = "utf-8"
     else:
         codec = "iso-8859-1"
@@ -988,6 +999,10 @@ def parse_data_from_html(item, spider_name, spider_path):
     else:
         try:
             parser.feed(text)
+            if parser.mode == "ni":
+                tree = item.get("tree")
+                if tree is not None:
+                    _populate_ni_metadata_from_tree(parser, tree)
             parser.complete_attributes()
 
             parser.save_to_file()
