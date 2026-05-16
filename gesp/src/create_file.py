@@ -6,7 +6,15 @@ from zipfile import ZipFile
 import requests
 from requests.exceptions import RequestException
 
+from .filenames import safe_filename_part
 from .output import output
+
+
+def _item_filename(item, extension, store_docId=False):
+    parts = [safe_filename_part(item["court"]), safe_filename_part(item["date"]), safe_filename_part(item["az"])]
+    if store_docId and item.get("docId"):
+        parts.append(safe_filename_part(item["docId"]))
+    return "_".join(parts) + "." + safe_filename_part(str(extension).lstrip("."))
 
 
 def info(item):
@@ -29,10 +37,7 @@ def save_as_html(item, spider_name, spider_path, store_docId):  # spider.name, s
     if spider_name == "by":
         is_zip_xml = True
     if is_zip_xml:  # Sonderfall Bund und Bayern: *.zip mit *.xml
-        filename = item["court"] + "_" + item["date"] + "_" + item["az"]
-        if store_docId and item.get("docId"):
-            filename += "_" + item["docId"]
-        filename += ".xml"
+        filename = _item_filename(item, "xml", store_docId)
 
         retries = 3  # Anzahl der Versuche
         for attempt in range(retries):
@@ -45,7 +50,7 @@ def save_as_html(item, spider_name, spider_path, store_docId):  # spider.name, s
                             original_path = os.path.join(spider_path, spider_name, zipinfo.filename)
                             target_path = os.path.join(spider_path, spider_name, filename)
                             zip_ref.extract(zipinfo, os.path.join(spider_path, spider_name))
-                            os.rename(original_path, target_path)
+                            os.replace(original_path, target_path)
                             # bayportalrsp
                             item["xmlfilename"] = target_path
                             return item
@@ -57,12 +62,12 @@ def save_as_html(item, spider_name, spider_path, store_docId):  # spider.name, s
                     time.sleep(2)  # Warte 2 Sekunden vor dem nächsten Versuch
                 else:
                     output(f"could not create file {filename}: {e}", "err")
+            except OSError as e:
+                output(f"could not create file {filename}: {e}", "err")
+                break
     else:
         if "text" in item and "court" in item and "date" in item and "az" in item and "filetype" in item:
-            filename = item["court"] + "_" + item["date"] + "_" + item["az"]
-            if store_docId and item.get("docId"):
-                filename += "_" + item["docId"]
-            filename += "." + item["filetype"]
+            filename = _item_filename(item, item["filetype"], store_docId)
             filepath = os.path.join(spider_path, spider_name, filename)
             enc = "utf-8" if spider_name != "by" else "ascii"
             try:
@@ -73,10 +78,7 @@ def save_as_html(item, spider_name, spider_path, store_docId):  # spider.name, s
             else:
                 return item
         elif "link" in item:
-            filename = item["court"] + "_" + item["date"] + "_" + item["az"]
-            if store_docId and item.get("docId"):
-                filename += "_" + item["docId"]
-            filename += ".html"
+            filename = _item_filename(item, "html", store_docId)
             filepath = os.path.join(spider_path, spider_name, filename)
             enc = "utf-8"
             try:
@@ -102,11 +104,10 @@ def save_as_pdf(item, spider_name, spider_path):  # spider.name, spider.path
     elif "body" in item:  # Sachsen (AG/LG/OLG)
         content = item["body"]
     if content and "court" in item and "date" in item and "az" in item:
-        basename = item["court"] + "_" + item["date"] + "_" + item["az"]
-        if item["link"].endswith(".docx"):
-            filename = basename + ".docx"
+        if item.get("link", "").endswith(".docx"):
+            filename = _item_filename(item, "docx")
         else:
-            filename = basename + ".pdf"
+            filename = _item_filename(item, "pdf")
         filepath = os.path.join(spider_path, spider_name, filename)
         try:
             with open(filepath, "wb") as f:

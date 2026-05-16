@@ -7,6 +7,7 @@ from datetime import datetime
 from html.parser import HTMLParser
 from importlib.resources import files
 
+from .filenames import safe_filename
 from .output import output
 
 blanko = (
@@ -21,6 +22,10 @@ date_pattern = (
     r"\d\d\.\d\d\.\d\d\d\d|\d\.\d\d\.\d\d\d\d|\d\.\d\.\d\d\d\d|\d\d\.\d\.\d\d\d\d|\d\d\. "
     r"(?:Januar|Februar|März|April|Mai|Juni|Juli|August|September|Oktober|November|Dezember) \d\d\d\d"
 )
+
+
+def _format_ddmm_unpadded_year(value):
+    return f"{value.day:02d}{value.month:02d}{value.year % 100}"
 
 
 class DecisionHTMLParser(HTMLParser):
@@ -523,7 +528,7 @@ class DecisionHTMLParser(HTMLParser):
         if not os.path.exists(gerichts_path):
             return False
 
-        file_name = self.ecli + ".txt"
+        file_name = safe_filename(self.ecli + ".txt")
         file_path = os.path.join(gerichts_path, file_name)
 
         if os.path.exists(file_path):
@@ -567,7 +572,7 @@ class DecisionHTMLParser(HTMLParser):
         if not os.path.exists(gerichts_path):
             os.makedirs(gerichts_path)
 
-        file_name = self.ecli + ".txt"
+        file_name = safe_filename(self.ecli + ".txt")
         file_path = os.path.join(gerichts_path, file_name)
 
         if os.path.exists(file_path):
@@ -730,7 +735,7 @@ class DecisionHTMLParser(HTMLParser):
                 if self.ecli_codes[self.gericht] == "BFH":
                     self.ecli += typcode + "."
 
-                self.ecli += self.entscheidungsdatum.strftime("%d%m%-y")
+                self.ecli += _format_ddmm_unpadded_year(self.entscheidungsdatum)
                 if self.ecli_codes[self.gericht] in ("BAG", "BFH"):
                     self.ecli += "."
 
