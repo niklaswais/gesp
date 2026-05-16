@@ -81,7 +81,7 @@ def save_as_html(item, spider_name, spider_path, store_docId):  # spider.name, s
             enc = "utf-8"
             try:
                 with open(filepath, "w", encoding=enc) as f:
-                    f.write(requests.get(item["link"]).content.decode(enc))
+                    f.write(requests.get(item["link"], timeout=30).content.decode(enc))
             except (OSError, RequestException):
                 output(f"could not create file {filepath}", "err")
         else:
@@ -96,7 +96,7 @@ def save_as_pdf(item, spider_name, spider_path):  # spider.name, spider.path
     content = ""
     if "link" in item and "body" not in item:  # Bremen / Sachsen (OVG)
         try:
-            content = requests.get(url=item["link"]).content
+            content = requests.get(url=item["link"], timeout=30).content
         except RequestException:
             output("could not retrieve " + item["link"], "err")
     elif "body" in item:  # Sachsen (AG/LG/OLG)

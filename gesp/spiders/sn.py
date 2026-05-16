@@ -25,7 +25,6 @@ class SpdrSN(scrapy.Spider):
             FingerprintExportPipeline: 500,
             RawExporter: 900,
         },
-        "AUTOTHROTTLE_ENABLED": True,
     }
 
     def __init__(
@@ -134,13 +133,14 @@ class SpdrSN(scrapy.Spider):
                     callback=self.parse_results,
                 )
         if not self.courts or "olg" in self.courts:
-            body = f"__EVENTTARGET=&__EVENTARGUMENT=&__VIEWSTATE={viewstate}&__VIEWSTATEGENERATOR={viewstategen}&__SCROLLPOSITIONX=0&__SCROLLPOSITIONY=0&DV1_C24=Suchen&DV1_C33=Oberlandesgericht+Dresden&DV1_C34=&DV1_C35=&DV1_C36=&DV1_C37=&DV1_C38=1012&DV1_C39=1012&DV13_C8=&BOX_RETURN_VALUE=-1"
+            olg_dresden_nr = 1012
+            body = f"__EVENTTARGET=&__EVENTARGUMENT=&__VIEWSTATE={viewstate}&__VIEWSTATEGENERATOR={viewstategen}&__SCROLLPOSITIONX=0&__SCROLLPOSITIONY=0&DV1_C24=Suchen&DV1_C33=Oberlandesgericht+Dresden&DV1_C34=&DV1_C35=&DV1_C36=&DV1_C37=&DV1_C38={olg_dresden_nr}&DV1_C39={olg_dresden_nr}&DV13_C8=&BOX_RETURN_VALUE=-1"
             yield scrapy.Request(
                 url=url,
                 method="POST",
                 headers=headers,
                 body=body,
-                meta={"cookiejar": nr},
+                meta={"cookiejar": olg_dresden_nr},
                 dont_filter=True,
                 callback=self.parse_results,
             )
@@ -160,7 +160,7 @@ class SpdrSN(scrapy.Spider):
                 body = f"__EVENTTARGET=&__EVENTARGUMENT=&__VIEWSTATE={viewstate}&__VIEWSTATEGENERATOR={viewstategen}&__SCROLLPOSITIONX=0&__SCROLLPOSITIONY=0&DV1_C44=&DV1_C45={dv1_c45}&DV1_C46=&DV1_C47=&DV1_C48=&DV13_C16={dv13_c16}&{dv13_name}={dv13_value}&BOX_RETURN_VALUE=-1"
                 url = "https://www.justiz.sachsen.de/esamosplus/pages/treffer.aspx"
                 headers = self.headers
-                headers["Referer"] = "Referer: https://www.justiz.sachsen.de/esamosplus/pages/suchen.aspx"
+                headers["Referer"] = "https://www.justiz.sachsen.de/esamosplus/pages/suchen.aspx"
                 item = {
                     "wait": self.wait,
                     "date": tr.xpath(".//td[2]/div/input/@value").get(),
@@ -188,7 +188,7 @@ class SpdrSN(scrapy.Spider):
             headers["Referer"] = "https://www.justiz.sachsen.de/esamosplus/pages/suchen.aspx"
             if response.xpath("//input[@id='DV13_C16']"):
                 dv13c16_value = urllib.parse.quote_plus(response.xpath("//input[@id='DV13_C16']/@value").get())
-                body = f"__EVENTTARGET=&__EVENTARGUMENT=&__VIEWSTATE={viewstate}&__VIEWSTATEGENERATOR{viewstategen}&__SCROLLPOSITIONX=0&__SCROLLPOSITIONY=0&DV1_C44=&DV1_C45=Oberlandesgericht+Dresden&DV1_C46=&DV1_C47=&DV1_C48=&DV13_C16={dv13c16_value}&ctl21=Vorw%C3%A4rts&BOX_RETURN_VALUE=-1"
+                body = f"__EVENTTARGET=&__EVENTARGUMENT=&__VIEWSTATE={viewstate}&__VIEWSTATEGENERATOR={viewstategen}&__SCROLLPOSITIONX=0&__SCROLLPOSITIONY=0&DV1_C44=&DV1_C45=Oberlandesgericht+Dresden&DV1_C46=&DV1_C47=&DV1_C48=&DV13_C16={dv13c16_value}&ctl21=Vorw%C3%A4rts&BOX_RETURN_VALUE=-1"
                 yield scrapy.Request(
                     url=url,
                     method="POST",
@@ -233,7 +233,7 @@ class SpdrSN(scrapy.Spider):
             tmp_link = "https://www.justiz.sachsen.de/ovgentschweb/document.phtml?id=" + tmp_link[0]
             data = table.xpath(".//td[2]/a/text()").get()[15:]
             try:  # Zwischengeschaltete Seite, von der aus erst der Filelink kopiert werden muss
-                tree = html.fromstring(requests.get(tmp_link).text)
+                tree = html.fromstring(requests.get(tmp_link, timeout=30).text)
             except:
                 output("could not retrieve " + tmp_link, "err")
             else:

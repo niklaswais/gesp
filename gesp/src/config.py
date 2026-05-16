@@ -1,4 +1,4 @@
-__version__ = "0.1"
+__version__ = "0.2.1"
 __author__ = "Niklas Wais"
 __licence__ = "MIT"
 
@@ -109,12 +109,12 @@ rp_cookies = {"r3autologin": '"bsrp"'}
 rp_body = '{"clientID":"bsrp","clientVersion":"bsrp - V06_07_00 - 23.06.2022 11:20","r3ID":"%sT%sZ"}'
 
 sh_headers = json_headers_base | {
-    "Origin": "www.gesetze-rechtsprechung.sh.juris.de",
-    "Referer": "www.gesetze-rechtsprechung.sh.juris.de/bssh/search",
+    "Origin": "https://www.gesetze-rechtsprechung.sh.juris.de",
+    "Referer": "https://www.gesetze-rechtsprechung.sh.juris.de/bssh/search",
     "juris-portalid": "bssh",
 }
 sh_cookies = {"r3autologin": '"bssh"'}
-sh_body = '{"clientID":"bssl","clientVersion":"bssh - V06_07_00 - 23.06.2022 11:20","r3ID":"%sT%sZ"}'
+sh_body = '{"clientID":"bssh","clientVersion":"bssh - V06_07_00 - 23.06.2022 11:20","r3ID":"%sT%sZ"}'
 
 sl_headers = json_headers_base | {
     "Origin": "https://recht.saarland.de",

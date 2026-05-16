@@ -101,9 +101,10 @@ class SpdrNI(scrapy.Spider):
                     if self.wait == True:
                         timelib.sleep(1.75)
                     try:
-                        txt = requests.get(self.base_url + href, headers=self.headers).text
-                    except:
-                        output(f"could not retrieve {self.base_url + href}: {str(e)}", "err")
+                        txt = requests.get(self.base_url + href, headers=self.headers, timeout=30).text
+                    except Exception as e:
+                        output(f"could not retrieve {self.base_url + href}: {e}", "err")
+                        continue
                     else:
                         try:
                             tree = html.fromstring(txt)

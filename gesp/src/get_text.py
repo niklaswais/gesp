@@ -11,7 +11,7 @@ from .output import output
 def bb(item):
     if "tree" not in item:
         try:
-            txt = requests.get(item["link"]).text
+            txt = requests.get(item["link"], timeout=30).text
             if item["wait"] == True:
                 timelib.sleep(1.5)
         except:
@@ -48,7 +48,7 @@ def be(item, headers, cookies):  # spider.headers, spider.cookies
     if item["wait"] == True:
         timelib.sleep(1.5)
     try:
-        req = requests.post(url=url, cookies=cookies, headers=headers, data=body)
+        req = requests.post(url=url, cookies=cookies, headers=headers, data=body, timeout=30)
     except:
         output("could not retrieve " + item["link"], "err")
     else:
@@ -74,7 +74,7 @@ def bw(item, headers, cookies):  # spider.headers, spider.cookies
     if item["wait"] == True:
         timelib.sleep(1.75)
     try:
-        req = requests.post(url=url, cookies=cookies, headers=headers, data=body)
+        req = requests.post(url=url, cookies=cookies, headers=headers, data=body, timeout=30)
     except:
         output("could not retrieve " + item["link"], "err")
     else:
@@ -89,7 +89,7 @@ def bw(item, headers, cookies):  # spider.headers, spider.cookies
 
 def by(item):
     try:
-        txt = requests.get(item["link"], headers=config.HEADERS).text
+        txt = requests.get(item["link"], headers=config.HEADERS, timeout=30).text
     except:
         output("could not retrieve " + item["link"], "err")
     else:
@@ -118,7 +118,7 @@ def he(item, headers, cookies):  # spider.headers, spider.cookies
     if item["wait"] == True:
         timelib.sleep(1.75)
     try:
-        req = requests.post(url=url, cookies=cookies, headers=headers, data=body)
+        req = requests.post(url=url, cookies=cookies, headers=headers, data=body, timeout=30)
     except:
         output("could not retrieve " + item["link"], "err")
     else:
@@ -144,7 +144,7 @@ def hh(item, headers, cookies):  # spider.headers, spider.cookies
     if item["wait"] == True:
         timelib.sleep(1.75)
     try:
-        req = requests.post(url=url, cookies=cookies, headers=headers, data=body)
+        req = requests.post(url=url, cookies=cookies, headers=headers, data=body, timeout=30)
     except:
         output("could not retrieve " + item["link"], "err")
     else:
@@ -170,7 +170,7 @@ def mv(item, headers, cookies):  # spider.headers, spider.cookies
     if item["wait"] == True:
         timelib.sleep(1.75)
     try:
-        req = requests.post(url=url, cookies=cookies, headers=headers, data=body)
+        req = requests.post(url=url, cookies=cookies, headers=headers, data=body, timeout=30)
     except:
         output("could not retrieve " + item["link"], "err")
     else:
@@ -207,7 +207,7 @@ def nw(item):
     if item["wait"] == True:
         timelib.sleep(0.25)
     try:
-        item["text"] = requests.get(item["link"], headers=config.HEADERS).text
+        item["text"] = requests.get(item["link"], headers=config.HEADERS, timeout=30).text
     except:
         output("could not retrieve " + item["link"], "err")
     else:
@@ -227,13 +227,13 @@ def rp(item, headers, cookies):  # spider.headers, spider.cookies
     date = str(datetime.date.today())
     time = str(datetime.datetime.now(datetime.timezone.utc).time())[0:-3]
     body = (
-        '{"docId":"%s","format":"xsl","keyword":null,"docPart":"L","sourceParams":{"source":"TL","position":1,"sort":"date","category":"Rechtsprechung"},"searches":[],"clientID":"bshe","clientVersion":"bsrp - V06_07_00 - 23.06.2022 11:20","r3ID":"%sT%sZ"}'
+        '{"docId":"%s","format":"xsl","keyword":null,"docPart":"L","sourceParams":{"source":"TL","position":1,"sort":"date","category":"Rechtsprechung"},"searches":[],"clientID":"bsrp","clientVersion":"bsrp - V06_07_00 - 23.06.2022 11:20","r3ID":"%sT%sZ"}'
         % (item["docId"], date, time)
     )
     if item["wait"] == True:
         timelib.sleep(1.75)
     try:
-        req = requests.post(url=url, cookies=cookies, headers=headers, data=body)
+        req = requests.post(url=url, cookies=cookies, headers=headers, data=body, timeout=30)
     except:
         output("could not retrieve " + item["link"], "err")
     else:
@@ -259,7 +259,7 @@ def sh(item, headers, cookies):
     if item["wait"] == True:
         timelib.sleep(1.75)
     try:
-        req = requests.post(url=url, cookies=cookies, headers=headers, data=body)
+        req = requests.post(url=url, cookies=cookies, headers=headers, data=body, timeout=30)
     except:
         output("could not retrieve " + item["link"], "err")
     else:
@@ -285,7 +285,7 @@ def sl(item, headers, cookies):  # spider.headers, spider.cookies
     if item["wait"] == True:
         timelib.sleep(1.75)
     try:
-        req = requests.post(url=url, cookies=cookies, headers=headers, data=body)
+        req = requests.post(url=url, cookies=cookies, headers=headers, data=body, timeout=30)
     except:
         output("could not retrieve " + item["link"], "err")
     else:
@@ -301,11 +301,11 @@ def sl(item, headers, cookies):  # spider.headers, spider.cookies
 def sn(item, headers):  # spider.headers
     if "body" in item:  # AG/LG/OLG-Subportal
         url = "https://www.justiz.sachsen.de/esamosplus/pages/treffer.aspx"
-        headers["Referer"] = "Referer: https://www.justiz.sachsen.de/esamosplus/pages/suchen.aspx"
+        headers["Referer"] = "https://www.justiz.sachsen.de/esamosplus/pages/suchen.aspx"
         if item["wait"] == True:
             timelib.sleep(1)
         try:
-            item["req"] = requests.post(url=url, headers=headers, data=item["body"])
+            item["req"] = requests.post(url=url, headers=headers, data=item["body"], timeout=30)
         except:
             output("could not retrieve " + item["az"], "err")
         else:
@@ -315,7 +315,7 @@ def sn(item, headers):  # spider.headers
             timelib.sleep(1)
         try:
             # Zwischengeschaltete Seite, von der aus erst der Filelink kopiert werden muss
-            tree = html.fromstring(requests.get(item["link"]).text)
+            tree = html.fromstring(requests.get(item["link"], timeout=30).text)
         except:
             output("could not retrieve " + item["link"], "err")
         else:
@@ -336,7 +336,7 @@ def st(item, headers, cookies):
     if item["wait"] == True:
         timelib.sleep(1.75)
     try:
-        req = requests.post(url=url, cookies=cookies, headers=headers, data=body)
+        req = requests.post(url=url, cookies=cookies, headers=headers, data=body, timeout=30)
     except:
         output("could not retrieve " + item["link"], "err")
     else:
@@ -362,7 +362,7 @@ def th(item, headers, cookies):  # spider.headers, spider.cookies
     if item["wait"] == True:
         timelib.sleep(1.75)
     try:
-        req = requests.post(url=url, cookies=cookies, headers=headers, data=body)
+        req = requests.post(url=url, cookies=cookies, headers=headers, data=body, timeout=30)
     except:
         output("could not retrieve " + item["link"], "err")
     else:

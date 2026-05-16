@@ -56,3 +56,27 @@ def test_extractor_states_subset_of_state_spiders():
     """Any state in the fingerprint dispatch must have a registered spider."""
     dispatch_states = set(_JPORTAL_EXTRACTORS) | set(_SIMPLE_EXTRACTORS) | {"bund", "hb", "sn"}
     assert dispatch_states <= set(STATE_SPIDERS.keys())
+
+
+def test_sh_uses_jportal_dispatch():
+    """sh()'s signature is (item, headers, cookies) — it must be in the jportal
+    map. Calling _SIMPLE_EXTRACTORS[state](item) on a jportal extractor raises
+    TypeError at reconstruction time."""
+    assert "sh" in _JPORTAL_EXTRACTORS
+    assert "sh" not in _SIMPLE_EXTRACTORS
+
+
+def test_jportal_body_carries_its_own_client_id():
+    """Each *_body JSON must reference its own state's portal id, not a neighbour's.
+
+    Several past bugs were copy-paste survivors (e.g. sh_body with bssl, rp/mv
+    pagination bodies with bshe). The portal id convention is bs<state>, with
+    Hamburg as the one historical exception (bsha, not bshh).
+    """
+    overrides = {"hh": "bsha"}
+    for state in _JPORTAL_INIT:
+        expected = overrides.get(state, f"bs{state}")
+        body = getattr(config, f"{state}_body")
+        assert f'"clientID":"{expected}"' in body, (
+            f"{state}_body has wrong clientID — expected {expected!r}, body is {body!r}"
+        )

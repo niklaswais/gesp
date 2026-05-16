@@ -2,10 +2,13 @@ import datetime
 import re
 
 from ..src import config
+from ._base import CrawlerAware
 
 
 class AZsPipeline:
-    def process_item(self, item, spider):
+    # `spider` is accepted but ignored: pre-2.15 Scrapy passes it unconditionally,
+    # 2.15+ skips it because it's not a required parameter.
+    def process_item(self, item, spider=None):
         # Formattierunng der Aktenzeichen
         item["az"] = item["az"].strip()
         item["az"] = item["az"].replace("/", "-")
@@ -15,7 +18,7 @@ class AZsPipeline:
 
 
 class DatesPipeline:
-    def process_item(self, item, spider):
+    def process_item(self, item, spider=None):
         # Formattierung der Daten
         item["date"] = item["date"].strip()
         item["date"] = datetime.datetime.strptime(item["date"], "%d.%m.%Y").strftime("%Y%m%d")
@@ -23,7 +26,7 @@ class DatesPipeline:
         return item
 
 
-class CourtsPipeline:
+class CourtsPipeline(CrawlerAware):
     def __cut_at_nr(self, court):
         # Senate/Kammern abschneiden ("-|7.-senat")
         return re.split(r"([-]?\d+)", court)[0]
@@ -50,7 +53,8 @@ class CourtsPipeline:
                 court = court.replace(term, "")
         return court
 
-    def process_item(self, item, spider):
+    def process_item(self, item, spider=None):
+        spider = self._spider(spider)
         court = item["court"]
         if spider.name[7:] == "bund":
             court = court.lower()
@@ -144,7 +148,7 @@ class CourtsPipeline:
                 )
             if spider.name[7:] == "rp":
                 court = self.__remove_terms(court, ["-rheinland-pfalz"])
-                court = self.__remove_terms(
+                court = self.__replace_terms(
                     court,
                     {
                         "finanzgericht": "fg",
@@ -202,7 +206,7 @@ class CourtsPipeline:
                     },
                 )
             if spider.name[7:] == "th":
-                court = self.__remove_terms(court, ["thueringer-", ""])
+                court = self.__remove_terms(court, ["thueringer-"])
                 court = self.__replace_terms(
                     court,
                     {

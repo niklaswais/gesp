@@ -60,6 +60,12 @@ _JPORTAL_INIT = {
         config.rp_cookies,
         config.rp_body,
     ),
+    "sh": (
+        "https://www.gesetze-rechtsprechung.sh.juris.de/jportal/wsrest/recherche3/init",
+        config.sh_headers,
+        config.sh_cookies,
+        config.sh_body,
+    ),
     "sl": (
         "https://recht.saarland.de/jportal/wsrest/recherche3/init",
         config.sl_headers,
@@ -88,17 +94,18 @@ _JPORTAL_EXTRACTORS = {
     "hh": hh,
     "mv": mv,
     "rp": rp,
+    "sh": sh,
     "sl": sl,
     "st": st,
     "th": th,
 }
 
 # State code → get_text extractor that consumes just (item,) for non-jportal HTML states.
-_SIMPLE_EXTRACTORS = {"bb": bb, "by": by, "ni": ni, "nw": nw, "sh": sh}
+_SIMPLE_EXTRACTORS = {"bb": bb, "by": by, "ni": ni, "nw": nw}
 
 
 class Fingerprint:
-    def __init__(self, path, fp_path, store_docId):
+    def __init__(self, path, fp_path, store_docId, wait=False):
         for i in Fingerprint.load_file(fp_path):
             if "version" in i and "date" in i and "args" in i:
                 output(f"reconstructing from fingerprint {fp_path} ({i['version']}, {i['date']}, {i['args']})")
@@ -111,7 +118,10 @@ class Fingerprint:
                 except Exception:
                     output(f"could not create folder {results_subfolder}", "err")
 
-            item = {"court": i["c"], "date": i["d"], "az": i["az"]}
+            # Extractors read item["wait"] unconditionally; fingerprints don't
+            # store it (a fingerprint is a recipe, not a rate-limit policy), so
+            # seed it from the CLI flag here.
+            item = {"court": i["c"], "date": i["d"], "az": i["az"], "wait": wait}
             if "link" in i:
                 item["link"] = i["link"]
             if "docId" in i:

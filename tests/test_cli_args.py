@@ -30,3 +30,13 @@ def test_states_and_courts_lowercased():
     args = build_parser().parse_args(["-s", "BUND,BY", "-c", "BGH"])
     assert args.states == "bund,by"
     assert args.courts == "bgh"
+
+
+def test_yes_flag_default_false():
+    args = build_parser().parse_args([])
+    assert args.yes is False
+
+
+def test_yes_flag_set():
+    args = build_parser().parse_args(["-y"])
+    assert args.yes is True

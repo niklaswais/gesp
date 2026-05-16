@@ -1,8 +1,10 @@
 from ..src.get_text import bb, be, bw, he, hh, mv, ni, nw, rp, sh, sl, sn, st, th
+from ._base import CrawlerAware
 
 
-class TextsPipeline:
-    def process_item(self, item, spider):
+class TextsPipeline(CrawlerAware):
+    def process_item(self, item, spider=None):
+        spider = self._spider(spider)
         if spider.name[7:] == "bb":
             return bb(item)
         elif spider.name[7:] == "be":

@@ -4,12 +4,12 @@ import logging
 import os
 import sys
 
-import scrapy
 from scrapy.utils.reactor import install_reactor
 
 # Scrapy requires install_reactor() to run before any spider modules are imported,
 # so the remaining imports must stay below this line (ruff: noqa: E402).
 install_reactor("twisted.internet.asyncioreactor.AsyncioSelectorReactor")
+from scrapy.crawler import CrawlerRunner  # noqa: E402
 from scrapy.settings import Settings  # noqa: E402
 from twisted.internet import reactor  # noqa: E402
 
@@ -63,6 +63,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="version of this package",
     )
     p.add_argument("--docId", action="store_true", help="appends the docId, if present, to the filename")
+    p.add_argument(
+        "-y",
+        "--yes",
+        action="store_true",
+        help="confirm non-commercial use non-interactively (for CI/cron)",
+    )
     p.add_argument("--probe-only", action="store_true", dest="probe_only", help=argparse.SUPPRESS)
     p.add_argument(
         "-fp",
@@ -90,18 +96,20 @@ def main():
     args = build_parser().parse_args()
     if args.probe_only:
         sys.exit(_run_probes(args))
-    output(
-        "Due to the terms of use governing the databases accessed by gesp, the use of gesp is only permitted for non-commercial purposes. Do you use gesp exclusively for non-commercial purposes?"
-    )
-    try:
-        inp = input("[Y]es/[N]o: ").strip().lower()
-    except EOFError:
-        sys.exit()
-    if inp not in ("y", "yes"):
-        sys.exit()
+    if not args.yes:
+        output(
+            "Due to the terms of use governing the databases accessed by gesp, the use of gesp is only permitted for non-commercial purposes. Do you use gesp exclusively for non-commercial purposes?"
+        )
+        try:
+            inp = input("[Y]es/[N]o: ").strip().lower()
+        except EOFError:
+            sys.exit()
+        if inp not in ("y", "yes"):
+            sys.exit()
     cl_courts, cl_states, cl_domains = [], [], []
     # -p (path)
-    path = os.path.join(os.getcwd(), "results", datetime.datetime.now().strftime("%Y-%m-%d_%H-%M"))
+    base = os.path.join(os.getcwd(), "results", datetime.datetime.now().strftime("%Y-%m-%d_%H-%M"))
+    path = base
     if args.path:
         if os.path.isdir(args.path):
             path = args.path
@@ -111,17 +119,19 @@ def main():
                 os.makedirs(args.path)
             except OSError:
                 output(f"could not create folder {args.path}", "err")
+                sys.exit(1)
             else:
                 path = args.path
     else:
         n = 1
         while os.path.exists(path):
-            path = f"{path}_{n}"
+            path = f"{base}_{n}"
             n += 1
         try:
             os.makedirs(path)
         except OSError:
             output(f"could not create folder {path}", "err")
+            sys.exit(1)
     # if path[-1] != "/": path = path + "/"
     # -c (courts)
     if args.courts:
@@ -133,7 +143,7 @@ def main():
                 cl_courts.append("lag")
             elif court == "vgh":  # vgh = ovg
                 output(f"court '{court}' is interpreted as 'ovg'", "warn")
-                cl_courts.append("lag")
+                cl_courts.append("ovg")
             else:
                 cl_courts.append(court)
     # -s (states)
@@ -164,14 +174,13 @@ def main():
         elif not os.path.isfile(fp):
             output(f"file {fp} is a folder, not a file", "err")
         else:
-            Fingerprint(path, fp, args.docId)
+            Fingerprint(path, fp, args.docId, wait=args.wait)
     else:  # fp als Flag / kein fp
         fp = args.fingerprint is True
-        logging.getLogger("scrapy").propagate = True
         logger = logging.getLogger("scrapy")
         logger.propagate = False
         logger.setLevel(logging.DEBUG)
-        rnr = scrapy.crawler.CrawlerRunner(settings=settings)
+        rnr = CrawlerRunner(settings=settings)
         for state, spider_cls in STATE_SPIDERS.items():
             if not cl_states or state in cl_states:
                 rnr.crawl(

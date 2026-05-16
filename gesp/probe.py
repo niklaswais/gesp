@@ -118,7 +118,7 @@ _JPORTAL_PROBES: dict[str, tuple[str, str, str]] = {
     "hh": (
         "https://www.landesrecht-hamburg.de/jportal/wsrest/recherche3/init",
         "https://www.landesrecht-hamburg.de/jportal/wsrest/recherche3/search",
-        "bshh",
+        "bsha",
     ),
     "mv": (
         "https://www.landesrecht-mv.de/jportal/wsrest/recherche3/init",
