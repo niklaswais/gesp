@@ -1,9 +1,12 @@
 from io import BytesIO
+from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
 from zipfile import ZipFile
 
 from gesp.src.create_file import save_as_html, save_as_pdf
+
+FIXTURES = Path(__file__).parent / "fixtures"
 
 
 def test_save_as_html_none_item_returns_none(tmp_path):
@@ -83,3 +86,54 @@ def test_zip_xml_output_replaces_existing_target(tmp_path):
 
     assert target.read_text(encoding="utf-8") == "new"
     assert item["xmlfilename"] == str(target)
+
+
+def test_zip_xml_recovers_archive_with_trailing_junk(tmp_path):
+    """gesetze-bayern.de occasionally appends junk (including a second, bogus
+    EOCD signature) after a valid archive. Python's backwards EOCD scan lands
+    on the junk EOCD and refuses to open the file; the trimming helper trims
+    everything past the first *valid* EOCD so the real archive is recoverable.
+    """
+    (tmp_path / "by").mkdir()
+    content = (FIXTURES / "by_corrupt.zip").read_bytes()
+    # Sanity: the raw bytes really do trip vanilla zipfile.
+    import pytest
+    from zipfile import BadZipFile as _Bad
+
+    with pytest.raises(_Bad):
+        with ZipFile(BytesIO(content)):
+            pass
+
+    response = SimpleNamespace(content=content, raise_for_status=lambda: None)
+    item = {
+        "court": "ag",
+        "date": "20200101",
+        "az": "1-A-1",
+        "link": "https://www.gesetze-bayern.de/Content/Zip/Y-300-Z-BECKRS-B-2022-N-15750",
+    }
+
+    with patch("gesp.src.create_file.requests.get", return_value=response):
+        assert save_as_html(item, "by", str(tmp_path), False) is item
+
+    target = tmp_path / "by" / "ag_20200101_1-A-1.xml"
+    assert target.exists()
+    assert target.read_bytes().lstrip(b"\xef\xbb\xbf").startswith(b"<?xml")
+    assert item["xmlfilename"] == str(target)
+
+
+def test_zip_xml_bad_zip_download_does_not_raise(tmp_path, monkeypatch, capsys):
+    (tmp_path / "by").mkdir()
+    response = SimpleNamespace(content=b"<html>not a zip</html>", raise_for_status=lambda: None)
+    item = {
+        "court": "ag",
+        "date": "20200101",
+        "az": "1-A-1",
+        "link": "https://example.test/archive.zip",
+    }
+
+    monkeypatch.setattr("gesp.src.create_file.time.sleep", lambda _seconds: None)
+    with patch("gesp.src.create_file.requests.get", return_value=response):
+        assert save_as_html(item, "by", str(tmp_path), False) is None
+
+    captured = capsys.readouterr()
+    assert "downloaded content is not a readable zip" in captured.out

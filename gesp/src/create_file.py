@@ -1,7 +1,7 @@
 import os
 import time
 from io import BytesIO
-from zipfile import ZipFile
+from zipfile import BadZipFile, ZipFile
 
 import requests
 from requests.exceptions import RequestException
@@ -25,6 +25,31 @@ def info(item):
     return item
 
 
+def _trim_trailing_zip_junk(content: bytes) -> bytes:
+    """Drop bytes after the first valid EOCD record.
+
+    Some portal-generated zips (observed on gesetze-bayern.de) append junk
+    after a perfectly good archive, and the junk contains a second EOCD
+    signature with wrong fields. Python's zipfile scans backwards for the
+    EOCD and lands on the bogus one, then fails with BadZipFile because the
+    declared central-directory offset doesn't point at PK\\x01\\x02.
+
+    Iterate EOCD candidates from earliest; keep the first whose declared
+    CD offset lands on a real CD entry. If none validates, return the input
+    untouched so the existing BadZipFile path still handles it.
+    """
+    pos = 0
+    while True:
+        idx = content.find(b"PK\x05\x06", pos)
+        if idx < 0 or idx + 22 > len(content):
+            return content
+        cd_off = int.from_bytes(content[idx + 16 : idx + 20], "little")
+        if content[cd_off : cd_off + 4] == b"PK\x01\x02":
+            comment_len = int.from_bytes(content[idx + 20 : idx + 22], "little")
+            return content[: idx + 22 + comment_len]
+        pos = idx + 1
+
+
 def save_as_html(item, spider_name, spider_path, store_docId):  # spider.name, spider.path
     if item is None:
         output("dropped empty item", "warn")
@@ -44,7 +69,7 @@ def save_as_html(item, spider_name, spider_path, store_docId):  # spider.name, s
             try:
                 response = requests.get(item["link"], timeout=10)
                 response.raise_for_status()
-                with ZipFile(BytesIO(response.content)) as zip_ref:  # Im RAM entpacken
+                with ZipFile(BytesIO(_trim_trailing_zip_junk(response.content))) as zip_ref:  # Im RAM entpacken
                     for zipinfo in zip_ref.infolist():  # Teilweise auch Bilder in .zip enthalten
                         if zipinfo.filename.endswith(".xml") and ("manifest" not in zipinfo.filename):
                             original_path = os.path.join(spider_path, spider_name, zipinfo.filename)
@@ -55,6 +80,10 @@ def save_as_html(item, spider_name, spider_path, store_docId):  # spider.name, s
                             item["xmlfilename"] = target_path
                             return item
                 output(f"could not create file {filename}: no suitable .xml found in zip", "err")
+                break
+            except BadZipFile as e:
+                # Server returned the same bytes; retrying can't change that.
+                output(f"could not create file {filename}: downloaded content is not a readable zip ({e})", "err")
                 break
             except RequestException as e:
                 output(f"Attempt {attempt + 1}/{retries} failed: {e}", "warn")
