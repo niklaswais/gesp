@@ -169,6 +169,59 @@ def test_reconstruction_supplies_wait_to_simple_extractor(tmp_path):
     assert captured["item"]["wait"] is False
 
 
+def test_ni_extractor_fetches_detail_page_when_tree_absent(tmp_path):
+    """Reconstruction never populates item['tree']; ni() must fetch the detail
+    page itself instead of bailing with 'could not retrieve tree'."""
+    from gesp.src.get_text import ni
+
+    html_body = (
+        "<html><body>"
+        "<article><p>Entscheidungstext</p></article>"
+        "</body></html>"
+    )
+    response = SimpleNamespace(text=html_body)
+    item = {
+        "court": "lg-hannover",
+        "date": "20200101",
+        "az": "1-O-1-20",
+        "link": "https://voris.wolterskluwer-online.de/browse/document/abc",
+        "wait": False,
+    }
+
+    with patch("gesp.src.get_text.requests.get", return_value=response) as mock_get:
+        result = ni(item)
+
+    assert mock_get.called, "ni() must fetch item['link'] when tree is absent"
+    assert result is item
+    assert "<article>" in item["text"] and "Entscheidungstext" in item["text"]
+    assert item["filetype"] == "html"
+
+
+def test_by_reconstruction_dispatches_to_save_as_html(tmp_path):
+    """by items store a ZIP link; reconstruction must bypass the by() text
+    extractor and call save_as_html, which unpacks the zip."""
+    fp_file = _write_fp(
+        tmp_path,
+        "by",
+        {
+            "court": "ag-muenchen",
+            "date": "20200101",
+            "az": "1-A-1-20",
+            "link": "https://www.gesetze-bayern.de/Zip/Y-300-Z-1",
+        },
+    )
+
+    out_dir = tmp_path / "out"
+    out_dir.mkdir()
+    with patch("gesp.src.fingerprint.save_as_html") as mock_save:
+        Fingerprint(str(out_dir), str(fp_file), store_docId=False, wait=False)
+
+    mock_save.assert_called_once()
+    item_arg, state_arg, *_ = mock_save.call_args.args
+    assert state_arg == "by"
+    assert item_arg["link"] == "https://www.gesetze-bayern.de/Zip/Y-300-Z-1"
+
+
 def test_fp_disabled_writes_nothing(tmp_path):
     spider = _make_spider(tmp_path)
     spider.fp = False

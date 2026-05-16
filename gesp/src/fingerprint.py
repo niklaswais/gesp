@@ -7,7 +7,7 @@ import requests
 
 from . import config
 from .create_file import save_as_html, save_as_pdf
-from .get_text import bb, be, bw, by, he, hh, mv, ni, nw, rp, sh, sl, st, th
+from .get_text import bb, be, bw, he, hh, mv, ni, nw, rp, sh, sl, st, th
 from .output import output
 
 
@@ -101,7 +101,9 @@ _JPORTAL_EXTRACTORS = {
 }
 
 # State code → get_text extractor that consumes just (item,) for non-jportal HTML states.
-_SIMPLE_EXTRACTORS = {"bb": bb, "by": by, "ni": ni, "nw": nw}
+# Note: `by` is intentionally absent — its fingerprint link points at a ZIP
+# archive, which save_as_html unpacks directly (see create_file.save_as_html).
+_SIMPLE_EXTRACTORS = {"bb": bb, "ni": ni, "nw": nw}
 
 
 class Fingerprint:
@@ -131,7 +133,9 @@ class Fingerprint:
             if state == "sn" and i.get("link") == "https://www.justiz.sachsen.de/esamosplus/pages/treffer.aspx":
                 output("sn: reconstruction for AG/LG/OLG decisions is not supported", "warn")
                 continue
-            if state == "bund":
+            if state in ("bund", "by"):
+                # bund: link is a per-decision .zip; by: link is a portal .zip.
+                # In both cases save_as_html does the zip→xml extraction itself.
                 save_as_html(item, state, path, store_docId)
                 continue
             if state in ("hb", "sn"):

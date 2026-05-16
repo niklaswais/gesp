@@ -16,11 +16,12 @@ def bb(item):
                 timelib.sleep(1.5)
         except:
             output("could not retrieve " + item["link"], "err")
-        else:
-            try:
-                item["tree"] = html.fromstring(txt)
-            except:
-                output("could not parse " + item["link"], "err")
+            return
+        try:
+            item["tree"] = html.fromstring(txt)
+        except:
+            output("could not parse " + item["link"], "err")
+            return
     if (
         not item["tree"].xpath("//h1[@id='header']/text()")[0].rstrip().strip() == "Entscheidung"
     ):  # Herausfiltern von leeren Seiten
@@ -184,23 +185,35 @@ def mv(item, headers, cookies):  # spider.headers, spider.cookies
 
 
 def ni(item):
+    # In normal runs the spider pre-fetches the detail page and attaches `tree`.
+    # During fingerprint reconstruction the spider is bypassed, so fetch here.
     if "tree" not in item:
-        output("could not retrieve tree from " + item["link"], "err")
-    else:
-        tree = item["tree"]
-        article = tree.xpath("//article")
-        if article:
-            # Abspeichern des Texts
-            body = html.tostring(tree.xpath("//article")[0]).decode("utf-8")
-            doc = "<html><head><title>%s - %s - %s</title></head><body>%s</body></html>" % (
-                item["court"],
-                item["date"],
-                item["az"],
-                body,
-            )
-            item["text"] = doc
-            item["filetype"] = "html"
-            return item
+        if item.get("wait") == True:
+            timelib.sleep(1.75)
+        try:
+            txt = requests.get(item["link"], headers=config.ni_headers, timeout=30).text
+        except Exception:
+            output("could not retrieve " + item["link"], "err")
+            return
+        try:
+            item["tree"] = html.fromstring(txt)
+        except Exception:
+            output("could not parse " + item["link"], "err")
+            return
+    tree = item["tree"]
+    article = tree.xpath("//article")
+    if article:
+        # Abspeichern des Texts
+        body = html.tostring(tree.xpath("//article")[0]).decode("utf-8")
+        doc = "<html><head><title>%s - %s - %s</title></head><body>%s</body></html>" % (
+            item["court"],
+            item["date"],
+            item["az"],
+            body,
+        )
+        item["text"] = doc
+        item["filetype"] = "html"
+        return item
 
 
 def nw(item):

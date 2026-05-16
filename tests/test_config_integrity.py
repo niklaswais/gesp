@@ -54,8 +54,16 @@ def test_extractor_state_sets_disjoint():
 
 def test_extractor_states_subset_of_state_spiders():
     """Any state in the fingerprint dispatch must have a registered spider."""
-    dispatch_states = set(_JPORTAL_EXTRACTORS) | set(_SIMPLE_EXTRACTORS) | {"bund", "hb", "sn"}
+    # bund/by/hb/sn are dispatched directly (zip-xml or PDF), not via extractors.
+    dispatch_states = set(_JPORTAL_EXTRACTORS) | set(_SIMPLE_EXTRACTORS) | {"bund", "by", "hb", "sn"}
     assert dispatch_states <= set(STATE_SPIDERS.keys())
+
+
+def test_by_not_in_simple_extractors():
+    """by's fingerprint link is a ZIP URL — the by() extractor would treat
+    it as HTML and fail. Reconstruction must dispatch by directly to
+    save_as_html, which knows how to unpack the zip."""
+    assert "by" not in _SIMPLE_EXTRACTORS
 
 
 def test_sh_uses_jportal_dispatch():
