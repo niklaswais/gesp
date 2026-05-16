@@ -1,0 +1,986 @@
+<!DOCTYPE html PUBLIC "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<head>
+    <title>Landesrechtsportal Brandenburg | Entscheidungsdatenbank der Gerichte in Brandenburg</title>
+                <!-- When Theme is switchted. Replaces Main Color!-->
+        <link type="text/css" rel="stylesheet" href="/style/normalize.css"/>
+
+        <link type="text/css" rel="stylesheet" href="/style/style.css"/>
+        <link type="text/css" rel="stylesheet" href="/style/all.css"/>
+        <!-- When Theme is switchted. Replaces Main Color!-->
+        <link type="text/css" rel="stylesheet" href="/style/app.css"/>
+        <link type="text/css" rel="stylesheet" href="/style/foundation-datepicker.css"/>
+        <link rel="icon" type="image/x-icon" href="/style/favicon.ico"/>
+            
+            <!-- application -->
+        <!--script type="text/javascript" src="style/2jquery.min.js"></script-->
+        <script type="text/javascript" src="/style/2jquery.min.js"></script>
+
+                <script type="text/javascript">
+            function showResults() {
+                var x = document.getElementById("results")
+                if (x.style.display === "none") {
+                    x.style.display = "block";
+                } else {
+                    x.style.display = "none";
+                }
+            }
+
+            $(function () {
+                if (!Modernizr.inputtypes.date) {
+                    $(
+                        "#input_date_promulgation_from"
+                    ).fdatepicker({
+                        format: "dd.mm.yyyy",
+                        language: "de",
+                    });
+                    $(
+                        "#input_date_promulgation_to"
+                    ).fdatepicker({
+                        format: "dd.mm.yyyy",
+                        language: "de",
+                    });
+                    $("#input_date_issue_from").fdatepicker({
+                        format: "dd.mm.yyyy",
+                        language: "de",
+                    });
+                    $("#input_date_issue_to").fdatepicker({
+                        format: "dd.mm.yyyy",
+                        language: "de",
+                    });
+                } else {
+                    $(
+                        "#input_date_promulgation_from"
+                    ).removeAttr("pattern");
+                    $("#input_date_promulgation_to").removeAttr(
+                        "pattern"
+                    );
+                    $("#input_date_issue_from").removeAttr(
+                        "pattern"
+                    );
+                    $("#input_date_issue_to").removeAttr(
+                        "pattern"
+                    );
+                }
+            });
+
+            function clear_form_elements() {
+                $("#input_date_promulgation_from").removeAttr("value");
+                $("#input_date_promulgation_to").removeAttr("value");
+                $("#input_aktenzeichen").removeAttr("value");
+                $("#input_ecli").removeAttr("value");
+                $("#input_shortdesc").removeAttr("value");
+                $("#input_fulltext").removeAttr("value");
+                $("#select_source option:selected").removeAttr("selected");
+            }
+        </script>
+    </head>
+<body>
+    <div class="bb-stage" style="width: auto">
+        <div class="row bb-area-header">
+            <div class="columns">
+                <div class="row">
+                    <div
+                            class="small-12 medium-6 medium-push-6 columns"
+                            id="bb-loginMsg"
+                    ></div>
+                </div>
+                <div class="row">
+                    <div
+                            class="small-12 medium-6 medium-push-6 columns bb-top-tool-bar-column"
+                    >
+                        <div
+                                class="title-bar bb-title-bar hide"
+                                data-responsive-toggle="bb-tool-menu"
+                        >
+                     <span
+                             for="bb-toolbar-button"
+                             class="bb-toolbar-button-bg"
+                             data-toggle
+                     >
+                     <button
+                             id="bb-toolbar-button"
+                             class="menu-icon bb-menu-icon"
+                             type="button"
+                     ></button>
+                     </span>
+                            <div
+                                    for="bb-toolbar-button"
+                                    class="title-bar-title bb-title-bar-title"
+                                    data-toggle
+                            >
+                                Toolbar-Menü
+                            </div>
+                        </div>
+                        <div class="top-bar bb-top-tool-bar" id="bb-tool-menu" >
+                            <div class="top-bar-right">&nbsp;</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row bb-border">
+            <div class="columns">
+                <div class="row bb-area-header">
+                    <div class="columns">
+                        <div class="row">
+                            <div class="small-12 columns" id="bb-absenderkennung">
+                                <a
+                                        href="https://www.landesrecht.brandenburg.de"
+                                >
+                                    Landesrecht Brandenburg
+                                </a>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="columns" id="bb-logo-bar">
+                                <div class="row">
+                                    <div class="small-12 medium-6 columns bb-logo">
+                                        <a
+                                                href="http://www.brandenburg.de"
+                                                title="Link zum Landesportal Brandenburg"
+                                        >
+                                            <img
+                                                    id="bb-wort-bild-marke"
+                                                    src="../style/Wort_Bildmarke.png"
+                                                    alt="Brandenburg-Logo"
+                                            />
+                                        </a>
+                                    </div>
+                                    <div class="hide-for-small-only medium-2 columns">
+                                        &nbsp;
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div
+                                    class="large-12 columns"
+                                    id="bb-nav"
+                                    style="margin-top: 0px; padding-top: 5px"
+                            >
+                                <div class="large-9 large-push-3 columns" id="bb-nav2">
+                                    <div
+                                            class="title-bar bb-title-bar"
+                                            data-responsive-toggle="bb-nav-menu"
+                                            data-hide-for="medium"
+                                            style="display: none"
+                                    >
+                        <span
+                                for="bb-navbar-button"
+                                class="bb-navbar-button-bg"
+                                data-toggle
+                        >
+                        <button
+                                id="bb-navbar-button"
+                                class="menu-icon bb-menu-icon"
+                                type="button"
+                        ></button>
+                        </span>
+                                        <div
+                                                for="bb-navbar-button"
+                                                class="title-bar-title bb-title-bar-title"
+                                                data-toggle
+                                        >
+                                            Hauptmenü
+                                        </div>
+                                    </div>
+                                    <div class="top-bar bb-top-nav-bar" id="bb-nav-menu">
+                                        <div class="top-bar-right" id="topMenu">
+                                             <ul
+        class="menu"
+        data-responsive-menu="drilldown medium-dropdown"
+        data-back-button='<li class="js-drilldown-back"><a title="Zurück">Zurück</a></li>'
+>
+    <li>
+        <a href="/suche"
+                title="Start"
+                class="bb-nav-menu-item"
+        >
+            Gerichtsentscheidungen
+        </a>
+    </li>
+    <li>
+        <a
+                href="https://www.landesrecht.brandenburg.de"
+                title="Gesetz- und Verordnungsblatt für das Land Brandenburg (GVBl)"
+                class="bb-nav-menu-item"
+        >
+            Gesetz- und Verordnungsblatt
+        </a>
+    </li>
+    <li>
+        <a
+                href="https://bravors.brandenburg.de"
+                title="Landesrecht"
+                class="bb-nav-menu-item"
+        >
+            Landesrecht
+        </a>
+    </li>
+    <li>
+        <a href="/seite/nutzungshinweise"
+           title="Start"
+           class="bb-nav-menu-item"
+        >
+            Nutzungshinweise
+        </a>
+    </li>
+
+</ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="bb-bottom-border"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row bb-area-content">
+                    <div class="columns">
+                        <div class="bb-content">
+                            
+                                <div class="row">
+    <div class="hide-for-small-only medium-9 columns">
+        <div class="bb-breadcrumbs" id="bb-breadcrumbs1">
+            <span title="Sie sind hier:"> Sie sind hier: </span>
+
+            <a href="/" title="Startseite"><font class="bb-breadcrumbs-title">Gerichtsentscheidungen</font></a>
+
+                        
+        </div>
+    </div>
+    <div class="small-12 medium-3 columns"></div>
+</div>
+                            
+                            <div class="row">
+                                <div class="columns">
+                                    <noscript>
+                                        <br/>
+                                        <div data-alert class="alert-box bb-alert error">
+                                            <div class="bb-alert-content">
+                                                <div
+                                                        class="bb-alert-title"
+                                                        title="Keine JavaScript-Unterstützung"
+                                                >
+                                                    Keine JavaScript-Unterstützung
+                                                </div>
+                                                <div class="bb-alert-description">
+                                                    Ihr Browser unterstützt kein JavaScript! Unter
+                                                    Umständen funktionieren einige Teile der Webseite
+                                                    nicht.
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </noscript>
+
+                                                                            <div class="row">
+                                        <div class="columns small-12 medium-12 large-8">
+                                            <div class="row">
+                                                <div class="columns">
+                                                    <h1 id="header">
+                                                        Entscheidungsdatenbank der Gerichte in Brandenburg
+                                                    </h1>
+                                                    <p>
+                                                        <strong>Suche nach Gerichtsentscheidungen des Landes Brandenburg</strong>
+                                                    </p>
+                                                    <span id="searchForm">
+                            <form action="#" method="get">
+                              <div class="row">
+                                <div class="small-12 medium-6 columns">
+                                  <label
+                                          for="input_shortdesc"
+                                          title="Nach Bezeichnung suchen"
+                                  >
+                                    Bezeichnung
+                                  </label>
+                                  <input
+                                          id="input_shortdesc"
+                                          name="input_title_abr"
+                                          type="text"
+                                          title="Nach Bezeichnung suchen"
+                                          value=""
+                                  />
+                                </div>
+                                <div class="small-12 medium-6 columns">
+                                  <label
+                                          for="input_fulltext"
+                                          title="Nach Volltext suchen"
+                                  >
+                                    Volltextsuche
+                                  </label>
+                                  <input
+                                          id="input_fulltext"
+                                          name="input_fulltext"
+                                          type="text"
+                                          title="Nach Volltext suchen"
+                                          value=""
+                                  />
+                                </div>
+                              </div>
+                              <div class="row">
+                                <div class="small-12 medium-6 columns">
+                                  <label
+                                          for="select_source"
+                                          title="Aktenzeichen"
+                                  >Aktenzeichen</label
+                                  >
+                                  <input
+                                          id="input_aktenzeichen"
+                                          name="input_aktenzeichen"
+                                          type="text"
+                                          title="Aktenzeichen"
+                                          value=""
+                                  />
+                                </div>
+                                <div class="small-12 medium-6 columns">
+                                  <label
+                                          for="select_source"
+                                          title="Aktenzeichen"
+                                  >ECLI</label
+                                  >
+                                  <input
+                                          id="input_ecli"
+                                          name="input_ecli"
+                                          type="text"
+                                          title="ECLI"
+                                          value=""
+                                  />
+                                </div>
+                              </div>
+                              <div class="row">
+                                <div class="small-12 medium-6 columns">
+                                  <label
+                                          for="input_date_promulgation_from"
+                                          title="Von-Entscheidungsdatum suchen (Format: tt.mm.jjjj)"
+                                  >
+                                    Von bis Entscheidungsdatum (tt.mm.jjjj)</label
+                                  >
+                                </div>
+                                <div class="small-12 medium-6 columns">
+                                  <label for="select_source" title="Gericht"
+                                  >Gericht</label
+                                  >
+                                </div>
+                              </div>
+                              <div class="row">
+                                <div class="small-12 medium-3 columns">
+                                  <input
+                                          name="input_date_promulgation_from"
+                                          id="input_date_promulgation_from"
+                                          type="date"
+                                          pattern="\d{2}.\d{2}.\d{4}"
+                                          title="Von-Entscheidungsdatum suchen (Format: tt.mm.jjjj)"
+                                          value=""
+                                  />
+                                </div>
+                                <div class="small-12 medium-3 columns">
+                                  <input
+                                          name="input_date_promulgation_to"
+                                          id="input_date_promulgation_to"
+                                          type="date"
+                                          pattern="\d{2}.\d{2}.\d{4}"
+                                          title="Bis-Entscheidungsdatum suchen (Format: tt.mm.jjjj)"
+                                          value=""
+                                  />
+                                </div>
+
+                                <div class="small-12 medium-6 columns">
+                                  <select
+                                          name="select_source"
+                                          id="select_source"
+                                          style="background-image: url('img/arrowdown.svg') !important;"
+                                          title="Gericht"
+                                  >
+                                      <option title="" value="0"></option>
+                                                                                <option title="AG Bad Liebenwerda" value="AG Bad Liebenwerda"
+                                                                                        >AG Bad Liebenwerda</option>
+                                                                                <option title="AG Bernau" value="AG Bernau"
+                                                                                        >AG Bernau</option>
+                                                                                <option title="AG Brandenburg" value="AG Brandenburg"
+                                                                                        >AG Brandenburg</option>
+                                                                                <option title="AG Frankfurt (Oder)" value="AG Frankfurt (Oder)"
+                                                                                        >AG Frankfurt (Oder)</option>
+                                                                                <option title="AG Königs Wusterhausen" value="AG Königs Wusterhausen"
+                                                                                        >AG Königs Wusterhausen</option>
+                                                                                <option title="AG Oranienburg" value="AG Oranienburg"
+                                                                                        >AG Oranienburg</option>
+                                                                                <option title="AG Potsdam" value="AG Potsdam"
+                                                                                        >AG Potsdam</option>
+                                                                                <option title="AG Schwedt" value="AG Schwedt"
+                                                                                        >AG Schwedt</option>
+                                                                                <option title="AG Senftenberg" value="AG Senftenberg"
+                                                                                        >AG Senftenberg</option>
+                                                                                <option title="AG Zossen" value="AG Zossen"
+                                                                                        >AG Zossen</option>
+                                                                                <option title="ArbG Brandenburg" value="ArbG Brandenburg"
+                                                                                        >ArbG Brandenburg</option>
+                                                                                <option title="ArbG Cottbus" value="ArbG Cottbus"
+                                                                                        >ArbG Cottbus</option>
+                                                                                <option title="ArbG Potsdam" value="ArbG Potsdam"
+                                                                                        >ArbG Potsdam</option>
+                                                                                <option title="FG Berlin-Brandenburg" value="FG Berlin-Brandenburg"
+                                                                                        >FG Berlin-Brandenburg</option>
+                                                                                <option title="LArbG Berlin-Brandenburg" value="LArbG Berlin-Brandenburg"
+                                                                                        >LArbG Berlin-Brandenburg</option>
+                                                                                <option title="LG Cottbus" value="LG Cottbus"
+                                                                                        >LG Cottbus</option>
+                                                                                <option title="LG Frankfurt (Oder)" value="LG Frankfurt (Oder)"
+                                                                                        >LG Frankfurt (Oder)</option>
+                                                                                <option title="LG Neuruppin" value="LG Neuruppin"
+                                                                                        >LG Neuruppin</option>
+                                                                                <option title="LG Potsdam" value="LG Potsdam"
+                                                                                        >LG Potsdam</option>
+                                                                                <option title="LSG Berlin-Brandenburg" value="LSG Berlin-Potsdam"
+                                                                                        >LSG Berlin-Brandenburg</option>
+                                                                                <option title="OLG Brandenburg" value="OLG Brandenburg"
+                                                                                        >OLG Brandenburg</option>
+                                                                                <option title="OVG Berlin-Brandenburg" value="OVG Berlin-Brandenburg"
+                                                                                        >OVG Berlin-Brandenburg</option>
+                                                                                <option title="SG Cottbus" value="SG Cottbus"
+                                                                                        >SG Cottbus</option>
+                                                                                <option title="SG Frankfurt (Oder)" value="SG Frankfurt (Oder)"
+                                                                                        >SG Frankfurt (Oder)</option>
+                                                                                <option title="SG Neuruppin" value="SG Neuruppin"
+                                                                                        >SG Neuruppin</option>
+                                                                                <option title="SG Potsdam" value="SG Potsdam"
+                                                                                        >SG Potsdam</option>
+                                                                                <option title="VG Cottbus" value="VG Cottbus"
+                                                                                        >VG Cottbus</option>
+                                                                                <option title="VG Frankfurt (Oder)" value="VG Frankfurt (Oder)"
+                                                                                        >VG Frankfurt (Oder)</option>
+                                                                                <option title="VG Potsdam" value="VG Potsdam"
+                                                                                        >VG Potsdam</option>
+                                                                                <option title="VerfG Potsdam" value="VerfG Potsdam"
+                                                                                        >VerfG Potsdam</option>
+                                                                                <option title="Vergabekammer Potsdam" value="Vergabekammer Potsdam"
+                                                                                        >Vergabekammer Potsdam</option>
+                                                                        </select>
+                                </div>
+                              </div>
+                                <input type="hidden" name="page" value="1" />
+
+
+
+                              <div class="row">
+                                <div class="large-12 columns">
+                                  <p style="height: 1em">
+                                    <button
+                                            title="Das Formular senden"
+                                            id="btnReset"
+                                            class="button bb-submit-button"
+                                            type=""
+                                            value="Suchen"
+                                            onclick="showResults()"
+                                    >
+                                      Suchen
+								  </button>
+                                    <button
+                                            title="Das Formular zurücksetzen"
+                                            id="btnReset"
+                                            type="reset"
+                                            onclick="clear_form_elements()"
+                                            class="button bb-submit-button"
+                                            style="margin-right: 1em"
+                                    >
+                                      Zurücksetzen
+                                    </button>
+                                  </p>
+                                </div>
+                              </div>
+                                </form>
+                            </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row" id="results">
+                                        <div class="columns">
+                                                                                            <h2>Suchergebnisse</h2>
+                                                <table
+                                                        class="bb-table-stripes bb-table-stretch"
+                                                        id="resultlist"
+                                                >
+                                                    <thead>
+                                                    <tr>
+                                                        <td></td>
+                                                        <th title="Typ">Typ</th>
+                                                        <th title="Datum">Datum</th>
+                                                        <th title="Bezeichnung">Bezeichnung</th>
+                                                        <th title="Gericht">Gericht</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+
+                                                                                                                                                                        <tr>
+                                                                <td>1</td>
+                                                                <td>Urteil</td>
+                                                                <td>08.10.2205</td>
+                                                                <td>
+                                                                    <a href="/gerichtsentscheidung/27692">
+                                                                                                                                            Zu der Entscheidung 11 U 30/25
+                                                                                                                                        </a>
+                                                                </td>
+                                                                <td>OLG 11. Zivilsenat</td>
+                                                            </tr>
+                                                                                                                                                                                <tr>
+                                                                <td>2</td>
+                                                                <td>Grundurteil</td>
+                                                                <td>06.05.2026</td>
+                                                                <td>
+                                                                    <a href="/gerichtsentscheidung/28668">
+                                                                                                                                            Grundurteil, Reha-Klinikum, Brustbedeckung, Gruppenübung, Schmerzensgeld
+
+                                                                                                                                        </a>
+                                                                </td>
+                                                                <td>Amtsgericht </td>
+                                                            </tr>
+                                                                                                                                                                                <tr>
+                                                                <td>3</td>
+                                                                <td>Beschluss</td>
+                                                                <td>24.04.2026</td>
+                                                                <td>
+                                                                    <a href="/gerichtsentscheidung/28658">
+                                                                                                                                            Windenergieanlagen, immissionsschutzrechtliche Genehmigungen, Drittwiderspruch, Verfahrensfehler, Bekanntmachung des Vorhabens, Bekanntgabe der Genehmigungsentscheidungen, luftverkehrliche und militärische...
+
+                                                                                                                                        </a>
+                                                                </td>
+                                                                <td>OVG Der 7. Senat</td>
+                                                            </tr>
+                                                                                                                                                                                <tr>
+                                                                <td>4</td>
+                                                                <td>Beschluss</td>
+                                                                <td>23.04.2026</td>
+                                                                <td>
+                                                                    <a href="/gerichtsentscheidung/28659">
+                                                                                                                                            Normenkontrollverfahren, einstweilige Anordnung, Veränderungssperre, Windenergieanlage, Antragsbefugnis, Nutzungsberechtigung, Bekanntmachung des Beschlusses über die Satzung anstelle des Textes der Satzung,...
+
+                                                                                                                                        </a>
+                                                                </td>
+                                                                <td>OVG Der 10. Senat</td>
+                                                            </tr>
+                                                                                                                                                                                <tr>
+                                                                <td>5</td>
+                                                                <td>Beschluss</td>
+                                                                <td>23.04.2026</td>
+                                                                <td>
+                                                                    <a href="/gerichtsentscheidung/28633">
+                                                                                                                                            Beförderung, dienstliche Beurteilung, Auswahlgespräch, ergänzendes Instrument, Leistungssteigerung nach Beförderung, Begründungserfordernis
+
+                                                                                                                                        </a>
+                                                                </td>
+                                                                <td>OVG Der 4. Senat</td>
+                                                            </tr>
+                                                                                                                                                                                <tr>
+                                                                <td>6</td>
+                                                                <td>Beschluss</td>
+                                                                <td>20.04.2026</td>
+                                                                <td>
+                                                                    <a href="/gerichtsentscheidung/28628">
+                                                                                                                                            Sekundarstufe I, Gymnasium, Wechsel 2. Fremdsprache, Ermessensentscheidung, gymnasiale Oberstufe, Fremdsprachenverpflichtung
+
+                                                                                                                                        </a>
+                                                                </td>
+                                                                <td>OVG Der 3. Senat</td>
+                                                            </tr>
+                                                                                                                                                                                <tr>
+                                                                <td>7</td>
+                                                                <td>Beschluss</td>
+                                                                <td>17.04.2026</td>
+                                                                <td>
+                                                                    <a href="/gerichtsentscheidung/28631">
+                                                                                                                                            Beschwerde, Ehemaliges Mitglied der Landesregierung, Untersagung einer Erwerbstätigkeit nach dem Ausscheiden aus dem Ministeramt, Karenzzeit, Beratertätigkeit für eine bestimmte Rechtsanwaltskanzlei,...
+
+                                                                                                                                        </a>
+                                                                </td>
+                                                                <td>OVG Der 4. Senat</td>
+                                                            </tr>
+                                                                                                                                                                                <tr>
+                                                                <td>8</td>
+                                                                <td>Beschluss</td>
+                                                                <td>16.04.2026</td>
+                                                                <td>
+                                                                    <a href="/gerichtsentscheidung/28629">
+                                                                                                                                            Aufenthaltserlaubnis, einstweilige Anordnung, Aufnahme aus dem Ausland, dringende humanitäre Gründe, subjektives Recht auf Aufnahme, objektiv-rechtlicher Charakter, Ermessen, Sicherheitsbedenken, Ausweisungsgrund,...
+
+                                                                                                                                        </a>
+                                                                </td>
+                                                                <td>OVG Der 3. Senat</td>
+                                                            </tr>
+                                                                                                                                                                                <tr>
+                                                                <td>9</td>
+                                                                <td>Beschluss</td>
+                                                                <td>15.04.2026</td>
+                                                                <td>
+                                                                    <a href="/gerichtsentscheidung/28636">
+                                                                                                                                            Pflegeheim, entwichener Bewohner, Ingewahrsamnahme und Rückführung durch die Bundespolizei, Polizeigebühren
+
+                                                                                                                                        </a>
+                                                                </td>
+                                                                <td>OVG Der 6. Senat</td>
+                                                            </tr>
+                                                                                                                                                                                <tr>
+                                                                <td>10</td>
+                                                                <td>Beschluss</td>
+                                                                <td>15.04.2026</td>
+                                                                <td>
+                                                                    <a href="/gerichtsentscheidung/28635">
+                                                                                                                                            Streitwertbeschwerde, Isoliert angegriffener Widerrufsvorbehalt eines Förderbescheids, Auffangwert, Fördersumme
+
+                                                                                                                                        </a>
+                                                                </td>
+                                                                <td>OVG Der 6. Senat</td>
+                                                            </tr>
+                                                                                                                                                                                <tr>
+                                                                <td>11</td>
+                                                                <td>Beschluss</td>
+                                                                <td>10.04.2026</td>
+                                                                <td>
+                                                                    <a href="/gerichtsentscheidung/28627">
+                                                                                                                                            berufsbezogener Teil, Fachhochschulreife, gelenktes Praktikum, Ausbildungsberechtigung
+
+                                                                                                                                        </a>
+                                                                </td>
+                                                                <td>OVG Der 3. Senat</td>
+                                                            </tr>
+                                                                                                                                                                                <tr>
+                                                                <td>12</td>
+                                                                <td>Beschluss</td>
+                                                                <td>10.04.2026</td>
+                                                                <td>
+                                                                    <a href="/gerichtsentscheidung/28626">
+                                                                                                                                            Verwaltungsprozess, Aussetzung, Vorgreiflichkeit, Rechtsverhältnis, abstrakte Rechtsfrage, Parallelverfahren beim Bundesverwaltungsgericht, analoge Anwendung
+
+                                                                                                                                        </a>
+                                                                </td>
+                                                                <td>OVG Der 3. Senat</td>
+                                                            </tr>
+                                                                                                                                                                                <tr>
+                                                                <td>13</td>
+                                                                <td>Beschluss</td>
+                                                                <td>10.04.2026</td>
+                                                                <td>
+                                                                    <a href="/gerichtsentscheidung/28588">
+                                                                                                                                            Zu der Entscheidung VG 2 L 346/26.A
+                                                                                                                                        </a>
+                                                                </td>
+                                                                <td>VG 2. Kammer</td>
+                                                            </tr>
+                                                                                                                                                                                <tr>
+                                                                <td>14</td>
+                                                                <td>Beschluss</td>
+                                                                <td>08.04.2026</td>
+                                                                <td>
+                                                                    <a href="/gerichtsentscheidung/28630">
+                                                                                                                                            Schulpflicht, Verletzung, monatelanges Fernbleiben, gesundheitliche Gründe, ärztliche Bescheinigungen, hinreichende Aussagekraft (verneint)
+
+                                                                                                                                        </a>
+                                                                </td>
+                                                                <td>OVG Der 3. Senat</td>
+                                                            </tr>
+                                                                                                                                                                                <tr>
+                                                                <td>15</td>
+                                                                <td>Beschluss</td>
+                                                                <td>08.04.2026</td>
+                                                                <td>
+                                                                    <a href="/gerichtsentscheidung/28530">
+                                                                                                                                            Auswahlverfahren, Erledigung, Abbruch, Organisationsentscheidung, Bewerbungsverfahrensanspruch, Vertrauensschutz, Ernennungsanspruch, Zusicherung, Berufungsvereinbarung
+
+                                                                                                                                        </a>
+                                                                </td>
+                                                                <td>OVG Der 4. Senat</td>
+                                                            </tr>
+                                                                                                                                                                                <tr>
+                                                                <td>16</td>
+                                                                <td>Beschluss</td>
+                                                                <td>07.04.2026</td>
+                                                                <td>
+                                                                    <a href="/gerichtsentscheidung/28529">
+                                                                                                                                            Professor, Hochschullehrer, Berufungskommission, Ausschreibung, Anforderungsprofil, Bindung an das -, Schwerpunktsetzung, Begründungspflicht, Dokumentation
+
+                                                                                                                                        </a>
+                                                                </td>
+                                                                <td>OVG Der 4. Senat</td>
+                                                            </tr>
+                                                                                                                                                                                <tr>
+                                                                <td>17</td>
+                                                                <td>Beschluss</td>
+                                                                <td>02.04.2026</td>
+                                                                <td>
+                                                                    <a href="/gerichtsentscheidung/28571">
+                                                                                                                                            Eilantrag, Akteneinsicht, Widerspruchsverfahren, Windenergie, Nachbar, Vorbescheid, Antragsbefugnis, rechtliches Interesse, Betriebs- und Geschäftsgeheimnisse, Urheberrechtsverletzung
+
+                                                                                                                                        </a>
+                                                                </td>
+                                                                <td>OVG Der 7. Senat</td>
+                                                            </tr>
+                                                                                                                                                                                <tr>
+                                                                <td>18</td>
+                                                                <td>Beschluss</td>
+                                                                <td>31.03.2026</td>
+                                                                <td>
+                                                                    <a href="/gerichtsentscheidung/28632">
+                                                                                                                                            Beförderung, Auswahlgespräch, ergänzendes Instrument, im Wesentlichen gleiches Gesamturteil, Führungskompetenz, Unterschied zwischen Führungsleistungen und Führungseignung
+
+                                                                                                                                        </a>
+                                                                </td>
+                                                                <td>OVG Der 4. Senat</td>
+                                                            </tr>
+                                                                                                                                                                                <tr>
+                                                                <td>19</td>
+                                                                <td>Beschluss</td>
+                                                                <td>31.03.2026</td>
+                                                                <td>
+                                                                    <a href="/gerichtsentscheidung/28484">
+                                                                                                                                            Landesbetrieb Forst Brandenburg, Konkurrentenstreit, Dienstpostenvergabe, Einaktiges Verfahren, Vorwirkung der Dienstpostenvergabe, Maßgeblichkeit des Statusamts für die Auswahlentscheidung, Ausnahmen...
+
+                                                                                                                                        </a>
+                                                                </td>
+                                                                <td>OVG Der 4. Senat</td>
+                                                            </tr>
+                                                                                                                                                                                <tr>
+                                                                <td>20</td>
+                                                                <td>Beschluss</td>
+                                                                <td>30.03.2026</td>
+                                                                <td>
+                                                                    <a href="/gerichtsentscheidung/28568">
+                                                                                                                                            Hochschulzulassung, Zweitstudium, Bachelor, Psychologie, Wintersemester 2025/2026, Bewerbung innerhalb der festgesetzten Aufnahmekapazität, Vorabquote, Messzahlbildung, Wiedereingliederung oder Neueinstieg...
+
+                                                                                                                                        </a>
+                                                                </td>
+                                                                <td>OVG Der 5. Senat</td>
+                                                            </tr>
+                                                                                                                    
+                                                    </tbody>
+                                                </table>
+                                                <div class="columns">
+                                                    <div class="bb-pagination">
+                                                        <div class="loader" style="margin: auto; display: none;"></div>
+                                                        <ul class="text-center" role="navigation" id="navigator" aria-label="Pagination">
+                                                            <li>
+                                                                                                                                    <i class="fa fa-angle-double-left" style="color: silver;" aria-hidden="true"></i>
+                                                                                                                            </li>
+                                                            <li>
+                                                                                                                                    <i class="fa fa-caret-left" style="color: silver;" aria-hidden="true"></i>
+                                                                                                                            </li>
+                                                            <li style="margin-left:2em; margin-right:2em;">Seite 1/1257</li>
+                                                            <li>
+                                                                                                                                    <a href="/suche?select_source=0&page=2" aria-label="Weiter" title="Weiter zur Seite 2"><i class="fa fa-caret-right bb-mainRed" aria-hidden="true"></i></a>
+                                                                                                                            </li>
+                                                            <li>
+                                                                                                                                    <a href="/suche?select_source=0&page=1257" aria-label="Letzte Seite" title="Letzte Seite"><i class="fa fa-angle-double-right bb-mainRed" aria-hidden="true"></i></a>
+                                                                                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                            
+                                        </div>
+                                    </div>
+                                    <style>
+                                        .loader {
+                                            border: 0.4rem solid #f3f3f3;
+                                            border-radius: 50%;
+                                            border-top: 0.4rem solid #ee3e33;
+                                            width: 2rem;
+                                            height: 2rem;
+                                            -webkit-animation: spin 2s linear infinite;
+                                            animation: spin 2s linear infinite;
+                                        }
+
+                                        @-webkit-keyframes spin {
+                                            0% {
+                                                -webkit-transform: rotate(0deg);
+                                            }
+                                            100% {
+                                                -webkit-transform: rotate(360deg);
+                                            }
+                                        }
+
+                                        @keyframes spin {
+                                            0% {
+                                                transform: rotate(0deg);
+                                            }
+                                            100% {
+                                                transform: rotate(360deg);
+                                            }
+                                        }
+                                    </style>
+
+
+    <!-- all Vendor JavaScript Library !-->
+    <script type="text/javascript" src="style/5foundation.mine723.js?v=1612167994286"></script>
+    <script type="text/javascript" src="style/what-input.mine723.js?v=1612167994286"></script>
+    <script
+            type="text/javascript"
+            src="style/vendor.mine723.js?v=1612167994286"
+    ></script>
+    <script
+            type="text/javascript"
+            src="style/finalApp.mine723.js?v=1612167994286"
+    ></script>
+    <script
+            type="text/javascript"
+            src="js/node_modules/foundation-datepicker/js/foundation-datepickere723.js?v=1612167994286"
+    ></script>
+    <script
+            type="text/javascript"
+            src="js/node_modules/foundation-datepicker/js/locales/foundation-datepicker.dee723.js?v=1612167994286"
+    ></script>
+
+
+
+
+
+
+                                    <div class="row">
+                                        <div class="columns small-12 medium-12 large-8">
+
+                                            <div class="row">
+                                                <div class="columns">
+                                                    <!--hlIgnoreOn-->
+
+
+                                                    <div class="row bb-area-footer">
+                                                        <div class="columns">
+
+                                                            <div class="row bb-area-footer-content">
+    <div class="large-12 columns">
+        <div class="bb-breadcrumbs" id="bb-breadcrumbs2">
+            <span title="Sie sind hier:"> Sie sind hier: </span>
+            <a href="/" title="Startseite"><font class="bb-breadcrumbs-title">Gerichtsentscheidungen</font></a>
+
+                        
+        </div>
+    </div>
+</div>
+                                                            <div class="row bb-area-footer-content">
+                                                                <div class="hide-for-medium columns">
+                                                                    <div id="bb-link-bar1">
+                                                                        <div class="row">
+                                                                            <div class="hide-for-medium large-3 columns"></div>
+                                                                        </div>
+                                                                        <div class="row">
+
+                                                                            <div class="columns" id="mobileServiceMenu">
+    <h6>Service</h6>
+    <ul class="bb-list-dark">
+        <li>
+            <a href="https://www.brandenburg.de" title="Link zum Landesportal Brandenburg">
+                Landesportal Brandenburg
+            </a>
+        </li>
+        <li>
+            <a href="https://service.brandenburg.de" title="Link zum Serviceportal Brandenburg">
+                Serviceportal Brandenburg
+            </a>
+        </li>
+    </ul>
+</div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="medium-12 large-9 columns">
+                                                                    <div id="bb-info-bar">
+                                                                        <div class="row">
+                                                                            <div
+                                                                                    class="columns small-12 medium-6"
+                                                                                    id="quickAccessMenu"
+                                                                            ></div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="hide-for-small-only medium-12 large-3 columns">
+                                                                    <div id="bb-link-bar2">
+                                                                        <div class="row">
+
+                                                                            <div class="medium-6 large-12 columns" id="serviceMenu">
+    <h6>Service</h6>
+    <ul class="bb-list-dark">
+        <li>
+            <a href="https://www.brandenburg.de" title="Link zum Landesportal Brandenburg">
+                Landesportal Brandenburg
+            </a>
+        </li>
+        <li>
+            <a href="https://service.brandenburg.de" title="Link zum Serviceportal Brandenburg">
+                Serviceportal Brandenburg
+            </a>
+        </li>
+
+    </ul>
+</div>
+                                                                            <div class="medium-6 large-12 columns"></div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row bb-area-footer-bar">
+                                                                <div class="columns" id="footerbarMenu">
+    <div id="bb-footer-bar">
+        <span class="hide-for-small-only" id="footertext">
+        2026 | Landesregierung Brandenburg
+        </span>
+
+        <span class="bb-footer-items-right">
+            <a class="bb-footer-items-right" href="/seite/barrierefreiheit">Barrierefreiheit</a>
+        </span>
+
+        <span class="bb-footer-items-right">&nbsp;|&nbsp;</span>
+
+        <span class="bb-footer-items-right">
+            <a class="bb-footer-items-right" href="/seite/datenschutz">Datenschutz</a>
+        </span>
+
+        <span class="bb-footer-items-right">&nbsp;|&nbsp;</span>
+
+        <span class="bb-footer-items-right">
+            <a class="bb-footer-items-right" href="/seite/impressum">Impressum</a>
+        </span>
+
+        <span class="bb-footer-items-right">&nbsp;|&nbsp;</span>
+
+        <span class="bb-footer-items-right">
+            <a class="bb-footer-items-right" href="/seite/kontakt">Kontakt</a>
+        </span>
+
+
+
+    </div>
+</div>
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+
+
+                                        </div>
+                                    </div>
+
+
+
+
+
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+
+
+
+
+

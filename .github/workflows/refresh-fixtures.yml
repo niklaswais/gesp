@@ -1,0 +1,56 @@
+name: refresh-fixtures
+
+# Weekly snapshot of every court portal's discovery response. If markup drifts,
+# the resulting tests/fixtures/ diff lands as a PR — review the diff, update the
+# corresponding spider's XPath if any test fails, and merge.
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"  # Mondays at 06:00 UTC
+  workflow_dispatch:
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - run: pip install -e ".[dev]"
+
+      - name: Probe all portals
+        id: probe
+        # Some portals may be transiently down or rate-limit GH's runners;
+        # don't fail the whole workflow — the parser tests below are the
+        # regression gate (they skip when a fixture is missing).
+        run: python tests/refresh_fixtures.py || true
+
+      - name: Run parser tests against refreshed fixtures
+        id: tests
+        continue-on-error: true
+        run: pytest tests/test_spider_parse.py -v
+
+      - name: Open PR if fixtures changed
+        uses: peter-evans/create-pull-request@v6
+        with:
+          branch: refresh-fixtures
+          delete-branch: true
+          commit-message: "chore: refresh court portal fixtures"
+          title: "Refresh court portal fixtures"
+          body: |
+            Automated weekly snapshot of every court portal's discovery response.
+
+            * Inspect the diff under `tests/fixtures/` to see which portals altered markup.
+            * If the parser tests failed (see the run that produced this PR), the corresponding spider's XPath needs an update before merging.
+            * If nothing tripped, the diff is just routine churn (timestamps, generator banners, etc.).
+
+            Tests outcome: `${{ steps.tests.outcome }}`
+          labels: maintenance, automated
+          add-paths: tests/fixtures/

@@ -1,33 +1,45 @@
-# -*- coding: utf-8 -*-
-import scrapy
-import requests
-import urllib.parse
-from lxml import html
 import time as timelib
+
+import requests
+import scrapy
+from lxml import html
+
+from ..pipelines.exporters import ExportAsHtmlPipeline, FingerprintExportPipeline, RawExporter
+from ..pipelines.formatters import AZsPipeline, CourtsPipeline, DatesPipeline
+from ..pipelines.texts import TextsPipeline
 from ..src import config
 from ..src.output import output
-from ..pipelines.formatters import AZsPipeline, DatesPipeline, CourtsPipeline
-from ..pipelines.texts import TextsPipeline
-from ..pipelines.exporters import ExportAsHtmlPipeline, FingerprintExportPipeline, RawExporter
+
 
 class SpdrNI(scrapy.Spider):
     name = "spider_ni"
     base_url = "https://voris.wolterskluwer-online.de/"
     custom_settings = {
-        "DOWNLOAD_DELAY": 2, # minimum download delay 
+        "DOWNLOAD_DELAY": 2,  # minimum download delay
         "AUTOTHROTTLE_ENABLED": False,
-        "ITEM_PIPELINES": { 
+        "ITEM_PIPELINES": {
             AZsPipeline: 100,
             DatesPipeline: 200,
             CourtsPipeline: 300,
             TextsPipeline: 400,
             ExportAsHtmlPipeline: 500,
             FingerprintExportPipeline: 600,
-            RawExporter: 900
-        }
+            RawExporter: 900,
+        },
     }
 
-    def __init__(self, path, courts="", states="", fp=False, domains="", store_docId=False, postprocess=False, wait=False, **kwargs):
+    def __init__(
+        self,
+        path,
+        courts="",
+        states="",
+        fp=False,
+        domains="",
+        store_docId=False,
+        postprocess=False,
+        wait=False,
+        **kwargs,
+    ):
         self.path = path
         self.courts = courts
         self.states = states
@@ -41,8 +53,11 @@ class SpdrNI(scrapy.Spider):
         super().__init__(**kwargs)
 
     async def start(self):
-        filter_url = self.base_url + "/search?query=&in_publication=&in_year=&in_edition=&voris_number=&issuer=&date=&end_date_range=&lawtaxonomy=&pit=&da_id=&issuer_label=&content_tree_nodes=&publicationtype=publicationform-ats-filter%21ATS_Rechtsprechung"
-        start_urls = [] 
+        filter_url = (
+            self.base_url
+            + "/search?query=&in_publication=&in_year=&in_edition=&voris_number=&issuer=&date=&end_date_range=&lawtaxonomy=&pit=&da_id=&issuer_label=&content_tree_nodes=&publicationtype=publicationform-ats-filter%21ATS_Rechtsprechung"
+        )
+        start_urls = []
         if self.courts:
             if "ag" in self.courts:
                 start_urls.append(filter_url + "_Strafgerichte_AG")
@@ -71,7 +86,7 @@ class SpdrNI(scrapy.Spider):
             start_urls.append(filter_url)
 
         for i, url in enumerate(start_urls):
-            yield scrapy.Request(url=url, meta={'cookiejar': i}, dont_filter=True, callback=self.parse)
+            yield scrapy.Request(url=url, meta={"cookiejar": i}, dont_filter=True, callback=self.parse)
 
     def parse(self, response):
         view_content = response.xpath('//ul[@class="view-content"]')
@@ -80,10 +95,11 @@ class SpdrNI(scrapy.Spider):
             results = []
             for item in items:
                 # Extrahieren des Links
-                href = item.xpath('.//h3/a/@href').get()
+                href = item.xpath(".//h3/a/@href").get()
                 if href:
                     # Extrahieren der Meta-Informationen via Seiten-Aufruf
-                    if (self.wait == True): timelib.sleep(1.75)
+                    if self.wait == True:
+                        timelib.sleep(1.75)
                     try:
                         txt = requests.get(self.base_url + href, headers=self.headers).text
                     except:
@@ -94,13 +110,19 @@ class SpdrNI(scrapy.Spider):
                         except:
                             output("could not parse " + self.base_url + href, "err")
                         else:
-                            article = tree.xpath('//article')
+                            article = tree.xpath("//article")
                             if article:
                                 # Extraktion der Meta-Daten
-                                court = tree.xpath('//section[@class="wkde-bibliography"]//dt[text()="Gericht"]/following-sibling::dd[1]/text()')[0]
-                                date = tree.xpath('//section[@class="wkde-bibliography"]//dt[text()="Datum"]/following-sibling::dd[1]/text()')[0]
-                                az = tree.xpath('//section[@class="wkde-bibliography"]//dt[text()="Aktenzeichen"]/following-sibling::dd[1]/text()')[0]
-                
+                                court = tree.xpath(
+                                    '//section[@class="wkde-bibliography"]//dt[text()="Gericht"]/following-sibling::dd[1]/text()'
+                                )[0]
+                                date = tree.xpath(
+                                    '//section[@class="wkde-bibliography"]//dt[text()="Datum"]/following-sibling::dd[1]/text()'
+                                )[0]
+                                az = tree.xpath(
+                                    '//section[@class="wkde-bibliography"]//dt[text()="Aktenzeichen"]/following-sibling::dd[1]/text()'
+                                )[0]
+
                                 yield {
                                     "postprocess": self.postprocess,
                                     "wait": self.wait,
@@ -109,12 +131,19 @@ class SpdrNI(scrapy.Spider):
                                     "az": az.rstrip(),
                                     "link": self.base_url + href,
                                     "docId": href.split("/browse/document/")[1],
-                                    "tree": tree, # wenn ohnehin schon verarbeitet...
+                                    "tree": tree,  # wenn ohnehin schon verarbeitet...
                                 }
-                
+
         # Button für nächste Seite
-        next_page = response.xpath("//a[@class='wk-pagination-link' and @title='Zur nächsten Seite']/@aria-disabled").get()
+        next_page = response.xpath(
+            "//a[@class='wk-pagination-link' and @title='Zur nächsten Seite']/@aria-disabled"
+        ).get()
         if not next_page or next_page != "true":
             href = response.xpath("//a[@class='wk-pagination-link' and @title='Zur nächsten Seite']/@href").get()
             if href:
-                yield response.follow(self.base_url + href, dont_filter=True, meta={'cookiejar': response.meta['cookiejar']}, callback=self.parse)
+                yield response.follow(
+                    self.base_url + href,
+                    dont_filter=True,
+                    meta={"cookiejar": response.meta["cookiejar"]},
+                    callback=self.parse,
+                )

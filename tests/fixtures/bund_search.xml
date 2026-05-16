@@ -1,0 +1,153 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE items [
+ <!ELEMENT items (item)*>
+ <!ELEMENT item (gericht?,entsch-datum?,aktenzeichen?,link,modified)>
+ <!ELEMENT gericht (#PCDATA)>
+ <!ELEMENT entsch-datum (#PCDATA)>
+ <!ELEMENT aktenzeichen (#PCDATA)>
+ <!ELEMENT link (#PCDATA)>
+ <!ELEMENT modified (#PCDATA)>
+]>
+<!-- generator:jps10-V37_30_00_production 23.04.2026 16:50:07, lastBuildDate:15.05.2026 23:36:30 -->
+<items>
+<item>
+ <gericht>BVerwG 9. Senat</gericht>
+ <entsch-datum>20100108</entsch-datum>
+ <aktenzeichen>9 B 3/09</aktenzeichen>
+ <link>http://www.rechtsprechung-im-internet.de/jportal/docs/bsjrs/jb-JURE100054597.zip</link>
+ <modified>2026-04-14T21:14:20.772Z</modified>
+</item>
+<item>
+ <gericht>BVerwG 10. Senat</gericht>
+ <entsch-datum>20100111</entsch-datum>
+ <aktenzeichen>10 C 6/09</aktenzeichen>
+ <link>http://www.rechtsprechung-im-internet.de/jportal/docs/bsjrs/jb-JURE100054926.zip</link>
+ <modified>2026-04-14T21:14:20.772Z</modified>
+</item>
+<item>
+ <gericht>BGH 9. Zivilsenat</gericht>
+ <entsch-datum>20100114</entsch-datum>
+ <aktenzeichen>IX ZB 72/08</aktenzeichen>
+ <link>http://www.rechtsprechung-im-internet.de/jportal/docs/bsjrs/jb-JURE100055033.zip</link>
+ <modified>2025-06-23T21:55:54.378Z</modified>
+</item>
+<item>
+ <gericht>BGH 9. Zivilsenat</gericht>
+ <entsch-datum>20100114</entsch-datum>
+ <aktenzeichen>IX ZB 76/09</aktenzeichen>
+ <link>http://www.rechtsprechung-im-internet.de/jportal/docs/bsjrs/jb-JURE100055035.zip</link>
+ <modified>2025-06-23T21:55:54.378Z</modified>
+</item>
+<item>
+ <gericht>BGH 2. Strafsenat</gericht>
+ <entsch-datum>20100113</entsch-datum>
+ <aktenzeichen>2 ARs 569/09</aktenzeichen>
+ <link>http://www.rechtsprechung-im-internet.de/jportal/docs/bsjrs/jb-JURE100055051.zip</link>
+ <modified>2025-06-23T21:55:54.378Z</modified>
+</item>
+<item>
+ <gericht>BGH 2. Strafsenat</gericht>
+ <entsch-datum>20100113</entsch-datum>
+ <aktenzeichen>2 StR 428/09</aktenzeichen>
+ <link>http://www.rechtsprechung-im-internet.de/jportal/docs/bsjrs/jb-JURE100055072.zip</link>
+ <modified>2025-06-23T21:55:54.378Z</modified>
+</item>
+<item>
+ <gericht>BGH 2. Strafsenat</gericht>
+ <entsch-datum>20100113</entsch-datum>
+ <aktenzeichen>2 StR 447/09</aktenzeichen>
+ <link>http://www.rechtsprechung-im-internet.de/jportal/docs/bsjrs/jb-JURE100055074.zip</link>
+ <modified>2025-06-23T21:55:54.378Z</modified>
+</item>
+<item>
+ <gericht>BVerwG 2. Senat</gericht>
+ <entsch-datum>20100106</entsch-datum>
+ <aktenzeichen>2 B 125/09</aktenzeichen>
+ <link>http://www.rechtsprechung-im-internet.de/jportal/docs/bsjrs/jb-JURE100055348.zip</link>
+ <modified>2026-04-14T21:14:20.772Z</modified>
+</item>
+<item>
+ <gericht>BVerwG 2. Senat</gericht>
+ <entsch-datum>20100114</entsch-datum>
+ <aktenzeichen>2 B 55/09</aktenzeichen>
+ <link>http://www.rechtsprechung-im-internet.de/jportal/docs/bsjrs/jb-JURE100055349.zip</link>
+ <modified>2026-04-14T21:14:20.772Z</modified>
+</item>
+<item>
+ <gericht>BVerwG 7. Senat</gericht>
+ <entsch-datum>20100114</entsch-datum>
+ <aktenzeichen>7 B 1/10</aktenzeichen>
+ <link>http://www.rechtsprechung-im-internet.de/jportal/docs/bsjrs/jb-JURE100055350.zip</link>
+ <modified>2026-04-14T21:14:20.772Z</modified>
+</item>
+<item>
+ <gericht>BGH Senat für Anwaltssachen</gericht>
+ <entsch-datum>20100107</entsch-datum>
+ <aktenzeichen>AnwZ (B) 79/09</aktenzeichen>
+ <link>http://www.rechtsprechung-im-internet.de/jportal/docs/bsjrs/jb-JURE100055435.zip</link>
+ <modified>2025-06-23T21:55:54.378Z</modified>
+</item>
+<item>
+ <gericht>BGH 4. Strafsenat</gericht>
+ <entsch-datum>20100105</entsch-datum>
+ <aktenzeichen>4 StR 478/09</aktenzeichen>
+ <link>http://www.rechtsprechung-im-internet.de/jportal/docs/bsjrs/jb-JURE100055470.zip</link>
+ <modified>2025-06-23T21:55:54.378Z</modified>
+</item>
+<item>
+ <gericht>BGH 2. Strafsenat</gericht>
+ <entsch-datum>20100113</entsch-datum>
+ <aktenzeichen>2 StR 519/09</aktenzeichen>
+ <link>http://www.rechtsprechung-im-internet.de/jportal/docs/bsjrs/jb-JURE100055472.zip</link>
+ <modified>2025-06-23T21:55:54.378Z</modified>
+</item>
+<item>
+ <gericht>BGH 4. Strafsenat</gericht>
+ <entsch-datum>20100114</entsch-datum>
+ <aktenzeichen>4 StR 399/09</aktenzeichen>
+ <link>http://www.rechtsprechung-im-internet.de/jportal/docs/bsjrs/jb-JURE100055477.zip</link>
+ <modified>2025-06-23T21:55:54.378Z</modified>
+</item>
+<item>
+ <gericht>BGH 4. Strafsenat</gericht>
+ <entsch-datum>20100114</entsch-datum>
+ <aktenzeichen>4 StR 93/09</aktenzeichen>
+ <link>http://www.rechtsprechung-im-internet.de/jportal/docs/bsjrs/jb-JURE100055492.zip</link>
+ <modified>2025-06-23T21:55:54.378Z</modified>
+</item>
+<item>
+ <gericht>BGH 4. Zivilsenat</gericht>
+ <entsch-datum>20100120</entsch-datum>
+ <aktenzeichen>IV ZR 111/07</aktenzeichen>
+ <link>http://www.rechtsprechung-im-internet.de/jportal/docs/bsjrs/jb-JURE100055495.zip</link>
+ <modified>2025-06-23T21:55:54.378Z</modified>
+</item>
+<item>
+ <gericht>BGH 4. Zivilsenat</gericht>
+ <entsch-datum>20100113</entsch-datum>
+ <aktenzeichen>IV ZR 188/07</aktenzeichen>
+ <link>http://www.rechtsprechung-im-internet.de/jportal/docs/bsjrs/jb-JURE100055497.zip</link>
+ <modified>2025-06-23T21:55:54.378Z</modified>
+</item>
+<item>
+ <gericht>BGH 9. Zivilsenat</gericht>
+ <entsch-datum>20100114</entsch-datum>
+ <aktenzeichen>IX ZB 78/09</aktenzeichen>
+ <link>http://www.rechtsprechung-im-internet.de/jportal/docs/bsjrs/jb-JURE100055515.zip</link>
+ <modified>2025-06-23T21:55:54.378Z</modified>
+</item>
+<item>
+ <gericht>BGH 9. Zivilsenat</gericht>
+ <entsch-datum>20100114</entsch-datum>
+ <aktenzeichen>IX ZR 50/07</aktenzeichen>
+ <link>http://www.rechtsprechung-im-internet.de/jportal/docs/bsjrs/jb-JURE100055517.zip</link>
+ <modified>2025-06-23T21:55:54.378Z</modified>
+</item>
+<item>
+ <gericht>BGH 8. Zivilsenat</gericht>
+ <entsch-datum>20100112</entsch-datum>
+ <aktenzeichen>VIII ZB 64/09</aktenzeichen>
+ <link>http://www.rechtsprechung-im-internet.de/jportal/docs/bsjrs/jb-JURE100055519.zip</link>
+ <modified>2025-06-23T21:55:54.378Z</modified>
+</item>
+</items>

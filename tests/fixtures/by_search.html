@@ -1,0 +1,564 @@
+
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>Trefferliste - B&#xFC;rgerservice</title>
+  <link href="/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <link rel="apple-touch-icon-precomposed" href="/apple-touch-icon-precomposed.png" />
+
+  <link rel="stylesheet" href="/bundles/styles.css" />
+  
+
+  <script id="usercentrics-cmp" src="https://app.usercentrics.eu/browser-ui/latest/loader.js" data-settings-id="fyxvNFVrU" async></script>
+</head>
+<body>
+
+<form action="/Search" id="searchForm" method="post">
+<nav class="navbar navbar-default navbar-fixed-top" aria-label="Seitennavigation">
+    <div class="row" id="header">
+        <div class="col-xs-12 col-sm-4" style="padding-right: 0px; padding-left: 0px;">
+            <a class="navbarItem" href="/" title="Zur Startseite von BAYERN.RECHT">
+                <img src="/Images/logo_bayern-recht.png" class="img-responsive pull-left hidden-xs" alt="Logo Bayern.Recht" />
+            </a>
+        </div>
+        <div id="portalLogo" class="col-xs-12 col-sm-8" style="padding-right: 0px; padding-left: 0px;">
+            <img src="/Images/logo_bayern.png" class="img-responsive pull-right hidden-xs" alt="Logo Bayern" />
+            <img src="/Images/logo_xs_bayern.png" class="img-responsive pull-right visible-xs" alt="Logo Bayern" />
+        </div>
+    </div>
+
+    <ul class="nav navbar-nav col-xs-8 col-sm-4 col-lg-3">
+        <li>
+                <a class="navbarItem" href="/" title="Zur Startseite von BAYERN.RECHT"><span style="font-size: 20px" class="glyphicon glyphicon-home"></span><span class="sr-only">Zur Startseite von BAYERN.RECHT</span></a>
+        </li>
+        <li>
+                <span class="navbarItem active" title="Trefferliste der letzten Suche"><span style="font-size: 20px; color: lightgray" class="glyphicon glyphicon-list"></span><span class="sr-only">Trefferliste der letzten Suche</span></span>
+        </li>
+    </ul>
+
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+    </div>
+    
+    <div class="col-sm-5 col-lg-6" id="searchPanelDiv">
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <div style="padding:0px">
+              <div class="navbar-form">
+  <div at-target="searchSuggestInputGroup" class="input-group">
+    <input at-target="searchPanelBox" autocomplete="off" class="form-control" id="searchPanelBox" name="SearchFields.Content" aria-label="Suche" placeholder="Suche" title="Geben Sie die zu suchenden Begriffe wie Schlagworte, Aktenzeichen, Zitate in beliebiger Reihenfolge ein..." type="text" 
+           value="">
+    <div style="width: 85px" class="input-group-btn">
+      <button at-target="searchPanelBoxClearer" id="searchPanelBoxClearer" title="Suche zurücksetzen" class="btn btn-default" type="button"><i class="glyphicon glyphicon-trash"></i><span class="sr-only">Suche zurücksetzen</span></button>
+      <button at-target="searchPanelBoxSubmit" class="btn btn-default" title="Suche ausführen" type="submit" style="padding: 3px 14px"><i style="font-size: 21px" class="glyphicon glyphicon-search"></i><span class="sr-only">Suche ausführen</span></button>
+    </div>
+  </div>
+</div>
+
+
+            </div>
+        </div>
+    </div>
+</nav>
+      <main class="container">
+            <div class="row">
+                
+<div id="navigation" role="navigation" class="col-sm-4 col-lg-3">
+    <h1 class="sr-only">Navigation</h1>
+  <div id="facets" class="nav">
+    <div class="panel-group">
+
+        
+<div class="panel panel-default">
+    <div class="panel-heading  ">
+        <div class="panel-title" title="Vorschriften (2495)">
+            <img src="/Images/hitlist_gesetz.png" alt="gesetz" />
+                <a href="/Search/Filter/DOKTYP/norm" class="panel-group-item navPanelHeading">Vorschriften <span class="facet-count">(2495)</span></a>
+        </div>
+    </div>
+    <div id="rechtsvorschriften" class="panel-collapse collapse in documentNavigationType">
+        <div class="panel-body">
+            <div class="tree">
+                <ul class="list-group">
+                    
+<li class="list-group-item node-tree   " data-level="1" data-nodeid="2" data-docid="NORMTYP-ges" data-fieldname="NORMTYP" data-fieldvalue="ges" data-parent="" data-root="" data-count="242" title="Gesetze (242)">
+
+<span class="icon"><i class="glyphicon spacer"></i></span><span class="icon"><i></i></span><a href="/Search/Filter/NORMTYP/ges">Gesetze <span class="facet-count">(242)</span></a></li>
+
+<li class="list-group-item node-tree   " data-level="1" data-nodeid="1" data-docid="NORMTYP-rv" data-fieldname="NORMTYP" data-fieldvalue="rv" data-parent="" data-root="" data-count="489" title="Rechtsverordnungen (489)">
+
+<span class="icon"><i class="glyphicon spacer"></i></span><span class="icon"><i></i></span><a href="/Search/Filter/NORMTYP/rv">Rechtsverordnungen <span class="facet-count">(489)</span></a></li>
+
+<li class="list-group-item node-tree   " data-level="1" data-nodeid="0" data-docid="NORMTYP-vv" data-fieldname="NORMTYP" data-fieldvalue="vv" data-parent="" data-root="" data-count="1556" title="Verwaltungsvorschriften (1556)">
+
+<span class="icon"><i class="glyphicon spacer"></i></span><span class="icon"><i></i></span><a href="/Search/Filter/NORMTYP/vv">Verwaltungsvorschriften <span class="facet-count">(1556)</span></a></li>
+
+<li class="list-group-item node-tree   " data-level="1" data-nodeid="3" data-docid="NORMTYP-vertr" data-fieldname="NORMTYP" data-fieldvalue="vertr" data-parent="" data-root="" data-count="208" title="Vertr&#xE4;ge, sonstige Rechtsquellen (208)">
+
+<span class="icon"><i class="glyphicon spacer"></i></span><span class="icon"><i></i></span><a href="/Search/Filter/NORMTYP/vertr">Vertr&#xE4;ge, sonstige Rechtsquellen <span class="facet-count">(208)</span></a></li>
+
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+        
+<div class="panel panel-default">
+    <div class="panel-heading node-selected ">
+        <div class="panel-title" title="Gerichtsentscheidungen (24879)">
+            <img src="/Images/hitlist_rechtsprechung.png" alt="rechtsprechung" />
+                <a href="/Search/Filter/DOKTYP/rspr" class="panel-group-item navPanelHeading">Gerichtsentscheidungen <span class="facet-count">(24879)</span></a>
+        </div>
+    </div>
+    <div id="gerichtsentscheidungen" class="panel-collapse collapse in documentNavigationType">
+        <div class="panel-body">
+            <div class="tree">
+                <ul class="list-group">
+                    
+<li class="list-group-item node-tree collapsed  " data-level="1" data-nodeid="0" data-docid="LEVEL1RSPRTREENODE-Verfassungsgerichtsbarkeit" data-fieldname="LEVEL1RSPRTREENODE" data-fieldvalue="Verfassungsgerichtsbarkeit" data-parent="" data-root="" data-count="158" title="Verfassungsgerichtsbarkeit (158)">
+
+<span class="icon" role="button" style=""><i tabindex="0" class="click-expand glyphicon glyphicon-plus"></i><span class="sr-only">Bereich erweitern</span></span><span class="icon"><i></i></span><a href="/Search/Filter/LEVEL1RSPRTREENODE/Verfassungsgerichtsbarkeit">Verfassungsgerichtsbarkeit <span class="facet-count">(158)</span></a></li>
+
+<li class="list-group-item node-tree collapsed  " data-level="1" data-nodeid="1" data-docid="LEVEL1RSPRTREENODE-Ordentliche Gerichtsbarkeit" data-fieldname="LEVEL1RSPRTREENODE" data-fieldvalue="Ordentliche Gerichtsbarkeit" data-parent="" data-root="" data-count="8120" title="Ordentliche Gerichtsbarkeit (8120)">
+
+<span class="icon" role="button" style=""><i tabindex="0" class="click-expand glyphicon glyphicon-plus"></i><span class="sr-only">Bereich erweitern</span></span><span class="icon"><i></i></span><a href="/Search/Filter/LEVEL1RSPRTREENODE/Ordentliche%20Gerichtsbarkeit">Ordentliche Gerichtsbarkeit <span class="facet-count">(8120)</span></a></li>
+
+<li class="list-group-item node-tree collapsed  " data-level="1" data-nodeid="2" data-docid="LEVEL1RSPRTREENODE-Verwaltungsgerichtsbarkeit" data-fieldname="LEVEL1RSPRTREENODE" data-fieldvalue="Verwaltungsgerichtsbarkeit" data-parent="" data-root="" data-count="14403" title="Verwaltungsgerichtsbarkeit (14403)">
+
+<span class="icon" role="button" style=""><i tabindex="0" class="click-expand glyphicon glyphicon-plus"></i><span class="sr-only">Bereich erweitern</span></span><span class="icon"><i></i></span><a href="/Search/Filter/LEVEL1RSPRTREENODE/Verwaltungsgerichtsbarkeit">Verwaltungsgerichtsbarkeit <span class="facet-count">(14403)</span></a></li>
+
+<li class="list-group-item node-tree collapsed  " data-level="1" data-nodeid="3" data-docid="LEVEL1RSPRTREENODE-Finanzgerichtsbarkeit" data-fieldname="LEVEL1RSPRTREENODE" data-fieldvalue="Finanzgerichtsbarkeit" data-parent="" data-root="" data-count="437" title="Finanzgerichtsbarkeit (437)">
+
+<span class="icon" role="button" style=""><i tabindex="0" class="click-expand glyphicon glyphicon-plus"></i><span class="sr-only">Bereich erweitern</span></span><span class="icon"><i></i></span><a href="/Search/Filter/LEVEL1RSPRTREENODE/Finanzgerichtsbarkeit">Finanzgerichtsbarkeit <span class="facet-count">(437)</span></a></li>
+
+<li class="list-group-item node-tree collapsed  " data-level="1" data-nodeid="4" data-docid="LEVEL1RSPRTREENODE-Arbeitsgerichtsbarkeit" data-fieldname="LEVEL1RSPRTREENODE" data-fieldvalue="Arbeitsgerichtsbarkeit" data-parent="" data-root="" data-count="606" title="Arbeitsgerichtsbarkeit (606)">
+
+<span class="icon" role="button" style=""><i tabindex="0" class="click-expand glyphicon glyphicon-plus"></i><span class="sr-only">Bereich erweitern</span></span><span class="icon"><i></i></span><a href="/Search/Filter/LEVEL1RSPRTREENODE/Arbeitsgerichtsbarkeit">Arbeitsgerichtsbarkeit <span class="facet-count">(606)</span></a></li>
+
+<li class="list-group-item node-tree collapsed  " data-level="1" data-nodeid="5" data-docid="LEVEL1RSPRTREENODE-Dienstgericht" data-fieldname="LEVEL1RSPRTREENODE" data-fieldvalue="Dienstgericht" data-parent="" data-root="" data-count="1" title="Dienstgericht (1)">
+
+<span class="icon" role="button" style=""><i tabindex="0" class="click-expand glyphicon glyphicon-plus"></i><span class="sr-only">Bereich erweitern</span></span><span class="icon"><i></i></span><a href="/Search/Filter/LEVEL1RSPRTREENODE/Dienstgericht">Dienstgericht <span class="facet-count">(1)</span></a></li>
+
+<li class="list-group-item node-tree collapsed  " data-level="1" data-nodeid="6" data-docid="LEVEL1RSPRTREENODE-Sozialgerichtsbarkeit" data-fieldname="LEVEL1RSPRTREENODE" data-fieldvalue="Sozialgerichtsbarkeit" data-parent="" data-root="" data-count="1136" title="Sozialgerichtsbarkeit (1136)">
+
+<span class="icon" role="button" style=""><i tabindex="0" class="click-expand glyphicon glyphicon-plus"></i><span class="sr-only">Bereich erweitern</span></span><span class="icon"><i></i></span><a href="/Search/Filter/LEVEL1RSPRTREENODE/Sozialgerichtsbarkeit">Sozialgerichtsbarkeit <span class="facet-count">(1136)</span></a></li>
+
+<li class="list-group-item node-tree collapsed  " data-level="1" data-nodeid="7" data-docid="LEVEL1RSPRTREENODE-Sonstige Gerichte" data-fieldname="LEVEL1RSPRTREENODE" data-fieldvalue="Sonstige Gerichte" data-parent="" data-root="" data-count="18" title="Sonstige Gerichte (18)">
+
+<span class="icon" role="button" style=""><i tabindex="0" class="click-expand glyphicon glyphicon-plus"></i><span class="sr-only">Bereich erweitern</span></span><span class="icon"><i></i></span><a href="/Search/Filter/LEVEL1RSPRTREENODE/Sonstige%20Gerichte">Sonstige Gerichte <span class="facet-count">(18)</span></a></li>
+
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+        
+<div class="panel panel-default">
+    <div class="panel-heading inactive">
+        <div class="panel-title" title="RSS-Feed Gerichtsentscheidungen">
+            <img src="/Images/rss-icon.png" alt="rss" style="float:left" />
+            <span style="display:inline-block; margin-top:1px; margin-left: 3px;">
+                RSS-Feed Gerichtsentscheidungen
+            </span>
+        </div>
+    </div>
+    <div id="rss" class="panel-collapse collapse in documentNavigationType">
+        <div class="panel-body" style=" padding-bottom: 8px">
+            <span style="padding-left:25px; font-size: 90%">
+                <a href="/Content/Document/Rss">Abonnieren Sie hier!</a>
+            </span>
+        </div>
+    </div>
+</div>
+
+        
+<div class="panel panel-default">
+    <div class="panel-heading inactive">
+        <div class="panel-title" title="Fortführungsnachweise">
+            <img src="/Images/ffn.png" alt="ffn" style="float:left" />
+            <span style="display:inline-block; margin-top:2px; margin-left: 3px;">
+                Fortführungsnachweise
+            </span>
+        </div>
+    </div>
+    <div id="ffn" class="panel-collapse collapse in documentNavigationType">
+        <div class="panel-body" style="padding-bottom: 8px; padding-left:25px;">
+            <div>
+                <span style="font-size: 90%">
+                    <a href="/Content/Document/ffn">Rechtsvorschriften</a>
+                </span>
+            </div>
+            <div>
+                <span style="font-size: 90%">
+          <a href="/Content/Document/ffn-mbl">Verwaltungsvorschriften (BayMBl.)</a>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+    </div>
+</div>
+
+
+</div>
+<div role="search" class="col-sm-8 col-lg-6" style="padding:0px">
+    <h1 class="sr-only">Suche</h1>
+<div id="filterPanel">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            Eingeschränkt auf:
+        </div>
+        <ul>
+            
+<li>
+    <span></span>Gerichtsentscheidungen
+    <a href="/Search/Filter/DOKTYP/rspr/null/null/remove" title="Filter entfernen"><span class="glyphicon glyphicon-remove" style="padding-left:10px;"></span><span class="sr-only">Filter entfernen</span></a>
+</li>
+
+        </ul>
+    </div>
+</div>
+<div id="advancedSearch">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <span>Gerichtsentscheidungen weiter einschränken:</span>
+            <a href="/Content/Document/Hilfe#Hilfe-2" title="Hilfe"><span class="glyphicon glyphicon-question-sign pull-right" style="font-size:15px;"></span><span class="sr-only">Hilfe</span></a>
+            <span id="clearer" title="Eingaben löschen" class="glyphicon glyphicon-trash pull-right" style="padding-right:20px;"></span><span class="sr-only">Eingaben löschen</span>
+        </div>
+    </div>
+        
+    <div class="form-group row">
+        <div class="col-sm-5">
+            <input class="form-control input-sm datepicker" id="SearchFields_DatumVon" name="SearchFields.DatumVon" placeholder="Datum von" title="Geben Sie hier den Start des Zeitraums ein, auf den Sie ihre Suche einschr&#xE4;nken m&#xF6;chten" type="text" value="" />
+        </div>
+        <div class="col-sm-offset-2 col-sm-5">
+            <input class="form-control input-sm datepicker" id="SearchFields_DatumBis" name="SearchFields.DatumBis" placeholder="Datum bis" title="Geben Sie hier das Ende des Zeitraums ein, auf den Sie ihre Suche einschr&#xE4;nken m&#xF6;chten" type="text" value="" />
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-sm-12">
+            <input autocomplete="off" class="form-control input-sm" id="azSearchField" name="SearchFields.Aktenzeichen" placeholder="Aktenzeichen" title="Geben Sie hier das Aktenzeichen der gesuchten Gerichtsentscheidung ein" type="text" value="" />
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="col-sm-12">
+            <input autocomplete="off" class="form-control input-sm" id="normSearchField" name="SearchFields.Norm" placeholder="Norm" title="Geben Sie hier die Norm ein, zu welcher Sie eine Gerichtsentscheidung suchen" type="text" value="" />
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-7">
+            <button class="btn btn-sm btn-default" type="submit" title="Suche ausführen">Suchen</button>
+        </div>
+    </div>
+</div>
+
+            <div id="hitlistHeader">
+                <hr />
+                <p id="readable">24879 Treffer in 24879 Gerichtsentscheidungen</p>
+                <hr />
+            </div>
+
+<div id="hitlist" at-target="hitlist">
+    <ul>
+        
+<li class="hitlistItem">
+    <div style="display:table-cell; padding-right: 5px; vertical-align: top">
+        <img title="Gerichtsentscheidung" src="/Images/hitlist_rechtsprechung.png" alt="Gerichtsentscheidung" />
+    </div>
+    <div style="display:table-cell;">
+            <p class="hltitel"><a href="/Content/Document/Y-300-Z-BECKRS-B-2026-N-9522?hl=true"><b>VGH M&#xFC;nchen: Technischer Inspektor (Besoldungsgruppe A 9 mit Amtszulage), Systembetreuer, Vorl&#xE4;ufige Dienstenthebung, Einbehaltung von Dienstbez&#xFC;gen, F&#xE4;lschung beweiserheblicher Daten in 100 tatmehrheitlichen F&#xE4;llen, Betrug</b></a></p>
+            <p class="hlSubTitel">
+Beschluss vom 13.05.2026 &#x2013; 16a DS 26.327            </p>
+    </div>
+</li>
+<li class="hitlistItem">
+    <div style="display:table-cell; padding-right: 5px; vertical-align: top">
+        <img title="Gerichtsentscheidung" src="/Images/hitlist_rechtsprechung.png" alt="Gerichtsentscheidung" />
+    </div>
+    <div style="display:table-cell;">
+            <p class="hltitel"><a href="/Content/Document/Y-300-Z-BECKRS-B-2026-N-9513?hl=true"><b>VGH M&#xFC;nchen: Entziehung der Fahrerlaubnis, Nichtvorlage des angeordneten &#xE4;rztlichen Gutachtens, Fahreignungszweifel aufgrund von vor&#xFC;bergehenden Bewusstseinsverlusten sowie einer Operation am Hirn, Fragestellung bzw. Umfang der Begutachtung, Hinweise auf Krankheiten des Nervensystems sowie von Herz- und Gef&#xE4;&#xDF;krankheiten im Sinne eines &#x201E;Anfangsverdachts&#x201C; aufgrund der Notwendigkeit einer Differenzialdiagnose zwischen epileptischen Anf&#xE4;llen und Synkopen (bejaht)</b></a></p>
+            <p class="hlSubTitel">
+Beschluss vom 12.05.2026 &#x2013; 11 CS 26.505            </p>
+    </div>
+</li>
+<li class="hitlistItem">
+    <div style="display:table-cell; padding-right: 5px; vertical-align: top">
+        <img title="Gerichtsentscheidung" src="/Images/hitlist_rechtsprechung.png" alt="Gerichtsentscheidung" />
+    </div>
+    <div style="display:table-cell;">
+            <p class="hltitel"><a href="/Content/Document/Y-300-Z-BECKRS-B-2026-N-9517?hl=true"><b>VGH M&#xFC;nchen: Anh&#xF6;rungsr&#xFC;ge im Prozesskostenhilfeverfahren f&#xFC;r eine beabsichtigte Beschwerde gegen die erstinstanzliche Versagung vorl&#xE4;ufigen Rechtsschutzes</b></a></p>
+            <p class="hlSubTitel">
+Beschluss vom 12.05.2026 &#x2013; 11 CS 26.753            </p>
+    </div>
+</li>
+<li class="hitlistItem">
+    <div style="display:table-cell; padding-right: 5px; vertical-align: top">
+        <img title="Gerichtsentscheidung" src="/Images/hitlist_rechtsprechung.png" alt="Gerichtsentscheidung" />
+    </div>
+    <div style="display:table-cell;">
+            <p class="hltitel"><a href="/Content/Document/Y-300-Z-BECKRS-B-2026-N-9341?hl=true"><b>OLG M&#xFC;nchen: Einsichtsrecht, Mitgliederliste, Insolvenzverwalter, Liquidator, Passivlegitimation, einstweilige Verf&#xFC;gung, Gesellschaftsrecht</b></a></p>
+            <p class="hlSubTitel">
+Beschluss vom 12.05.2026 &#x2013; 7 W 607/26 e            </p>
+    </div>
+</li>
+<li class="hitlistItem">
+    <div style="display:table-cell; padding-right: 5px; vertical-align: top">
+        <img title="Gerichtsentscheidung" src="/Images/hitlist_rechtsprechung.png" alt="Gerichtsentscheidung" />
+    </div>
+    <div style="display:table-cell;">
+            <p class="hltitel"><a href="/Content/Document/Y-300-Z-BECKRS-B-2026-N-9533?hl=true"><b>VGH M&#xFC;nchen: Kostenerinnerung, Zur&#xFC;ckverweisung an den Urkundsbeamten, notwendige Aufwendungen zur zweckentsprechenden Rechtsverfolgung, erstattungsf&#xE4;hige Parteikosten bei juristischer Person, Verdienstausfall, zus&#xE4;tzlicher Rechtsanwalt als beigezogener Rechtsbeistand (nicht erstattungsf&#xE4;hig), Reisekosten eines Fachbeistands zur m&#xFC;ndlichen Verhandlung (nicht erstattungsf&#xE4;hig).</b></a></p>
+            <p class="hlSubTitel">
+Beschluss vom 11.05.2026 &#x2013; 24 M 25.1121            </p>
+    </div>
+</li>
+<li class="hitlistItem">
+    <div style="display:table-cell; padding-right: 5px; vertical-align: top">
+        <img title="Gerichtsentscheidung" src="/Images/hitlist_rechtsprechung.png" alt="Gerichtsentscheidung" />
+    </div>
+    <div style="display:table-cell;">
+            <p class="hltitel"><a href="/Content/Document/Y-300-Z-BECKRS-B-2026-N-9181?hl=true"><b>LG N&#xFC;rnberg-F&#xFC;rth: Strafbefehl, Kostenbeschwerde, Ermittlungsma&#xDF;nahmen, Dolmetscherkosten, Fahrtkosten, Unrichtige Sachbehandlung</b></a></p>
+            <p class="hlSubTitel">
+Beschluss vom 11.05.2026 &#x2013; 12 Qs 33/26            </p>
+    </div>
+</li>
+<li class="hitlistItem">
+    <div style="display:table-cell; padding-right: 5px; vertical-align: top">
+        <img title="Gerichtsentscheidung" src="/Images/hitlist_rechtsprechung.png" alt="Gerichtsentscheidung" />
+    </div>
+    <div style="display:table-cell;">
+            <p class="hltitel"><a href="/Content/Document/Y-300-Z-BECKRS-B-2026-N-9531?hl=true"><b>VGH M&#xFC;nchen: immissionsschutzrechtlicher Vorbescheid f&#xFC;r Windenergieanlagen, isolierte Anfechtung einer Nebenbestimmung, Nebenbestimmung bzw. aufl&#xF6;sende Bedingung in einem immissionsschutzrechtlichem Vorbescheid, prognostische Ber&#xFC;cksichtigung k&#xFC;nftiger &#xC4;nderungen der Sach-/Rechtslage im Rahmen von Nebenbestimmungen</b></a></p>
+            <p class="hlSubTitel">
+Urteil vom 08.05.2026 &#x2013; 22 A 25.40067            </p>
+    </div>
+</li>
+<li class="hitlistItem">
+    <div style="display:table-cell; padding-right: 5px; vertical-align: top">
+        <img title="Gerichtsentscheidung" src="/Images/hitlist_rechtsprechung.png" alt="Gerichtsentscheidung" />
+    </div>
+    <div style="display:table-cell;">
+            <p class="hltitel"><a href="/Content/Document/Y-300-Z-BECKRS-B-2026-N-9540?hl=true"><b>VGH M&#xFC;nchen: vorzeitige Besitzeinweisung f&#xFC;r Hochwasserschutzma&#xDF;nahme, einstweiliger Rechtsschutz, Vertretungszwang im erstinstanzlichen Verfahren vor dem Verwaltungsgerichtshof</b></a></p>
+            <p class="hlSubTitel">
+Beschluss vom 08.05.2026 &#x2013; 8 AS 26.40024            </p>
+    </div>
+</li>
+<li class="hitlistItem">
+    <div style="display:table-cell; padding-right: 5px; vertical-align: top">
+        <img title="Gerichtsentscheidung" src="/Images/hitlist_rechtsprechung.png" alt="Gerichtsentscheidung" />
+    </div>
+    <div style="display:table-cell;">
+            <p class="hltitel"><a href="/Content/Document/Y-300-Z-BECKRS-B-2026-N-9574?hl=true"><b>LG N&#xFC;rnberg-F&#xFC;rth: Sofortige Beschwerde der Staatsanwaltschaft gegen die Festsetzung der Tagessatzh&#xF6;he; Bemessung der Tagessatzh&#xF6;he bei einer am Existenzminimum lebenden Person</b></a></p>
+            <p class="hlSubTitel">
+Beschluss vom 08.05.2026 &#x2013; 18 Qs 23/25            </p>
+    </div>
+</li>
+<li class="hitlistItem">
+    <div style="display:table-cell; padding-right: 5px; vertical-align: top">
+        <img title="Gerichtsentscheidung" src="/Images/hitlist_rechtsprechung.png" alt="Gerichtsentscheidung" />
+    </div>
+    <div style="display:table-cell;">
+            <p class="hltitel"><a href="/Content/Document/Y-300-Z-BECKRS-B-2026-N-9269?hl=true"><b>OLG M&#xFC;nchen: Verschmelzungsvertrag, Auslandsbeurkundung, Materielle Richtigkeitsgew&#xE4;hr, Registergerichtliche Pr&#xFC;fung, Internationale Notarurkunde, Registergericht, Zur&#xFC;ckverweisung</b></a></p>
+            <p class="hlSubTitel">
+Beschluss vom 07.05.2026 &#x2013; 34 Wx 41/26 e            </p>
+    </div>
+</li>
+    </ul>
+</div>
+
+
+<div id="pager">
+    <nav>
+        <ul class="pagination">
+                <li class="disabled" title="Vorherige Seite (inaktiv)"><span>←</span></li>
+                            
+            <li class="active"><a href="/Search/Page/1">1</a></li>
+<li class=""><a href="/Search/Page/2">2</a></li>
+<li class=""><a href="/Search/Page/3">3</a></li>
+<li class=""><a href="/Search/Page/4">4</a></li>
+<li class=""><a href="/Search/Page/5">5</a></li>
+<li class=""><a href="/Search/Page/6">6</a></li>
+<li class=""><a href="/Search/Page/7">7</a></li>
+<li class=""><a href="/Search/Page/8">8</a></li>
+<li class=""><a href="/Search/Page/9">9</a></li>
+<li class=""><a href="/Search/Page/10">10</a></li>
+
+
+                <li><a href="/Search/Page/2" title="Nächste Seite">→</a></li>
+            
+        </ul>
+    </nav>
+</div>
+</div>
+<div class="col-lg-3 hidden-md hidden-sm hidden-xs" style="padding-right: 0px;">
+    <div class="panel-group">
+          <div id="tagcloud" class="panel panel-default">
+        <div class="panel-heading">
+            <div class="panel-title" title="Schlagworte">
+                <img src="/Images/hitlist_schlagworte.png" alt="Schlagworte" />
+                <span>Schlagworte</span>
+            </div>
+        </div>
+        <div id="schlagworte" class="panel-collapse collapse in documentNavigationType">
+            <div class="panel-body">
+                <ul>
+                    <li>
+    <a class="tcl-1" href="/Search/Filter/skeyword1/Abschiebungsverbot">Abschiebungsverbot</a>
+</li>
+<li>
+    <a class="tcl-1" href="/Search/Filter/skeyword1/Asyl">Asyl</a>
+</li>
+<li>
+    <a class="tcl-1" href="/Search/Filter/skeyword1/Auslegung">Auslegung</a>
+</li>
+<li>
+    <a class="tcl-3" href="/Search/Filter/skeyword1/Baugenehmigung">Baugenehmigung</a>
+</li>
+<li>
+    <a class="tcl-2" href="/Search/Filter/skeyword1/Berufung">Berufung</a>
+</li>
+<li>
+    <a class="tcl-3" href="/Search/Filter/skeyword1/Beschwerde">Beschwerde</a>
+</li>
+<li>
+    <a class="tcl-2" href="/Search/Filter/skeyword1/Corona">Corona</a>
+</li>
+<li>
+    <a class="tcl-1" href="/Search/Filter/skeyword1/Corona-Pandemie">Corona-Pandemie</a>
+</li>
+<li>
+    <a class="tcl-3" href="/Search/Filter/skeyword1/Diesel-Abgasskandal">Diesel-Abgasskandal</a>
+</li>
+<li>
+    <a class="tcl-4" href="/Search/Filter/skeyword1/Ermessen">Ermessen</a>
+</li>
+<li>
+    <a class="tcl-1" href="/Search/Filter/skeyword1/Gebot der R&#xFC;cksichtnahme">Gebot der R&#xFC;cksichtnahme</a>
+</li>
+<li>
+    <a class="tcl-2" href="/Search/Filter/skeyword1/Kostenentscheidung">Kostenentscheidung</a>
+</li>
+<li>
+    <a class="tcl-2" href="/Search/Filter/skeyword1/Nachbarklage">Nachbarklage</a>
+</li>
+<li>
+    <a class="tcl-2" href="/Search/Filter/skeyword1/Prozesskostenhilfe">Prozesskostenhilfe</a>
+</li>
+<li>
+    <a class="tcl-2" href="/Search/Filter/skeyword1/Rechtsschutzbed&#xFC;rfnis">Rechtsschutzbed&#xFC;rfnis</a>
+</li>
+<li>
+    <a class="tcl-1" href="/Search/Filter/skeyword1/R&#xFC;cksichtnahmegebot">R&#xFC;cksichtnahmegebot</a>
+</li>
+<li>
+    <a class="tcl-4" href="/Search/Filter/skeyword1/Schadensersatz">Schadensersatz</a>
+</li>
+<li>
+    <a class="tcl-1" href="/Search/Filter/skeyword1/Schadensersatzanspruch">Schadensersatzanspruch</a>
+</li>
+<li>
+    <a class="tcl-2" href="/Search/Filter/skeyword1/Sittenwidrigkeit">Sittenwidrigkeit</a>
+</li>
+<li>
+    <a class="tcl-2" href="/Search/Filter/skeyword1/Streitwert">Streitwert</a>
+</li>
+<li>
+    <a class="tcl-4" href="/Search/Filter/skeyword1/Thermofenster">Thermofenster</a>
+</li>
+<li>
+    <a class="tcl-4" href="/Search/Filter/skeyword1/unzul&#xE4;ssige Abschalteinrichtung">unzul&#xE4;ssige Abschalteinrichtung</a>
+</li>
+<li>
+    <a class="tcl-3" href="/Search/Filter/skeyword1/Verh&#xE4;ltnism&#xE4;&#xDF;igkeit">Verh&#xE4;ltnism&#xE4;&#xDF;igkeit</a>
+</li>
+<li>
+    <a class="tcl-1" href="/Search/Filter/skeyword1/Verj&#xE4;hrung">Verj&#xE4;hrung</a>
+</li>
+<li>
+    <a class="tcl-1" href="/Search/Filter/skeyword1/Widerruf">Widerruf</a>
+</li>
+
+                </ul>
+            </div>
+        </div>
+    </div>
+
+
+    </div>
+</div>
+
+
+            </div>
+      </main>
+
+
+<footer class="row">
+    <ul>
+        <li class="col-sm-3">
+            <a href="http://www.bayern.de" target="_blank">Bayern.de</a>
+        </li>
+        <li class="col-sm-3">
+            <a href="http://www.freistaat.bayern/" target="_blank">BayernPortal</a>
+        </li>
+        <li class="col-sm-3">
+            <a href="/Content/Document/Datenschutz">Datenschutz</a>
+        </li>
+        <li class="col-sm-3">
+            <a href="/Content/Document/Impressum">Impressum</a>
+        </li>
+        <li class="col-sm-3">
+            <a href="/Content/Document/Barrierefreiheit">Barrierefreiheit</a>
+        </li>
+        <li class="col-sm-3">
+            <a href="/Content/Document/Hilfe">Hilfe</a>
+        </li>
+        <li class="col-sm-3">
+            <a href="http://www.bayern.de/service/bayern-direkt-2/" target="_blank">Kontakt</a>
+        </li>
+        <li class="col-sm-3">
+            <button class="btn btn-link" id="adjustFontsize" type="button"><span style="font-size: 55%" class="glyphicon glyphicon-font" title="Schriftgröße"></span><span style="font-size: 90%" class="glyphicon glyphicon-font" title="Schriftgröße"></span><span class="sr-only">Schriftgröße</span></button>
+          <div id="adjustFontsizePopover" style="display: none">
+            <ul id="fontsize-list" class="popover-list">
+              <li><a id="btn-fontsize-small" href="/changefontsize?fontsize=small"><span>A</span></a></li>
+              <li><a id="btn-fontsize-normal" href="/changefontsize?fontsize=middle"><span>A</span></a></li>
+              <li><a id="btn-fontsize-large" href="/changefontsize?fontsize=large"><span>A</span></a></li>
+            </ul>
+          </div>
+            <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
+          <a href="/changecontrast" title="Kontrastwechsel"><span style="font-size: 120%" class="glyphicon glyphicon-adjust"></span><span class="sr-only">Kontrastwechsel</span></a>
+        </li>
+    </ul>
+</footer><input name="__RequestVerificationToken" type="hidden" value="CfDJ8MAB_YQAs_BHmb6o0gj1SiFBjDsJwxlDYe8Yo-wsjeFWgf7A6PXqd-ZK3lQ2CQgGrCEe3TAR0DYvpAatgjsbZYTxUdUj15oRxaKfCoxusesq6SaufgRrM24OGx4dXPGscR0sZqc-bG7ZsZV8AyDOdTM" /></form>
+    <!-- Piwik -->
+<script type="text/plain" data-usercentrics="Matomo">
+        var _paq = _paq || [];
+        const regex = /-(?!bayern\.de)/g;
+        _paq.push(['setCustomUrl', location.href.replace(regex,'/') + '/']);
+        _paq.push(['trackPageView']);
+        _paq.push(['enableLinkTracking']);
+        (function() {
+        _paq.push(['setTrackerUrl', 'https://beck.matomo.cloud/matomo.php']);
+        _paq.push(['setSiteId', 4]);
+
+        var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
+        g.type='text/javascript'; g.async=true; g.defer=true; g.src='https://beck.matomo.cloud/matomo.js'; s.parentNode.insertBefore(g,s);
+        })();
+</script>
+<!-- End Piwik Code -->
+
+
+    <script src="/bundles/jquery.js"></script>
+    
+    
+    <script src="/bundles/Scripts.js"></script>
+</body>
+</html>

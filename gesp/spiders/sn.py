@@ -1,32 +1,45 @@
-# -*- coding: utf-8 -*-
 import datetime
 import re
 import urllib
+
 import requests
 import scrapy
-from ..src import config
 from lxml import html
-from ..src.output import output
-from ..pipelines.formatters import AZsPipeline, DatesPipeline, CourtsPipeline
+
 from ..pipelines.exporters import ExportAsPdfPipeline, FingerprintExportPipeline, RawExporter
+from ..pipelines.formatters import AZsPipeline, CourtsPipeline, DatesPipeline
+from ..src import config
+from ..src.output import output
+
 
 class SpdrSN(scrapy.Spider):
     name = "spider_sn"
     custom_settings = {
-        "DOWNLOAD_DELAY": 1, # minimum download delay 
+        "DOWNLOAD_DELAY": 1,  # minimum download delay
         "AUTOTHROTTLE_ENABLED": True,
-        "ITEM_PIPELINES": { 
+        "ITEM_PIPELINES": {
             AZsPipeline: 100,
             DatesPipeline: 200,
             CourtsPipeline: 300,
             ExportAsPdfPipeline: 400,
             FingerprintExportPipeline: 500,
-            RawExporter: 900
+            RawExporter: 900,
         },
-        "AUTOTHROTTLE_ENABLED": True
+        "AUTOTHROTTLE_ENABLED": True,
     }
 
-    def __init__(self, path, courts="", states="", fp=False, domains="", store_docId=False, postprocess=False, wait=False, **kwargs):
+    def __init__(
+        self,
+        path,
+        courts="",
+        states="",
+        fp=False,
+        domains="",
+        store_docId=False,
+        postprocess=False,
+        wait=False,
+        **kwargs,
+    ):
         self.path = path
         self.courts = courts
         self.states = states
@@ -51,7 +64,14 @@ class SpdrSN(scrapy.Spider):
             date_from = "03.10.1990"
             date_until = datetime.datetime.today().strftime("%d.%m.%Y")
             body = f"aktenzeichen=&datum={date_from}-{date_until}&stichwort=+++++++++++++++++++++&rules=+++++++++++++++++++++&ok=Suche+starten"
-            yield scrapy.Request(url=url, method="POST", headers=self.headers, body=body, dont_filter=True, callback=self.parse_results_ovg)
+            yield scrapy.Request(
+                url=url,
+                method="POST",
+                headers=self.headers,
+                body=body,
+                dont_filter=True,
+                callback=self.parse_results_ovg,
+            )
         if not self.courts or "verfgh" in self.courts:
             # VerfGH auch mit eigener Sub-Plattform
             url = "https://www.justiz.sachsen.de/esaver/index.php"
@@ -59,7 +79,14 @@ class SpdrSN(scrapy.Spider):
             for year in range(1970, 2030):
                 subsequent = year + 1
                 body = f"aktion=suchen&verfart=&akz=&datumvon=01.01.{year}&datumbis=01.01.{subsequent}&stichwort=&set_grund=&feldgrund=&set_norm=&feldnorm="
-                yield scrapy.Request(url=url, method="POST", headers=self.headers, body=body, dont_filter=True, callback=self.parse_results_verfgh)
+                yield scrapy.Request(
+                    url=url,
+                    method="POST",
+                    headers=self.headers,
+                    body=body,
+                    dont_filter=True,
+                    callback=self.parse_results_verfgh,
+                )
 
     def parse(self, response):
         url = "https://www.justiz.sachsen.de/esamosplus/pages/suchen.aspx"
@@ -68,18 +95,55 @@ class SpdrSN(scrapy.Spider):
         viewstate = urllib.parse.quote_plus(response.xpath("//input[@id='__VIEWSTATE']/@value").get())
         viewstategen = urllib.parse.quote_plus(response.xpath("//input[@id='__VIEWSTATEGENERATOR']/@value").get())
         if not self.courts or "ag" in self.courts:
-            ags = {"Aue": 1016, "Dippoldiswalde": 1021, "D%C3%B6beln": 1018, "Dresden": 1019, "Eilenburg": 1027, "Hainichen": 1017, "Leipzig": 1025, "Mei%C3%9Fen": 1022, "Pirna": 1023, "Riesa": 1024, "Stollberg": 1015, "Torgau": 1028}
+            ags = {
+                "Aue": 1016,
+                "Dippoldiswalde": 1021,
+                "D%C3%B6beln": 1018,
+                "Dresden": 1019,
+                "Eilenburg": 1027,
+                "Hainichen": 1017,
+                "Leipzig": 1025,
+                "Mei%C3%9Fen": 1022,
+                "Pirna": 1023,
+                "Riesa": 1024,
+                "Stollberg": 1015,
+                "Torgau": 1028,
+            }
             for ag, nr in ags.items():
                 body = f"__EVENTTARGET=&__EVENTARGUMENT=&__VIEWSTATE={viewstate}&__VIEWSTATEGENERATOR={viewstategen}&__SCROLLPOSITIONX=0&__SCROLLPOSITIONY=0&DV1_C24=Suchen&DV1_C33=Amtsgericht+{ag}&DV1_C34=&DV1_C35=&DV1_C36=&DV1_C37=&DV1_C38={nr}&DV1_C39={nr}&DV13_C8=&BOX_RETURN_VALUE=-1"
-                yield scrapy.Request(url=url, method="POST", headers=headers, body=body, meta={"cookiejar": nr}, dont_filter=True, callback=self.parse_results)
+                yield scrapy.Request(
+                    url=url,
+                    method="POST",
+                    headers=headers,
+                    body=body,
+                    meta={"cookiejar": nr},
+                    dont_filter=True,
+                    callback=self.parse_results,
+                )
         if not self.courts or "lg" in self.courts:
             lgs = {"Dresden": 1020, "Leipzig": 1026, "Zwickau": 1029}
             for lg, nr in lgs.items():
                 body = f"__EVENTTARGET=&__EVENTARGUMENT=&__VIEWSTATE={viewstate}&__VIEWSTATEGENERATOR={viewstategen}&__SCROLLPOSITIONX=0&__SCROLLPOSITIONY=0&DV1_C24=Suchen&DV1_C33=Landgericht+{lg}&DV1_C34=&DV1_C35=&DV1_C36=&DV1_C37=&DV1_C38={nr}&DV1_C39={nr}&DV13_C8=&BOX_RETURN_VALUE=-1"
-                yield scrapy.Request(url=url, method="POST", headers=headers, body=body, meta={"cookiejar": nr}, dont_filter=True, callback=self.parse_results)
+                yield scrapy.Request(
+                    url=url,
+                    method="POST",
+                    headers=headers,
+                    body=body,
+                    meta={"cookiejar": nr},
+                    dont_filter=True,
+                    callback=self.parse_results,
+                )
         if not self.courts or "olg" in self.courts:
             body = f"__EVENTTARGET=&__EVENTARGUMENT=&__VIEWSTATE={viewstate}&__VIEWSTATEGENERATOR={viewstategen}&__SCROLLPOSITIONX=0&__SCROLLPOSITIONY=0&DV1_C24=Suchen&DV1_C33=Oberlandesgericht+Dresden&DV1_C34=&DV1_C35=&DV1_C36=&DV1_C37=&DV1_C38=1012&DV1_C39=1012&DV13_C8=&BOX_RETURN_VALUE=-1"
-            yield scrapy.Request(url=url, method="POST", headers=headers, body=body, meta={"cookiejar": nr}, dont_filter=True, callback=self.parse_results)
+            yield scrapy.Request(
+                url=url,
+                method="POST",
+                headers=headers,
+                body=body,
+                meta={"cookiejar": nr},
+                dont_filter=True,
+                callback=self.parse_results,
+            )
 
     def parse_results(self, response):
         viewstate = urllib.parse.quote_plus(response.xpath("//input[@id='__VIEWSTATE']/@value").get())
@@ -87,7 +151,7 @@ class SpdrSN(scrapy.Spider):
         dv1_c45 = response.xpath("//input[@name='DV1_C45']/@value").get()
         dv13_c16 = response.xpath("//input[@name='DV13_C16']/@value").get()
         for i, tr in enumerate(response.xpath("//table[@id='DV13_Table']/tbody/tr[not(@class)]")):
-            dv13_name = f"DV13_Table$ctl{i+3:02d}$DV13_Table_Col3_C1"
+            dv13_name = f"DV13_Table$ctl{i + 3:02d}$DV13_Table_Col3_C1"
             dv13_value = response.xpath(f"//input[@name='{dv13_name}']/@value").get()
             if dv1_c45 and dv13_c16 and dv13_value:
                 dv1_c45 = urllib.parse.quote_plus(dv1_c45)
@@ -100,21 +164,40 @@ class SpdrSN(scrapy.Spider):
                 item = {
                     "wait": self.wait,
                     "date": tr.xpath(".//td[2]/div/input/@value").get(),
-                    "az":  tr.xpath(".//td[3]/div/input/@value").get(),
+                    "az": tr.xpath(".//td[3]/div/input/@value").get(),
                     "court": tr.xpath(".//td[4]/div/input/@value").get(),
-                    "link": url
+                    "link": url,
                 }
-                yield scrapy.Request(url=url, method="POST", meta={"cookiejar": response.meta["cookiejar"], "item": item}, headers=headers, body=body, dont_filter=True, callback=self.parse_results_dl)
+                yield scrapy.Request(
+                    url=url,
+                    method="POST",
+                    meta={"cookiejar": response.meta["cookiejar"], "item": item},
+                    headers=headers,
+                    body=body,
+                    dont_filter=True,
+                    callback=self.parse_results_dl,
+                )
             else:
                 output("sn: can not parse results page", "err")
-        if response.xpath("//input[@value='Vorwärts']") and not response.xpath("//input[@value='Vorwärts']/@disabled").get() == "disabled":
+        if (
+            response.xpath("//input[@value='Vorwärts']")
+            and not response.xpath("//input[@value='Vorwärts']/@disabled").get() == "disabled"
+        ):
             url = "https://www.justiz.sachsen.de/esamosplus/pages/treffer.aspx"
             headers = self.headers
             headers["Referer"] = "https://www.justiz.sachsen.de/esamosplus/pages/suchen.aspx"
             if response.xpath("//input[@id='DV13_C16']"):
                 dv13c16_value = urllib.parse.quote_plus(response.xpath("//input[@id='DV13_C16']/@value").get())
                 body = f"__EVENTTARGET=&__EVENTARGUMENT=&__VIEWSTATE={viewstate}&__VIEWSTATEGENERATOR{viewstategen}&__SCROLLPOSITIONX=0&__SCROLLPOSITIONY=0&DV1_C44=&DV1_C45=Oberlandesgericht+Dresden&DV1_C46=&DV1_C47=&DV1_C48=&DV13_C16={dv13c16_value}&ctl21=Vorw%C3%A4rts&BOX_RETURN_VALUE=-1"
-                yield scrapy.Request(url=url, method="POST", meta={'cookiejar': response.meta['cookiejar']}, headers=headers, body=body, dont_filter=True, callback=self.parse_results)
+                yield scrapy.Request(
+                    url=url,
+                    method="POST",
+                    meta={"cookiejar": response.meta["cookiejar"]},
+                    headers=headers,
+                    body=body,
+                    dont_filter=True,
+                    callback=self.parse_results,
+                )
             else:
                 output("sn: can not proceed to the next page of results", "err")
 
@@ -134,13 +217,7 @@ class SpdrSN(scrapy.Spider):
             return
         location = "https://www.justiz.sachsen.de/esaver/internet/" + slots[16]
         url = location + "/" + filename
-        yield {
-            "wait": self.wait,
-            "date": date_de,
-            "az": az,
-            "court": "verfgh",
-            "link": url
-        }
+        yield {"wait": self.wait, "date": date_de, "az": az, "court": "verfgh", "link": url}
 
     def parse_results_verfgh(self, response):
         for anchor in response.xpath("//table/tr/td/a"):
@@ -155,7 +232,7 @@ class SpdrSN(scrapy.Spider):
             tmp_link = re.findall(r"'([^']*)'", tmp_link)
             tmp_link = "https://www.justiz.sachsen.de/ovgentschweb/document.phtml?id=" + tmp_link[0]
             data = table.xpath(".//td[2]/a/text()").get()[15:]
-            try: # Zwischengeschaltete Seite, von der aus erst der Filelink kopiert werden muss
+            try:  # Zwischengeschaltete Seite, von der aus erst der Filelink kopiert werden muss
                 tree = html.fromstring(requests.get(tmp_link).text)
             except:
                 output("could not retrieve " + tmp_link, "err")
@@ -179,5 +256,5 @@ class SpdrSN(scrapy.Spider):
                     "date": data[-11:-1],
                     "az": data.split("(")[0].strip(),
                     "court": "ovg",
-                    "link": "https://www.justiz.sachsen.de/ovgentschweb/" + url
+                    "link": "https://www.justiz.sachsen.de/ovgentschweb/" + url,
                 }

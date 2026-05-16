@@ -1,29 +1,41 @@
-# -*- coding: utf-8 -*-
 import requests
 import scrapy
 from lxml import html
-from ..pipelines.formatters import AZsPipeline, DatesPipeline, CourtsPipeline
-from ..pipelines.texts import TextsPipeline
+
 from ..pipelines.exporters import ExportAsHtmlPipeline, FingerprintExportPipeline, RawExporter
+from ..pipelines.formatters import AZsPipeline, CourtsPipeline, DatesPipeline
+from ..pipelines.texts import TextsPipeline
+
 
 class SpdrBB(scrapy.Spider):
     name = "spider_bb"
     base_url = "https://gerichtsentscheidungen.brandenburg.de"
     custom_settings = {
-        "DOWNLOAD_DELAY": 5, # minimum download delay 
+        "DOWNLOAD_DELAY": 5,  # minimum download delay
         "AUTOTHROTTLE_ENABLED": True,
-        "ITEM_PIPELINES": { 
+        "ITEM_PIPELINES": {
             AZsPipeline: 100,
             DatesPipeline: 200,
             CourtsPipeline: 300,
             TextsPipeline: 400,
             ExportAsHtmlPipeline: 500,
             FingerprintExportPipeline: 600,
-            RawExporter : 900
-        }
+            RawExporter: 900,
+        },
     }
 
-    def __init__(self, path, courts="", states="", fp=False, domains="", store_docId=False, postprocess=False, wait = False, **kwargs):
+    def __init__(
+        self,
+        path,
+        courts="",
+        states="",
+        fp=False,
+        domains="",
+        store_docId=False,
+        postprocess=False,
+        wait=False,
+        **kwargs,
+    ):
         self.path = path
         self.courts = courts
         self.states = states
@@ -35,11 +47,22 @@ class SpdrBB(scrapy.Spider):
         super().__init__(**kwargs)
 
     async def start(self):
-        start_urls = []     
+        start_urls = []
         base_url = self.base_url + "/suche?"
         if self.courts:
             if "ag" in self.courts:
-                ags = ["AG+Bad+Liebenwerda", "AG+Bernau", "AG+Brandenburg", "AG+Frankfurt+%28Oder%29", "AG+Königs+Wusterhausen", "AG+Oranienburg", "AG+Potsdam", "AG+Schwedt", "AG+Senftenberg", "AG+Zossen"]
+                ags = [
+                    "AG+Bad+Liebenwerda",
+                    "AG+Bernau",
+                    "AG+Brandenburg",
+                    "AG+Frankfurt+%28Oder%29",
+                    "AG+Königs+Wusterhausen",
+                    "AG+Oranienburg",
+                    "AG+Potsdam",
+                    "AG+Schwedt",
+                    "AG+Senftenberg",
+                    "AG+Zossen",
+                ]
                 for ag in ags:
                     start_urls.append(base_url + "&select_source=" + ag)
             if "arbg" in self.courts:
@@ -68,7 +91,7 @@ class SpdrBB(scrapy.Spider):
                 vgs = ["VG+Cottbus", "VG+Frankfurt+%28Oder%29", "VG+Potsdam"]
                 for vg in vgs:
                     start_urls.append(base_url + "&select_source=" + vg)
-            #VerfG Potsdam
+            # VerfG Potsdam
         else:
             start_urls.append(base_url + "&select_source=0")
         for url in start_urls:
@@ -84,12 +107,12 @@ class SpdrBB(scrapy.Spider):
             tree = html.fromstring(requests.get(link).text)
             az = tree.xpath("//div[@id='metadata']/div/table/tbody/tr[2]/td[1]/text()")[0]
             yield {
-                    "postprocess": self.postprocess,
-                    "wait": self.wait,
-                    "court": result.xpath(".//td[5]/text()").get(),
-                    "date": result.xpath(".//td[3]/text()").get(),
-                    "link": link,
-                    "az": az,
-                    "docId": docid,
-                    "tree": tree # Wenn ohnehin schon verarbeitet...
+                "postprocess": self.postprocess,
+                "wait": self.wait,
+                "court": result.xpath(".//td[5]/text()").get(),
+                "date": result.xpath(".//td[3]/text()").get(),
+                "link": link,
+                "az": az,
+                "docId": docid,
+                "tree": tree,  # Wenn ohnehin schon verarbeitet...
             }

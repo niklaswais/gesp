@@ -1,20 +1,37 @@
-# -*- coding: utf-8 -*-
-
 __version__ = "0.1"
 __author__ = "Niklas Wais"
 __licence__ = "MIT"
 
 SCRAPY_SETTINGS = {
     "DOWNLOAD_TIMEOUT": 60,
-    "RETRY_ENABLED": True,  
-    "RETRY_TIMES": 3, 
+    "RETRY_ENABLED": True,
+    "RETRY_TIMES": 3,
     "RETRY_DELAY": 5,
     "DOWNLOAD_FAIL_ON_DATALOSS": False,
     "HTTPERROR_ALLOW_ALL": True,
 }
 
-UMLAUTE = {ord('ä'):'ae', ord('ö'):'oe', ord('ß'):'ss', ord('ü'):'ue'}
-COURTS = ["ag", "arbg", "bgh", "bfh", "bverwg", "bverfg", "bpatg", "bag", "bsg", "fg", "lag", "lg", "lsg", "olg", "ovg", "sg", "vg", "verfgh"] # vgh = ovg
+UMLAUTE = {ord("ä"): "ae", ord("ö"): "oe", ord("ß"): "ss", ord("ü"): "ue"}
+COURTS = [
+    "ag",
+    "arbg",
+    "bgh",
+    "bfh",
+    "bverwg",
+    "bverfg",
+    "bpatg",
+    "bag",
+    "bsg",
+    "fg",
+    "lag",
+    "lg",
+    "lsg",
+    "olg",
+    "ovg",
+    "sg",
+    "vg",
+    "verfgh",
+]  # vgh = ovg
 STATES = ["bund", "bw", "by", "be", "bb", "hb", "hh", "he", "mv", "ni", "nw", "rp", "sl", "sn", "st", "sh", "th"]
 HTML_STATES = ["bund", "bw", "by", "be", "bb", "hh", "he", "mv", "ni", "nw", "rp", "sl", "st", "sh", "th"]
 DOMAINS = ["oeff", "zivil", "straf"]
@@ -31,92 +48,80 @@ json_headers_base = {
     "Sec-Fetch-Site": "same-origin",
     "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.53 Safari/537.36",
     "content-type": "application/json",
-    "sec-ch-ua": "\"Chromium\";v=\"103\", \".Not/A)Brand\";v=\"99\"",
+    "sec-ch-ua": '"Chromium";v="103", ".Not/A)Brand";v="99"',
     "sec-ch-ua-mobile": "?0",
-    "sec-ch-ua-platform": "\"Linux\""
+    "sec-ch-ua-platform": '"Linux"',
 }
 
 be_headers = json_headers_base | {
     "Origin": "https://gesetze.berlin.de",
     "Referer": "https://gesetze.berlin.de/bsbe/search",
-    "juris-portalid": "bsbe"
+    "juris-portalid": "bsbe",
 }
 be_cookies = {
-    "up": "{\"search\":{\"hitsPerPage\":0,\"sort\":\"date\",\"categorySort\":null,\"disableComfortSearch\":false,\"extendedFieldsOpen\":true,\"previewDocument\":false},\"casefile\":{\"sort\":\"standard\"},\"menue\":{\"leftSearchColumnOpen\":true,\"rightSearchColumnOpen\":true,\"leftDocColumnOpen\":true,\"rightDocColumnOpen\":true,\"searchFrameLeftSplitter\":296,\"searchFrameRightSplitter\":300,\"docFrameLeftSplitter\":300,\"docFrameRightSplitter\":300},\"genericUI\":{\"leftColumnOpen\":true,\"rightColumnOpen\":true}}",
-    "r3autologin": "\"bsbe\""
+    "up": '{"search":{"hitsPerPage":0,"sort":"date","categorySort":null,"disableComfortSearch":false,"extendedFieldsOpen":true,"previewDocument":false},"casefile":{"sort":"standard"},"menue":{"leftSearchColumnOpen":true,"rightSearchColumnOpen":true,"leftDocColumnOpen":true,"rightDocColumnOpen":true,"searchFrameLeftSplitter":296,"searchFrameRightSplitter":300,"docFrameLeftSplitter":300,"docFrameRightSplitter":300},"genericUI":{"leftColumnOpen":true,"rightColumnOpen":true}}',
+    "r3autologin": '"bsbe"',
 }
 be_body = '{"clientID":"bsbe","clientVersion":"bsbe - V06_07_00 - 23.06.2022 11:20","r3ID":"%sT%sZ"}'
 
 bw_headers = json_headers_base | {
     "Origin": "https://www.landesrecht-bw.de",
     "Referer": "https://www.landesrecht-bw.de/bsbw/search",
-    "juris-portalid": "bsbw"
+    "juris-portalid": "bsbw",
 }
-bw_cookies = {
-    "r3autologin": "\"bsbw\""
-}
+bw_cookies = {"r3autologin": '"bsbw"'}
 bw_body = '{"clientID":"bsbw","clientVersion":"bsbw - V08_18_00 - 24.04.2025 11:53","r3ID":"%sT%sZ"}'
 
 he_headers = json_headers_base | {
     "Origin": "https://www.lareda.hessenrecht.hessen.de",
     "Referer": "https://www.lareda.hessenrecht.hessen.de/bshe/search",
-    "juris-portalid": "bshe"
+    "juris-portalid": "bshe",
 }
-he_cookies = {
-    "r3autologin": "\"bshe\""
-}
+he_cookies = {"r3autologin": '"bshe"'}
 he_body = '{"clientID":"bshe","clientVersion":"bshe - V06_07_00 - 23.06.2022 11:20","r3ID":"%sT%sZ"}'
 
 hh_headers = json_headers_base | {
     "Origin": "https://www.landesrecht-hamburg.de",
     "Referer": "https://www.landesrecht-hamburg.de/bsha/search",
-    "juris-portalid": "bsha"
+    "juris-portalid": "bsha",
 }
-hh_cookies = {
-    "r3autologin": "\"bsha\""
-}
+hh_cookies = {"r3autologin": '"bsha"'}
 hh_body = '{"clientID":"bsha","clientVersion":"bsha - V06_07_00 - 23.06.2022 11:20","r3ID":"%sT%sZ"}'
 
 mv_headers = json_headers_base | {
     "Origin": "https://www.landesrecht-mv.de",
     "Referer": "https://www.landesrecht-mv.de/bsmv/search",
-    "juris-portalid": "bsmv"
+    "juris-portalid": "bsmv",
 }
-mv_cookies = {
-    "r3autologin": "\"bsmv\""
-}
+mv_cookies = {"r3autologin": '"bsmv"'}
 mv_body = '{"clientID":"bsmv","clientVersion":"bsmv - V06_07_00 - 23.06.2022 11:20","r3ID":"%sT%sZ"}'
 
-ni_headers = { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0 Safari/537.36" }
+ni_headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0 Safari/537.36"
+}
 
 rp_headers = json_headers_base | {
     "Origin": "https://www.landesrecht.rlp.de",
     "Referer": "https://www.landesrecht.rlp.de/bsrp/search",
-    "juris-portalid": "bsrp"
+    "juris-portalid": "bsrp",
 }
-rp_cookies = {
-    "r3autologin": "\"bsrp\""
-}
+rp_cookies = {"r3autologin": '"bsrp"'}
 rp_body = '{"clientID":"bsrp","clientVersion":"bsrp - V06_07_00 - 23.06.2022 11:20","r3ID":"%sT%sZ"}'
 
 sh_headers = json_headers_base | {
     "Origin": "www.gesetze-rechtsprechung.sh.juris.de",
     "Referer": "www.gesetze-rechtsprechung.sh.juris.de/bssh/search",
-    "juris-portalid": "bssh"
+    "juris-portalid": "bssh",
 }
-sh_cookies = {
-    "r3autologin": "\"bssh\""
-}
+sh_cookies = {"r3autologin": '"bssh"'}
 sh_body = '{"clientID":"bssl","clientVersion":"bssh - V06_07_00 - 23.06.2022 11:20","r3ID":"%sT%sZ"}'
 
 sl_headers = json_headers_base | {
     "Origin": "https://recht.saarland.de",
     "Referer": "https://recht.saarland.de/bssl/search",
-    "juris-portalid": "bssl"
+    "juris-portalid": "bssl",
 }
-sl_cookies = {
-    "r3autologin": "\"bssl\""
-}
+sl_cookies = {"r3autologin": '"bssl"'}
 sl_body = '{"clientID":"bssl","clientVersion":"bssl - V06_07_00 - 23.06.2022 11:20","r3ID":"%sT%sZ"}'
 
 sn_headers = {
@@ -132,27 +137,23 @@ sn_headers = {
     "Sec-Fetch-User": "?1",
     "Upgrade-Insecure-Requests": "1",
     "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/103.0.5060.53 Safari/537.36",
-    "sec-ch-ua": "\"Chromium\";v=\"103\", \".Not/A)Brand\";v=\"99\"",
+    "sec-ch-ua": '"Chromium";v="103", ".Not/A)Brand";v="99"',
     "sec-ch-ua-mobile": "?0",
-    "sec-ch-ua-platform": "\"Linux\""
+    "sec-ch-ua-platform": '"Linux"',
 }
 
 st_headers = json_headers_base | {
     "Origin": "https://www.landesrecht.sachsen-anhalt.de",
     "Referer": "https://www.landesrecht.sachsen-anhalt.de/bsst/search",
-    "juris-portalid": "bsst"
+    "juris-portalid": "bsst",
 }
-st_cookies = {
-    "r3autologin": "\"bsst\""
-}
+st_cookies = {"r3autologin": '"bsst"'}
 st_body = '{"clientID":"bsst","clientVersion":"bsst - V06_07_00 - 23.06.2022 11:20","r3ID":"%sT%sZ"}'
 
 th_headers = json_headers_base | {
     "Origin": "https://landesrecht.thueringen.de",
     "Referer": "https://landesrecht.thueringen.de/bsth/search",
-    "juris-portalid": "bsth"
+    "juris-portalid": "bsth",
 }
-th_cookies = {
-    "r3autologin": "\"bsth\""
-}
+th_cookies = {"r3autologin": '"bsth"'}
 th_body = '{"clientID":"bsth","clientVersion":"bsth - V06_07_00 - 23.06.2022 11:20","r3ID":"%sT%sZ"}'
