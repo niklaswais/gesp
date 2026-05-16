@@ -3,9 +3,13 @@
 If a court portal redesigns its markup, these tests start yielding zero items
 or items missing keys — which is exactly the symptom that's silent today.
 
-Fixtures live in tests/fixtures/<state>_search.{html,xml,json}. Refresh them with::
+Fixtures live in tests/fixtures/:
 
-    python tests/refresh_fixtures.py
+  * <state>_search.{html,xml,json} — discovery response (every state). Refresh
+    via `python tests/refresh_fixtures.py`.
+  * <state>_detail.html — one decision's detail page (only bb, ni, whose
+    parse() makes a synchronous requests.get() per result row). Refreshed
+    manually; see tests/fixtures/README.md.
 
 Missing fixtures cause the corresponding state's test to skip (not fail), so
 the suite stays green on a fresh checkout before the cron has run.
@@ -15,6 +19,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 import scrapy
@@ -26,6 +31,12 @@ from gesp.probe import all_states, fixture_filename, is_jportal
 FIXTURES = Path(__file__).parent / "fixtures"
 
 REQUIRED_KEYS = {"court", "date", "az", "link"}
+
+# Spiders whose parse() makes a synchronous requests.get() per result row to
+# pull metadata off the detail page. The drift test would otherwise hit those
+# portals live on every CI run; stub the spider module's `requests` binding to
+# replay a recorded detail-page response instead.
+_DETAIL_FETCH_STATES = {"bb", "ni"}
 
 # State → discovery URL used to construct the scrapy.http.Response object.
 # Doesn't matter exactly which URL; only used for response.url-based logic.
@@ -83,6 +94,29 @@ def _load_or_skip(state: str) -> bytes:
     return fp.read_bytes()
 
 
+def _stub_detail_fetch(state: str, monkeypatch) -> None:
+    """Replay a recorded detail-page response for spiders that call requests.get inside parse().
+
+    Patches `gesp.spiders.<state>.requests` (the module-level binding, not the
+    shared requests module's `.get` attribute) so the stub is scoped to this
+    spider only. Skips when the static `<state>_detail.html` fixture isn't
+    present — mirrors `_load_or_skip` for the discovery fixture.
+    """
+    if state not in _DETAIL_FETCH_STATES:
+        return
+    fp = FIXTURES / f"{state}_detail.html"
+    if not fp.exists():
+        pytest.skip(f"detail fixture {fp.name} not present — capture one detail page manually")
+    body = fp.read_bytes()
+
+    class _StubRequests:
+        @staticmethod
+        def get(*_args, **_kwargs):
+            return SimpleNamespace(text=body.decode("utf-8"))
+
+    monkeypatch.setattr(f"gesp.spiders.{state}.requests", _StubRequests)
+
+
 def _items_and_requests(parse_results):
     items, requests = [], []
     for r in parse_results:
@@ -114,8 +148,9 @@ def _parse(state: str, spider, body: bytes):
 
 # ─── Parametrized over every supported state ──────────────────────────────────
 @pytest.mark.parametrize("state", all_states())
-def test_spider_parses_fixture(state, tmp_path):
+def test_spider_parses_fixture(state, tmp_path, monkeypatch):
     body = _load_or_skip(state)
+    _stub_detail_fetch(state, monkeypatch)
     spider = _make_spider(state, tmp_path)
     items, requests = _parse(state, spider, body)
     if state in _DISCOVERY_ONLY:
@@ -131,8 +166,9 @@ def test_spider_parses_fixture(state, tmp_path):
 
 
 @pytest.mark.parametrize("state", sorted(set(all_states()) - _DISCOVERY_ONLY))
-def test_items_have_required_keys(state, tmp_path):
+def test_items_have_required_keys(state, tmp_path, monkeypatch):
     body = _load_or_skip(state)
+    _stub_detail_fetch(state, monkeypatch)
     spider = _make_spider(state, tmp_path)
     items, _ = _parse(state, spider, body)
     for item in items:

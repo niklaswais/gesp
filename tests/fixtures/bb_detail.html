@@ -1,0 +1,602 @@
+<!DOCTYPE html PUBLIC "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<head>
+    <title>Landesrechtsportal Brandenburg | Entscheidungsdatenbank der Gerichte in Brandenburg</title>
+                <!-- When Theme is switchted. Replaces Main Color!-->
+        <link type="text/css" rel="stylesheet" href="/style/normalize.css"/>
+
+        <link type="text/css" rel="stylesheet" href="/style/style.css"/>
+        <link type="text/css" rel="stylesheet" href="/style/all.css"/>
+        <!-- When Theme is switchted. Replaces Main Color!-->
+        <link type="text/css" rel="stylesheet" href="/style/app.css"/>
+        <link type="text/css" rel="stylesheet" href="/style/foundation-datepicker.css"/>
+        <link rel="icon" type="image/x-icon" href="/style/favicon.ico"/>
+            
+            <!-- application -->
+        <!--script type="text/javascript" src="style/2jquery.min.js"></script-->
+        <script type="text/javascript" src="/style/2jquery.min.js"></script>
+
+                <script type="text/javascript">
+            function showResults() {
+                var x = document.getElementById("results")
+                if (x.style.display === "none") {
+                    x.style.display = "block";
+                } else {
+                    x.style.display = "none";
+                }
+            }
+
+            $(function () {
+                if (!Modernizr.inputtypes.date) {
+                    $(
+                        "#input_date_promulgation_from"
+                    ).fdatepicker({
+                        format: "dd.mm.yyyy",
+                        language: "de",
+                    });
+                    $(
+                        "#input_date_promulgation_to"
+                    ).fdatepicker({
+                        format: "dd.mm.yyyy",
+                        language: "de",
+                    });
+                    $("#input_date_issue_from").fdatepicker({
+                        format: "dd.mm.yyyy",
+                        language: "de",
+                    });
+                    $("#input_date_issue_to").fdatepicker({
+                        format: "dd.mm.yyyy",
+                        language: "de",
+                    });
+                } else {
+                    $(
+                        "#input_date_promulgation_from"
+                    ).removeAttr("pattern");
+                    $("#input_date_promulgation_to").removeAttr(
+                        "pattern"
+                    );
+                    $("#input_date_issue_from").removeAttr(
+                        "pattern"
+                    );
+                    $("#input_date_issue_to").removeAttr(
+                        "pattern"
+                    );
+                }
+            });
+
+            function clear_form_elements() {
+                $("#input_date_promulgation_from").removeAttr("value");
+                $("#input_date_promulgation_to").removeAttr("value");
+                $("#input_aktenzeichen").removeAttr("value");
+                $("#input_ecli").removeAttr("value");
+                $("#input_shortdesc").removeAttr("value");
+                $("#input_fulltext").removeAttr("value");
+                $("#select_source option:selected").removeAttr("selected");
+            }
+        </script>
+    </head>
+<body>
+    <div class="bb-stage" style="width: auto">
+        <div class="row bb-area-header">
+            <div class="columns">
+                <div class="row">
+                    <div
+                            class="small-12 medium-6 medium-push-6 columns"
+                            id="bb-loginMsg"
+                    ></div>
+                </div>
+                <div class="row">
+                    <div
+                            class="small-12 medium-6 medium-push-6 columns bb-top-tool-bar-column"
+                    >
+                        <div
+                                class="title-bar bb-title-bar hide"
+                                data-responsive-toggle="bb-tool-menu"
+                        >
+                     <span
+                             for="bb-toolbar-button"
+                             class="bb-toolbar-button-bg"
+                             data-toggle
+                     >
+                     <button
+                             id="bb-toolbar-button"
+                             class="menu-icon bb-menu-icon"
+                             type="button"
+                     ></button>
+                     </span>
+                            <div
+                                    for="bb-toolbar-button"
+                                    class="title-bar-title bb-title-bar-title"
+                                    data-toggle
+                            >
+                                Toolbar-Menü
+                            </div>
+                        </div>
+                        <div class="top-bar bb-top-tool-bar" id="bb-tool-menu" >
+                            <div class="top-bar-right">&nbsp;</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row bb-border">
+            <div class="columns">
+                <div class="row bb-area-header">
+                    <div class="columns">
+                        <div class="row">
+                            <div class="small-12 columns" id="bb-absenderkennung">
+                                <a
+                                        href="https://www.landesrecht.brandenburg.de"
+                                >
+                                    Landesrecht Brandenburg
+                                </a>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="columns" id="bb-logo-bar">
+                                <div class="row">
+                                    <div class="small-12 medium-6 columns bb-logo">
+                                        <a
+                                                href="http://www.brandenburg.de"
+                                                title="Link zum Landesportal Brandenburg"
+                                        >
+                                            <img
+                                                    id="bb-wort-bild-marke"
+                                                    src="../style/Wort_Bildmarke.png"
+                                                    alt="Brandenburg-Logo"
+                                            />
+                                        </a>
+                                    </div>
+                                    <div class="hide-for-small-only medium-2 columns">
+                                        &nbsp;
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div
+                                    class="large-12 columns"
+                                    id="bb-nav"
+                                    style="margin-top: 0px; padding-top: 5px"
+                            >
+                                <div class="large-9 large-push-3 columns" id="bb-nav2">
+                                    <div
+                                            class="title-bar bb-title-bar"
+                                            data-responsive-toggle="bb-nav-menu"
+                                            data-hide-for="medium"
+                                            style="display: none"
+                                    >
+                        <span
+                                for="bb-navbar-button"
+                                class="bb-navbar-button-bg"
+                                data-toggle
+                        >
+                        <button
+                                id="bb-navbar-button"
+                                class="menu-icon bb-menu-icon"
+                                type="button"
+                        ></button>
+                        </span>
+                                        <div
+                                                for="bb-navbar-button"
+                                                class="title-bar-title bb-title-bar-title"
+                                                data-toggle
+                                        >
+                                            Hauptmenü
+                                        </div>
+                                    </div>
+                                    <div class="top-bar bb-top-nav-bar" id="bb-nav-menu">
+                                        <div class="top-bar-right" id="topMenu">
+                                             <ul
+        class="menu"
+        data-responsive-menu="drilldown medium-dropdown"
+        data-back-button='<li class="js-drilldown-back"><a title="Zurück">Zurück</a></li>'
+>
+    <li>
+        <a href="/suche"
+                title="Start"
+                class="bb-nav-menu-item"
+        >
+            Gerichtsentscheidungen
+        </a>
+    </li>
+    <li>
+        <a
+                href="https://www.landesrecht.brandenburg.de"
+                title="Gesetz- und Verordnungsblatt für das Land Brandenburg (GVBl)"
+                class="bb-nav-menu-item"
+        >
+            Gesetz- und Verordnungsblatt
+        </a>
+    </li>
+    <li>
+        <a
+                href="https://bravors.brandenburg.de"
+                title="Landesrecht"
+                class="bb-nav-menu-item"
+        >
+            Landesrecht
+        </a>
+    </li>
+    <li>
+        <a href="/seite/nutzungshinweise"
+           title="Start"
+           class="bb-nav-menu-item"
+        >
+            Nutzungshinweise
+        </a>
+    </li>
+
+</ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="bb-bottom-border"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row bb-area-content">
+                    <div class="columns">
+                        <div class="bb-content">
+                            
+            <div class="row">
+    <div class="hide-for-small-only medium-9 columns">
+        <div class="bb-breadcrumbs" id="bb-breadcrumbs1">
+            <span title="Sie sind hier:"> Sie sind hier: </span>
+
+            <a href="/" title="Startseite"><font class="bb-breadcrumbs-title">Gerichtsentscheidungen</font></a>
+
+            
+                    <i class="fa fa-caret-right"></i>
+
+                    <font class="bb-breadcrumbs-title">
+                                                    Entscheidung
+                        
+                    </font>
+
+                
+        </div>
+    </div>
+    <div class="small-12 medium-3 columns"></div>
+</div>
+        
+                            <div class="row">
+                                <div class="columns">
+                                    <noscript>
+                                        <br/>
+                                        <div data-alert class="alert-box bb-alert error">
+                                            <div class="bb-alert-content">
+                                                <div
+                                                        class="bb-alert-title"
+                                                        title="Keine JavaScript-Unterstützung"
+                                                >
+                                                    Keine JavaScript-Unterstützung
+                                                </div>
+                                                <div class="bb-alert-description">
+                                                    Ihr Browser unterstützt kein JavaScript! Unter
+                                                    Umständen funktionieren einige Teile der Webseite
+                                                    nicht.
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </noscript>
+
+                                    
+    <div class="row" id="metadata">
+        <div class="columns">
+            <h1 id="header">
+                                    Entscheidung 11 U 30/25
+                            </h1>
+            <br>
+            <h3>Metadaten</h3>
+            <table class="bb-table-stripes bb-table-stretch">
+                <tbody>
+                <tr>
+                    <th title="Typ">Gericht</th>
+                    <td>
+                        OLG Brandenburg 11. Zivilsenat
+                    </td>
+                    <th title="Datum">Entscheidungsdatum</th>
+                    <td>08.10.2205</td>
+                </tr>
+                <tr>
+                    <th title="Bezeichnung">Aktenzeichen</th>
+                    <td>11 U 30/25</td>
+                    <th title="Gericht">ECLI</th>
+                    <td>ECLI:DE:OLGBB:2025:1008.11U30.25.00</td>
+                </tr>
+                <tr>
+                    <th title="Gericht">Dokumententyp</th>
+                    <td>Urteil</td>
+                    <th title="Gericht">Verfahrensgang</th>
+                    <td>-</td>
+                </tr>
+                <tr>
+                    <th title="Gericht">Normen</th>
+                    <td colspan="4"> </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="row" id="gerichtsentscheidung-detail">
+        <div class="columns small-12 medium-12 large-8">
+            <div class="row">
+                <div class="columns">
+                    <br>
+                    <div class="docLayoutText doktyp-juris-r dokutyp">
+
+                        
+                        
+                        
+                            <div class="">
+                                <h4 class="doc">
+                                    <!--hlIgnoreOn-->Tenor<!--hlIgnoreOff-->
+                                </h4>
+                            </div>
+                            <div class="docLayoutText">
+                                <div>
+                                    <dl class="RspDL">
+                                        <dt></dt>
+                                        <dd>
+                                            <p><ol>
+<li>Auf die Berufung der Kl&auml;gerin wird das Urteil des Landgerichts Frankfurt (Oder) vom 28. Februar 2025, Az. 15 O 107/24, einschlie&szlig;lich des zugrundeliegenden Verfahrens aufgehoben. Die Sache wird zur erneuten Verhandlung und Entscheidung, auch &uuml;ber die Kosten der Berufung, an das Landgericht zur&uuml;ckverwiesen.<br /><br /></li>
+<li>Das Urteil ist vorl&auml;ufig vollstreckbar. Der Kl&auml;gerin bleibt nachgelassen, die Zwangsvollstreckung durch Sicherheitsleistung oder Hinterlegung in H&ouml;he von 120 % des zu vollstreckbaren Betrages abzuwenden, wenn nicht zuvor die Beklagte Sicherheit in H&ouml;he von 120 % des jeweils zu vollstreckenden Betrages leistet.<br /><br /></li>
+<li>Der Streitwert wird f&uuml;r das Berufungsverfahren auf bis zu 70.000,00 &euro; festgesetzt.</li>
+<li>Die Revision wird nicht zugelassen.</li>
+</ol></p>
+                                        </dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        
+                        
+                        
+                        
+                            <div class="docLayoutMarginTopMore">
+                                <h4 class="doc" data-juris-toc="{&quot;level&quot;:1,&quot;label&quot;:&quot;Gründe&quot;}">
+                                    <!--hlIgnoreOn-->Gründe<!--hlIgnoreOff-->
+                                </h4>
+                            </div>
+                            <div class="docLayoutText">
+                                <div>
+                                    <dl class="RspDL">
+                                        <dt></dt>
+                                        <dd>
+                                            <p><p>I.</p>
+<p>Die Kl&auml;gerin verlangt von dem beklagten Versicherer Leistungen aus einer privaten Unfallversicherung aufgrund einer von ihr behaupteten Invalidit&auml;t, welche infolge eines am 23. Januar 2021 ereigneten Unfalls und der daran anschlie&szlig;enden Arthroskopie ihres rechten Kniegelenks eingetreten sein soll.</p>
+<p>Wegen der Einzelheiten der tats&auml;chlichen Feststellungen sowie der erstinstanzlichen Antr&auml;ge wird auf den Tatbestand des angefochtenen Urteils Bezug genommen, &sect; 540 Abs. 1 S. 1 Nr. 1 ZPO.</p>
+<p>Das Landgericht hat die Klage ohne vorherigen Hinweis auf die aus seiner Sicht bestehende Unschl&uuml;ssigkeit des Klagevorbringens, ohne pers&ouml;nliche Anh&ouml;rung der Kl&auml;gerin und ohne Beweisaufnahme in vollem Umfang abgewiesen. Zur Begr&uuml;ndung hat es im Wesentlichen ausgef&uuml;hrt, dass die Kl&auml;gerin gegen die Beklagte keinen vertraglichen Anspruch auf die geltend gemachte Invalidit&auml;tsleistung habe, weil sie diesbez&uuml;glich unzureichend prozessual vorgetragen habe. Sie habe den Unfallhergang im Ergebnis unzureichend dargestellt, da ihre aktenkundigen fr&uuml;heren Darstellungen, denen regelm&auml;&szlig;ig besonderes Gewicht beizumessen sei, da sie eher unbeeinflusst von rechtsfolgengeleiteten &Uuml;berlegungen get&auml;tigt werden, einerseits sowie ihr Klagevortrag andererseits keine schl&uuml;ssige und widerspruchsfreie Darstellung des Unfallhergangs beinhalten, welche einen vertraglichen Anspruch schl&uuml;ssig unterlege. Darauf sei sie von der Beklagten hingewiesen worden. Dies gelte ebenso im Hinblick auf Einzelheiten des Unfallhergangs, die f&uuml;r die Beurteilung, ob beispielsweise Leistungsausschl&uuml;sse greifen, heranzuziehen w&auml;ren. Die Kl&auml;gerin habe sich zu der von ihr anfangs in ihrer eigenen Schadensmeldung angegebenen - und ihr im Rechtsstreit von der Beklagten insoweit auch deutlich vorgehaltenen - Kreislaufschw&auml;che nicht ge&auml;u&szlig;ert. Zu dem konkreten Hergang des Ereignisses fehle daher der nach &sect; 138 ZPO erforderliche vollst&auml;ndige und wahrheitsgem&auml;&szlig;e Vortrag der Kl&auml;gerin.</p>
+<p>Dagegen wendet sich die Kl&auml;gerin mit ihrer Berufung, die sie im Wesentlichen damit begr&uuml;ndet, dass das Landgericht zu Unrecht angenommen habe, dass der Vortrag der Kl&auml;gerin unschl&uuml;ssig sei. Indem die Kl&auml;gerin in der Klageschrift vorgetragen habe, dass sie am 23. Januar 2021 gest&uuml;rzt sei und sich dabei das Knie verletzt habe, habe sie sich vollst&auml;ndig erkl&auml;rt und die tats&auml;chlichen Voraussetzungen eines Unfalls im Sinne des privaten Unfallversicherungsrechts dargelegt und daf&uuml;r auch Beweis angeboten. Dass die au&szlig;ergerichtlichen Angaben der Kl&auml;gerin in der Meldung an die Beklagte bzw. die Angaben im Bericht von Dr. (&bdquo;Name 01&ldquo;) dazu wom&ouml;glich in Widerspruch stehen, f&uuml;hre nicht zu einer Unschl&uuml;ssigkeit des Klagevorbringens, welches sie im Schriftsatz vom 21. Januar 2025 nochmals bekr&auml;ftigt habe. Insoweit habe das Landgericht auch nicht festgestellt oder begr&uuml;ndet, dass der Vortrag der Kl&auml;gerin zum Unfallhergang in der Klageschrift unwahr und deshalb unbeachtlich sei.</p>
+<p>Das Landgericht habe es zudem unter Versto&szlig; gegen &sect; 139 Abs. 1 S. 1 und S. 2 ZPO vers&auml;umt, den Sachverhalt mit den Parteien im Termin rechtlich und tats&auml;chlich zu er&ouml;rtern, Hinweise auf eine fehlende Schl&uuml;ssigkeit des Kl&auml;gervorbringens zu erteilen sowie der pers&ouml;nlich anwesenden Kl&auml;gerin Fragen zu stellen, um etwaige Unklarheiten oder Unvollst&auml;ndigkeiten im Sachvortrag zu beseitigen.</p>
+<p>Es sei dar&uuml;ber hinaus von einem fehlerhaften Unfallbegriff ausgegangen, da ein versicherter Unfall nach &sect; 1 Nr. 4 l) der hier einschl&auml;gigen Versicherungsbedingungen auch vorliege, wenn ein Sturz durch eine Kreislaufschw&auml;che verursacht werde. Insoweit tr&auml;gt die Kl&auml;gerin nunmehr vor, dass sie sich nicht daran erinnern k&ouml;nne, warum sie am 23. Januar 2021 gest&uuml;rzt sei. Eine Bewusstseinsst&ouml;rung habe bei der Kl&auml;gerin vor dem Unfall jedenfalls nicht vorgelegen.</p>
+<p>Die Kl&auml;gerin beantragt nach entsprechendem Hinweis des Senats vom 3. Juli 2025 zuletzt,</p>
+<blockquote>
+<p><em>das am 28. Februar 2025 verk&uuml;ndete Urteil des Landgerichts Frankfurt (Oder) zum Aktenzeichen 15 O 107/24 aufzuheben und das Verfahren an das Landgericht Frankfurt/Oder zur&uuml;ckzuverweisen.</em></p>
+</blockquote>
+<p>Die Beklagte beantragt,</p>
+<blockquote>
+<p><em>die Berufung zur&uuml;ckzuweisen.</em></p>
+</blockquote>
+<p>Sie verteidigt das landgerichtliche Urteil unter Vertiefung ihres erstinstanzlichen Vorbringens.</p>
+<p>II.</p>
+<p>Auf den ausdr&uuml;cklichen Antrag der Kl&auml;gerin sind das angegriffene Urteil und das zugrundeliegende Verfahren nach &sect; 538 Abs. 2 Satz 1 Nr. 1 ZPO aufzuheben und zur erneuten Verhandlung und Entscheidung an das Erstgericht zur&uuml;ckzuverweisen. Das landgerichtliche Urteil beruht auf einem wesentlichen Verfahrensfehler im Sinne der vorgenannten Vorschrift, wodurch das Landgericht den ma&szlig;geblichen Sachverhalt verfahrensfehlerhaft nicht hinreichend aufgekl&auml;rt hat.</p>
+<p>1.</p>
+<p>Das erstinstanzliche Verfahren leidet an einem wesentlichen Verfahrensfehler. Das Erstgericht hat den Anspruch der Parteien auf rechtliches Geh&ouml;r verletzt.</p>
+<p>a) Verfahrensfehlerhaft hat das Landgericht das Vorliegen eines bedingungsgem&auml;&szlig;en Unfalls - ohne vorherigen Hinweis - mit der Begr&uuml;ndung verneint, die Kl&auml;gerin habe den Unfallhergang unschl&uuml;ssig und unzureichend dargestellt, da sich ihre aktenkundigen fr&uuml;heren Darstellungen und ihr Klagevortrag zum Unfallgeschehen widersprochen haben.</p>
+<p>Auf mangelnde Substantiierung darf sich ein Gericht nicht st&uuml;tzen, bevor es die Partei auf die Erg&auml;nzungsbed&uuml;rftigkeit des Sachvortrages hingewiesen hat. Eine Er&ouml;rterung ist nach &sect; 139 Abs. 2 ZPO unerl&auml;sslich, wenn Tatsachenvortrag, Beweisangebote oder Antr&auml;ge nach Ansicht des Gerichts unvollst&auml;ndig, unklar oder neben der Sache sind. Vorliegend hat das Landgericht die Kl&auml;gerin weder pers&ouml;nlich angeh&ouml;rt noch auf etwaige Unvollst&auml;ndigkeiten und Unstimmigkeiten und der daraus nach seiner Ansicht folgenden Unschl&uuml;ssigkeit des Klagevorbringens, insbesondere im Hinblick auf die Darlegung eines versicherten Unfalls, hingewiesen.</p>
+<p>Einer solchen gerichtlichen Er&ouml;rterung und eines entsprechenden Hinweises bedarf es zwar dann nicht, wenn die Partei durch eingehenden und von ihr erfassten Vortrag des Verfahrensgegners zutreffend &uuml;ber die Sach- und Rechtslage unterrichtet wurde (statt vieler: Brandenburgisches OLG, Beschl. v. 13.02.2020 - 13 UF 127/17, juris Rn. 14, m.w.N.). Aber auch dies war hier nicht der Fall. Die Beklagte hat in ihrer Klageerwiderung vom 23. Dezember 2024 lediglich den Tatsachenvortrag der Kl&auml;gerin bestritten und dazu Widerspr&uuml;che in den aus den vorgerichtlichen Dokumenten erfassten Darstellungen des Unfallhergangs aufgezeigt, ohne daraus folgende rechtliche Konsequenzen, insbesondere eine etwaige fehlende Schl&uuml;ssigkeit des Klagevorbringens, zu benennen. Dies hat sie auch in ihren nachfolgenden Schrifts&auml;tzen nicht getan.</p>
+<p>Dadurch dass das Landgericht in seinem Urteil die nach seiner Ansicht bestehende Unschl&uuml;ssigkeit des Klagevorbringens erstmals &uuml;berhaupt thematisierte und seine Klageabweisung allein auf diesen ma&szlig;geblichen Punkt st&uuml;tzte, ist die landgerichtliche Entscheidung als &bdquo;&Uuml;berraschungsentscheidung&ldquo; zu bewerten.</p>
+<p>b) Der dargestellte Verfahrensfehler in Form des unterlassenen Hinweises ist deshalb auch wesentlich, da er die prozessualen Rechte der Kl&auml;gerin im vorliegenden Einzelfall erheblich verk&uuml;rzt und das angegriffene Urteil hierauf beruht.</p>
+<p>c) Die Berufung der Kl&auml;gerin bleibt auch nicht aus anderen Gr&uuml;nden ohne Erfolg, etwa weil ihr Leistungsanspruch wegen einer &bdquo;arglistigen Obliegenheitsverletzung&ldquo; entfallen ist, wie die Beklagte erstmals mit ihrer Berufungserwiderung einwendet. Aus den zur Akte gereichten Versicherungsbedingungen (Anlage K 2) geht zwar hervor, dass der Versicherungsnehmer nach &sect; 14 Nr. 1b) AUB 2016 s&auml;mtliche Angaben, um die der Versicherer ihn bittet, wahrheitsgem&auml;&szlig;, vollst&auml;ndig und unverz&uuml;glich erteilen muss. Bei vors&auml;tzlicher Verletzung dieser Obliegenheit verliert er den Versicherungsschutz, bei grob fahrl&auml;ssiger Verletzung kann der Versicherer seine Leistung k&uuml;rzen, &sect; 14 Nr. 2 Abs. 1 und 2 AUB 2016. Dies gilt allerdings nur, wenn sich die Verletzung dieser Obliegenheit kausal auf die Feststellungsm&ouml;glichkeiten der Beklagten zu ihrer Einstandspflicht negativ ausgewirkt hat, &sect; 14 Nr. 2 Abs. 5 AUB 2016 (vgl. &sect;&nbsp;28 Abs. 3 S. 1 VVG).</p>
+<p>Eine solche Kausalit&auml;t ist weder ersichtlich noch dargetan. Auch wenn dem Versicherungsnehmer nach der hier vorliegenden Versicherungsbedingung die Beweislast f&uuml;r die fehlende Kausalit&auml;t obliegt, muss der Versicherer im Rahmen der ihn treffenden Substantiierungslast dartun, welche Ma&szlig;nahmen er bei rechtzeitiger Erf&uuml;llung der Obliegenheit ergriffen und welchen Erfolg er sich davon versprochen h&auml;tte. Allgemeine Erw&auml;gungen gen&uuml;gen nicht (BGH, VersR 1964, 709, 712; 2001, 756, 757; KG, VersR 2010, 1488, 1489; OLG D&uuml;sseldorf, VersR 2001, 888, 891; OLG Saarbr&uuml;cken, VersR 2016, 1368, 1371; OLG Hamm, r+s 2023, 1045, 1048; OLG Celle, r+s 2023, 853 Rn. 90; OLG Karlsruhe, r+s 2023, 712 Rn. 67; OGH, VersR 2003, 1062, 1063; Pr&ouml;lss/Martin/Armbr&uuml;ster, 32. Aufl. 2024, VVG &sect; 28 Rn. 258, beck-online). Die Verletzung der Aufkl&auml;rungsobliegenheit muss zudem einen in Geld messbaren Verm&ouml;gensnachteil des Versicherers verursacht haben (BGH VersR 1960, 1074; OLG Oldenburg, VersR 2011, 1437, 1438&thinsp;f.; OLG Naumburg, VersR 2017, 93, 96; M&uuml;KoVVG/Wandt &sect; 28 Rn. 301; n&auml;her Armbr&uuml;ster, VersR 2008, 1154, 1162&thinsp;f.; Pr&ouml;lss/Martin/Armbr&uuml;ster, 32. Aufl. 2024, VVG &sect; 28 Rn. 254, beck-online). Ma&szlig;geblich ist dabei grunds&auml;tzlich der Zeitpunkt der Regulierungsentscheidung (OLG Saarbr&uuml;cken, VersR 2013, 180, 181; Pr&ouml;lss/Martin/Armbr&uuml;ster, 32. Aufl. 2024, VVG &sect; 28 Rn. 254 m.w.N., beck-online).</p>
+<p>Zuzugeben ist der Beklagten zwar, dass die Kl&auml;gerin auf der gegen&uuml;ber der Beklagten get&auml;tigten Schadensanzeige im Beiblatt &bdquo;Unfallanzeige&ldquo; (S. 2 der Anlage B 1) im Flie&szlig;text zun&auml;chst ausgef&uuml;hrt hat, &bdquo;aufgrund von einer Kreislaufschw&auml;che gest&uuml;rzt&ldquo; zu sein. Gleichwohl kreuzte sie in der der &bdquo;Unfallanzeige&ldquo; unmittelbar nachfolgenden Schadensanzeige unter Ziff. 4 (S. 3 der Anlage B 1) an, dass der Unfall nicht durch eine vorher eingetretene Bewusstseinsst&ouml;rung entstanden sei. Inwieweit sich diese widersprechenden Angaben der Kl&auml;gerin, die seitens der Beklagten jedenfalls vorgerichtlich zu keinem Zeitpunkt bem&auml;ngelt noch von den Parteigutachtern als ma&szlig;geblich empfunden wurden, auf die Feststellung der Eintrittspflicht der Beklagten ausgewirkt haben sollen, ist bisher weder von der Beklagten vorgetragen noch sonst erkennbar, insbesondere weil ein Unfall infolge einer Bewusstseinsst&ouml;rung im vorliegenden Fall nach &sect; 1 Nr. 4l) AUB 2016-Basis mitversichert ist. Vielmehr kann es ohne Auswirkungen auf die Feststellung des Versicherungsfalls bleiben, wenn der Versicherungsnehmer zun&auml;chst unrichtige Angaben gemacht und diese sp&auml;ter korrigiert hat (zum Ganzen auch Langheid/Rixecker/Rixecker VVG &sect;&nbsp;31 Rn.&nbsp;19; Schimikowski VersVertrR, 7. Aufl. 2024, Rn. 352, beck-online). Erinnerungsl&uuml;cken zum Unfallhergang, auf die sich die Kl&auml;gerin nunmehr auch prozessual beruft, hatte sie zudem bereits gegen&uuml;ber dem Parteigutachter (&bdquo;Name 02&ldquo;) einger&auml;umt (S. 9 des Parteigutachtens vom 25. Juli 2022, Anlage K12; so auch S. 15 Anlage B3).</p>
+<p>Angesichts dieser vorgerichtlichen - sich augenscheinlich widersprechenden - Angaben der Kl&auml;gerin sind auch Anhaltspunkte f&uuml;r deren arglistiges Verhalten, welches das Kausalit&auml;tserfordernis entfallen lassen w&uuml;rde (&sect; 14 Nr. 2 Abs. 6 AUB 2016), nicht ersichtlich, denn dieses verlangt ein &uuml;ber das Wollen der Obliegenheitsverletzung und der damit typischerweise einhergehenden Beeinflussung der Regulierungsentscheidung des Versicherers hinaus, dass das Verhalten des Versicherungsnehmers zumindest bedingt vors&auml;tzlich darauf gerichtet ist, dem Versicherer einen Nachteil zuzuf&uuml;gen (Pr&ouml;lss/Martin/Armbr&uuml;ster, 32. Aufl. 2024, VVG &sect; 28 Rn. 197 m.w.N., beck-online).</p>
+<p>2.</p>
+<p>Das weitere Verfahren erfordert eine umfangreiche und aufwendige Beweisaufnahme.</p>
+<p>Insoweit ist hinsichtlich des behaupteten Unfallgeschehens zun&auml;chst die Anh&ouml;rung der Kl&auml;gerin sowie die Vernehmung des dazu angebotenen Zeugen Herrn (&bdquo;Name 03&ldquo;) angezeigt. Sofern demnach ein bedingungsgem&auml;&szlig;er Unfall zugrundezulegen ist, ist die Einholung eines medizinischen Sachverst&auml;ndigengutachtens zu der Frage veranlasst, ob und inwieweit die k&ouml;rperlichen Einschr&auml;nkungen der Kl&auml;gerin urs&auml;chlich auf das fragliche Unfallgeschehen zur&uuml;ckzuf&uuml;hren sind. Denn entgegen der Darstellung der Beklagten in ihrem Schriftsatz vom 4. Juli 2025 hat die Kl&auml;gerin die Voraussetzungen ihres geltend gemachten versicherungsrechtlichen Anspruchs (insbesondere in ihrer Klageschrift) hinreichend unter Beweisantritt dargelegt. Nach ihrem Vortag habe sie infolge des am 23. Januar 2021 erlittenen Sturzes an anhaltenden Schmerzen im rechten Knie gelitten und dieses durch Dr. (&bdquo;Name 01&ldquo;) mittels MRT (Befund vom 26. Januar 2021, Anlage K 3) und Arthroskopie am 16. M&auml;rz 2021 (vgl. OP-Bericht, Anlage K 4) weiter untersuchen lassen. Im weiteren Verlauf sei es zu einer erheblichen Verschlechterung der Beweglichkeit des rechten Kniegelenks der Kl&auml;gerin und schlie&szlig;lich zu dessen dauerhafter Sch&auml;digung als Folge des Unfalls vom 23. Januar 2021 gekommen, wobei die Kl&auml;gerin ihren Krankheitsverlauf unter Vorlage weiterer &auml;rztlicher Dokumente (Anlagen K6ff.) dezidiert dargelegt hat sowie auch, dass die Arthroskopie der Behandlung von Unfallfolgen gedient habe (vgl. Schriftsatz der Kl&auml;gerin vom 29. Januar 2025, S. 2). Das erhebliche Vorbringen der Kl&auml;gerin hat die Beklagte bestritten und in diesem Rahmen auf die von ihr veranlassten Parteigutachten des Herrn (&bdquo;Name 02&ldquo;), Dr. (&bdquo;Name 04&ldquo;) und Dr. (&bdquo;Name 05&ldquo;) (Anlagen K 12, 14 und 16) verwiesen.</p>
+<p>Dementsprechend ist das von der Kl&auml;gerin angebotene Sachverst&auml;ndigengutachten zur Frage des Bestehens und des Ausma&szlig;es ihrer gesundheitlichen Beeintr&auml;chtigungen und deren Kausalit&auml;t zum Unfall einzuholen. Die Begutachtung erweist sich dabei schon deshalb als anspruchsvoll, weil sich der Sachverst&auml;ndige zwingend auch mit den gegenl&auml;ufigen Ergebnissen aus den von der Beklagten veranlassten Parteigutachten (&bdquo;Name 02&ldquo;), Dr. (&bdquo;Name 04&ldquo;) und Dr. (&bdquo;Name 05&ldquo;) (Anlagen K 12, 14 und 16) auseinandersetzen muss und im &Uuml;brigen eine Vielzahl &auml;rztlicher Stellungnahmen, Atteste und Befunde auszuwerten hat. Der Senat h&auml;lt die Aktenlage - entgegen der Meinung der Beklagten (vgl. Schriftsatz vom 4. Juli 2025) - insoweit nicht f&uuml;r eindeutig. Dar&uuml;ber hinaus wird der Sachverst&auml;ndige auch zu erl&auml;utern haben, inwieweit bestehende Vorerkrankungen/ Gebrechen mitgewirkt haben sowie - soweit erforderlich - zum Grad der zum jeweiligen Zeitpunkt bestehenden, unfallbedingten Invalidit&auml;t.</p>
+<p>3.</p>
+<p>Der Senat macht deshalb von seinem nach &sect; 538 Abs. 2 ZPO einger&auml;umten Ermessen Gebrauch, den vorliegenden Rechtsstreit ausnahmsweise unter Aufhebung des landgerichtlichen Urteils an die erste Instanz zur&uuml;ckzuverweisen, da dies in der Gesamtschau trotz des mit der Zur&uuml;ckverweisung verbundenen, zus&auml;tzlichen Zeit- und Kostenaufwandes sachdienlich und im Interesse beider Parteien ist. Nach dem bisherigen Sach- und Streitstand ist absehbar, dass der Rechtsstreit deutlich weniger Schwierigkeiten in rechtlicher als in tats&auml;chlicher Hinsicht bereitet. In Anbetracht dessen, wie auch unter Ber&uuml;cksichtigung des Umstandes, dass die notwendige Beweisaufnahme und auch die Anh&ouml;rung der Kl&auml;gerin erstinstanzlich vollst&auml;ndig unterblieben sind, ist dies gerechtfertigt, um den Parteien im Sinne eines umfassenden Justizgew&auml;hrungsanspruches in Bezug auf die anstehende anspruchsvolle - und damit fehleranf&auml;llige - Beweisaufnahme eine Korrekturm&ouml;glichkeit in einer zweiten Tatsacheninstanz offenzuhalten.</p>
+<p>III.</p>
+<p>F&uuml;r das weitere Verfahren wird das Landgericht zu ber&uuml;cksichtigen haben, dass es entgegen seiner Auffassung auf die Ursache des Sturzes f&uuml;r den schl&uuml;ssigen Klagevortrag des Versicherungsfalles zun&auml;chst nicht ankommt (vgl. BGH, Hinweisbeschl. v. 18.01.2012 - IV ZR 116/11 = NJW 2012, 1289). F&uuml;r den Unfallbegriff ist vielmehr allein dasjenige Ereignis ma&szlig;geblich, das den Schaden unmittelbar ausgel&ouml;st hat, mithin hier der von der Kl&auml;gerin geschilderte Sturz. Dies gilt umso mehr, als dass ein Unfall infolge einer Bewusstseinsst&ouml;rung im vorliegenden Fall nach &sect; 1 Nr. 4l) AUB 2016-Basis mitversichert ist. Die dahingehenden widersprechenden Angaben der Kl&auml;gerin werden wom&ouml;glich im Rahmen einer Beweisw&uuml;rdigung zu bewerten sein.</p>
+<p>Das Landgericht hat in rechtlicher Hinsicht weiter zu ber&uuml;cksichtigen, dass die pl&ouml;tzliche Einwirkung von au&szlig;en, also das Unfallereignis, zu einer medizinisch feststellbaren ersten Gesundheitssch&auml;digung des Versicherten gef&uuml;hrt haben muss, wobei dieser erste Gesundheitsschaden nicht erheblich zu sein braucht (OLG Saarbr&uuml;cken, Urt. v. 02.10.2019 &ndash; 5 U 97/18, NJW-RR 2020, 96, beck-online). Blo&szlig;es (auch kurzfristiges) Schmerzempfinden - wie von der Kl&auml;gerin schrifts&auml;tzlich vorgetragen und in den &auml;rztlichen Dokumenten erfasst - reicht aus (Pr&ouml;lss/Martin/Piontek, 32. Aufl. 2024, VVG &sect; 178, Rn. 17 m.w.N., beck-online).</p>
+<p>Dar&uuml;ber hinaus gen&uuml;gt es in der privaten Unfallversicherung f&uuml;r einen ad&auml;quaten Kausalzusammenhang zwischen Unfallereignis und Gesundheitsbeeintr&auml;chtigung, dass das Unfallereignis an der eingetretenen Funktionsbeeintr&auml;chtigung mitgewirkt hat, wenn diese Mitwirkung nicht g&auml;nzlich au&szlig;erhalb aller Wahrscheinlichkeit liegt. Eine wesentliche oder richtungsgebende Mitwirkung ist - anders als im Sozialversicherungsrecht - nicht zu verlangen (vgl. BGH, Urt. v. 19.10.2016 - IV ZR 521/14, juris Rn. 14). Deshalb k&ouml;nnen auch behandlungsbedingte Folgen, wie die hier vorgetragenen, relevant sein. Es gen&uuml;gt, dass eine als solche unerhebliche K&ouml;rperbesch&auml;digung die Voraussetzung f&uuml;r weitere auf den Verletzten einwirkende Ursachen geschaffen hat (OLG Saarbr&uuml;cken, a.a.O., Rn. 10 m.w.N.; NJW-RR 2009, 903; Pr&ouml;lss/Martin/Piontek, a.a.O., Rn. 17).</p>
+<p>Die etwaige Mitwirkung von Krankheiten und Gebrechen, also von unfallfremden Faktoren, hat zudem keinen Ausschluss, sondern ggf. eine Anspruchsminderung entsprechend dem Mitwirkungsanteil zur Folge (vgl. hier Versicherungsbedingung Nr. 23 BB-Optimal-Deckung; BGH, a.a.O.).</p>
+<p>In Bezug auf die Unfallkausalit&auml;t und den Grad der Beeintr&auml;chtigungen gelten die Beweiserleichterungen des &sect; 287 ZPO (vgl. Pr&ouml;lss/Martin/Piontek, AUB 2020, Rn. 3).</p>
+<p>IV.</p>
+<p>Die Kostengrundentscheidung bleibt dem Landgericht vorbehalten.</p>
+<p>Die Entscheidung &uuml;ber die vorl&auml;ufige Vollstreckbarkeit folgt aus den &sect;&sect; 708 Nr. 10, 711 ZPO.</p>
+<p>Die Revision war in Ermangelung von Zulassungsgr&uuml;nden im Sinne des &sect; 543 Abs. 2 ZPO nicht zuzulassen.</p></p>
+                                        </dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="columns small-12 medium-12 large-8">
+
+            <div class="row">
+                <div class="columns">
+                    <!--hlIgnoreOn-->
+
+                    <div class="large-12 columns">
+                        <p style="height: 1em;">
+                            <a onclick="javascript:window.print();" class="button bb-submit-button float-right" title="Seite drucken">
+                                <i class="fa fa-print"></i> Seite drucken
+                            </a>
+                        </p>
+                    </div>
+                    <br>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+                                    <div class="row">
+                                        <div class="columns small-12 medium-12 large-8">
+
+                                            <div class="row">
+                                                <div class="columns">
+                                                    <!--hlIgnoreOn-->
+
+
+                                                    <div class="row bb-area-footer">
+                                                        <div class="columns">
+
+                                                            <div class="row bb-area-footer-content">
+    <div class="large-12 columns">
+        <div class="bb-breadcrumbs" id="bb-breadcrumbs2">
+            <span title="Sie sind hier:"> Sie sind hier: </span>
+            <a href="/" title="Startseite"><font class="bb-breadcrumbs-title">Gerichtsentscheidungen</font></a>
+
+                        
+        </div>
+    </div>
+</div>
+                                                            <div class="row bb-area-footer-content">
+                                                                <div class="hide-for-medium columns">
+                                                                    <div id="bb-link-bar1">
+                                                                        <div class="row">
+                                                                            <div class="hide-for-medium large-3 columns"></div>
+                                                                        </div>
+                                                                        <div class="row">
+
+                                                                            <div class="columns" id="mobileServiceMenu">
+    <h6>Service</h6>
+    <ul class="bb-list-dark">
+        <li>
+            <a href="https://www.brandenburg.de" title="Link zum Landesportal Brandenburg">
+                Landesportal Brandenburg
+            </a>
+        </li>
+        <li>
+            <a href="https://service.brandenburg.de" title="Link zum Serviceportal Brandenburg">
+                Serviceportal Brandenburg
+            </a>
+        </li>
+    </ul>
+</div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="medium-12 large-9 columns">
+                                                                    <div id="bb-info-bar">
+                                                                        <div class="row">
+                                                                            <div
+                                                                                    class="columns small-12 medium-6"
+                                                                                    id="quickAccessMenu"
+                                                                            ></div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="hide-for-small-only medium-12 large-3 columns">
+                                                                    <div id="bb-link-bar2">
+                                                                        <div class="row">
+
+                                                                            <div class="medium-6 large-12 columns" id="serviceMenu">
+    <h6>Service</h6>
+    <ul class="bb-list-dark">
+        <li>
+            <a href="https://www.brandenburg.de" title="Link zum Landesportal Brandenburg">
+                Landesportal Brandenburg
+            </a>
+        </li>
+        <li>
+            <a href="https://service.brandenburg.de" title="Link zum Serviceportal Brandenburg">
+                Serviceportal Brandenburg
+            </a>
+        </li>
+
+    </ul>
+</div>
+                                                                            <div class="medium-6 large-12 columns"></div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row bb-area-footer-bar">
+                                                                <div class="columns" id="footerbarMenu">
+    <div id="bb-footer-bar">
+        <span class="hide-for-small-only" id="footertext">
+        2026 | Landesregierung Brandenburg
+        </span>
+
+        <span class="bb-footer-items-right">
+            <a class="bb-footer-items-right" href="/seite/barrierefreiheit">Barrierefreiheit</a>
+        </span>
+
+        <span class="bb-footer-items-right">&nbsp;|&nbsp;</span>
+
+        <span class="bb-footer-items-right">
+            <a class="bb-footer-items-right" href="/seite/datenschutz">Datenschutz</a>
+        </span>
+
+        <span class="bb-footer-items-right">&nbsp;|&nbsp;</span>
+
+        <span class="bb-footer-items-right">
+            <a class="bb-footer-items-right" href="/seite/impressum">Impressum</a>
+        </span>
+
+        <span class="bb-footer-items-right">&nbsp;|&nbsp;</span>
+
+        <span class="bb-footer-items-right">
+            <a class="bb-footer-items-right" href="/seite/kontakt">Kontakt</a>
+        </span>
+
+
+
+    </div>
+</div>
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+
+
+                                        </div>
+                                    </div>
+
+
+
+
+
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+
+
+
+
+
