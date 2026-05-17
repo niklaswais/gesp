@@ -174,11 +174,7 @@ def test_ni_extractor_fetches_detail_page_when_tree_absent(tmp_path):
     page itself instead of bailing with 'could not retrieve tree'."""
     from gesp.src.get_text import ni
 
-    html_body = (
-        "<html><body>"
-        "<article><p>Entscheidungstext</p></article>"
-        "</body></html>"
-    )
+    html_body = "<html><body><article><p>Entscheidungstext</p></article></body></html>"
     response = SimpleNamespace(text=html_body)
     item = {
         "court": "lg-hannover",

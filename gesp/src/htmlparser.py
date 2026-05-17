@@ -926,9 +926,7 @@ def _populate_ni_metadata_from_tree(parser, tree):
         return
 
     def _read(label):
-        nodes = section[0].xpath(
-            f'.//dt[normalize-space(text())="{label}"]/following-sibling::dd[1]'
-        )
+        nodes = section[0].xpath(f'.//dt[normalize-space(text())="{label}"]/following-sibling::dd[1]')
         if not nodes:
             return ""
         return nodes[0].text_content().replace("\xa0", " ").strip()
