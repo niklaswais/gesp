@@ -2,7 +2,9 @@ from io import BytesIO
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
-from zipfile import ZipFile
+from zipfile import BadZipFile, ZipFile
+
+import pytest
 
 from gesp.src.create_file import save_as_html, save_as_pdf
 
@@ -97,10 +99,7 @@ def test_zip_xml_recovers_archive_with_trailing_junk(tmp_path):
     (tmp_path / "by").mkdir()
     content = (FIXTURES / "by_corrupt.zip").read_bytes()
     # Sanity: the raw bytes really do trip vanilla zipfile.
-    import pytest
-    from zipfile import BadZipFile as _Bad
-
-    with pytest.raises(_Bad):
+    with pytest.raises(BadZipFile):
         with ZipFile(BytesIO(content)):
             pass
 
