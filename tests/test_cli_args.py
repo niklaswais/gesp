@@ -40,3 +40,18 @@ def test_yes_flag_default_false():
 def test_yes_flag_set():
     args = build_parser().parse_args(["-y"])
     assert args.yes is True
+
+
+def test_wait_default_is_zero():
+    args = build_parser().parse_args([])
+    assert args.wait == 0.0
+
+
+def test_wait_bare_uses_juris_safe_default():
+    args = build_parser().parse_args(["-w"])
+    assert args.wait == 1.75
+
+
+def test_wait_accepts_explicit_seconds():
+    args = build_parser().parse_args(["-w", "3.5"])
+    assert args.wait == 3.5

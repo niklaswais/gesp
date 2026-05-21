@@ -131,9 +131,9 @@ def test_reconstruction_supplies_wait_to_jportal_extractor(tmp_path):
         patch.dict("gesp.src.fingerprint._JPORTAL_EXTRACTORS", {"mv": fake_extractor}),
         patch("gesp.src.fingerprint.save_as_html"),
     ):
-        Fingerprint(str(out_dir), str(fp_file), store_docId=False, wait=True)
+        Fingerprint(str(out_dir), str(fp_file), store_docId=False, wait=2.5)
 
-    assert captured["item"]["wait"] is True
+    assert captured["item"]["wait"] == 2.5
     assert captured["item"]["link"] == "https://www.landesrecht-mv.de/bsmv/document/MVRE1"
 
 
@@ -164,9 +164,9 @@ def test_reconstruction_supplies_wait_to_simple_extractor(tmp_path):
         patch.dict("gesp.src.fingerprint._SIMPLE_EXTRACTORS", {"nw": fake_extractor}),
         patch("gesp.src.fingerprint.save_as_html"),
     ):
-        Fingerprint(str(out_dir), str(fp_file), store_docId=False, wait=False)
+        Fingerprint(str(out_dir), str(fp_file), store_docId=False, wait=0)
 
-    assert captured["item"]["wait"] is False
+    assert captured["item"]["wait"] == 0
 
 
 def test_ni_extractor_fetches_detail_page_when_tree_absent(tmp_path):
@@ -181,7 +181,7 @@ def test_ni_extractor_fetches_detail_page_when_tree_absent(tmp_path):
         "date": "20200101",
         "az": "1-O-1-20",
         "link": "https://voris.wolterskluwer-online.de/browse/document/abc",
-        "wait": False,
+        "wait": 0,
     }
 
     with patch("gesp.src.get_text.requests.get", return_value=response) as mock_get:
@@ -210,7 +210,7 @@ def test_by_reconstruction_dispatches_to_save_as_html(tmp_path):
     out_dir = tmp_path / "out"
     out_dir.mkdir()
     with patch("gesp.src.fingerprint.save_as_html") as mock_save:
-        Fingerprint(str(out_dir), str(fp_file), store_docId=False, wait=False)
+        Fingerprint(str(out_dir), str(fp_file), store_docId=False, wait=0)
 
     mock_save.assert_called_once()
     item_arg, state_arg, *_ = mock_save.call_args.args
@@ -226,3 +226,14 @@ def test_fp_disabled_writes_nothing(tmp_path):
     pipeline.process_item({"court": "lg", "date": "x", "az": "y", "link": "z"}, spider)
     pipeline.close_spider(spider)
     assert not (tmp_path / "fp.xz").exists()
+
+
+def test_process_item_tolerates_none(tmp_path):
+    """Extractors in get_text return None on fetch/parse failure (e.g. nw()
+    after 'could not retrieve'). The fingerprint pipeline must not crash on
+    those — save_as_html and RawExporter already guard the same way."""
+    spider = _make_spider(tmp_path)
+    pipeline = FingerprintExportPipeline()
+    pipeline.open_spider(spider)
+    assert pipeline.process_item(None, spider) is None
+    pipeline.close_spider(spider)

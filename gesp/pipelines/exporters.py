@@ -78,6 +78,11 @@ class FingerprintExportPipeline(CrawlerAware):
                 cls._compressor = None
 
     def process_item(self, item, spider=None):
+        if item is None:
+            # An upstream extractor (e.g. get_text.nw) returns None when the
+            # decision fetch fails; save_as_html and RawExporter already guard
+            # against that, and we need to as well or fp.xz writing crashes.
+            return None
         spider = self._spider(spider)
         if not spider.fp:
             return item

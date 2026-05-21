@@ -107,7 +107,7 @@ _SIMPLE_EXTRACTORS = {"bb": bb, "ni": ni, "nw": nw}
 
 
 class Fingerprint:
-    def __init__(self, path, fp_path, store_docId, wait=False):
+    def __init__(self, path, fp_path, store_docId, wait=0):
         for i in Fingerprint.load_file(fp_path):
             if "version" in i and "date" in i and "args" in i:
                 output(f"reconstructing from fingerprint {fp_path} ({i['version']}, {i['date']}, {i['args']})")

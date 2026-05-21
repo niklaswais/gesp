@@ -34,7 +34,7 @@ class SpdrHE(scrapy.Spider):
         domains="",
         store_docId=False,
         postprocess=False,
-        wait=False,
+        wait=0,
         **kwargs,
     ):
         self.path = path

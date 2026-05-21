@@ -86,8 +86,13 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument(
         "-w",
         "--wait",
-        action=argparse.BooleanOptionalAction,
-        help="inserts a delay after downloading each decision, which can avoid a ban from the service providers (mainly juris)",
+        type=float,
+        nargs="?",
+        const=1.75,
+        default=0.0,
+        metavar="SECONDS",
+        help="sleep N seconds before each per-decision fetch to avoid bans (mainly juris). "
+        "Bare -w uses 1.75s; pass -w 3 for 3s. Default: 0 (no delay).",
     )
     return p
 
@@ -165,7 +170,6 @@ def main():
             else:
                 cl_domains.append(domain)
     args.postprocess = bool(args.postprocess)
-    args.wait = bool(args.wait)
     # -fp (fingerprint)
     if isinstance(args.fingerprint, str):  # fp als Argument
         fp = args.fingerprint

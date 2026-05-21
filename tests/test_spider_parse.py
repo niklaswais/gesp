@@ -77,7 +77,7 @@ def _make_spider(state: str, tmp_path):
     )
     # Some spiders take an extra `wait` kwarg; pass it conditionally.
     if "wait" in cls.__init__.__code__.co_varnames:
-        kwargs["wait"] = False
+        kwargs["wait"] = 0
     spider = cls(**kwargs)
     # Many spiders set `self.headers` in start(); seed it for tests that bypass start().
     if not hasattr(spider, "headers") or not spider.headers:

@@ -37,7 +37,7 @@ class SpdrNI(scrapy.Spider):
         domains="",
         store_docId=False,
         postprocess=False,
-        wait=False,
+        wait=0,
         **kwargs,
     ):
         self.path = path
@@ -98,8 +98,8 @@ class SpdrNI(scrapy.Spider):
                 href = item.xpath(".//h3/a/@href").get()
                 if href:
                     # Extrahieren der Meta-Informationen via Seiten-Aufruf
-                    if self.wait == True:
-                        timelib.sleep(1.75)
+                    if self.wait:
+                        timelib.sleep(self.wait)
                     try:
                         txt = requests.get(self.base_url + href, headers=self.headers, timeout=30).text
                     except Exception as e:

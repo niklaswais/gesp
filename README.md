@@ -48,7 +48,7 @@ The fingerprinting feature of gesp can also be used to meet good scientific prac
 The use of "-pp" activates pre-processing. A separate subfolder is created in the "results" folder for the subsequent outputs.
 
 ### F. Delayed Retrieval
-You can use the argument "-w" to add a delay between two consecutive downloads of decisions from the same source. This reduces the server load for the provider of the decisions and can prevent bans.
+You can use the argument "-w" to add a delay before each per-decision fetch. This reduces the server load for the provider of the decisions and can prevent bans (juris-backed portals are particularly aggressive). Passing the flag on its own ("-w") uses a juris-safe default of 1.75 seconds; pass a number to override, e.g. "-w 3" for a three-second delay. The default when "-w" is omitted is no delay at all.
 
 ### G. Appendix
 #### 1. Abbreviations for "-s" (federal/states)

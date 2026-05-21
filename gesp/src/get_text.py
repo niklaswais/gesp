@@ -12,8 +12,8 @@ def bb(item):
     if "tree" not in item:
         try:
             txt = requests.get(item["link"], timeout=30).text
-            if item["wait"] == True:
-                timelib.sleep(1.5)
+            if item["wait"]:
+                timelib.sleep(item["wait"])
         except:
             output("could not retrieve " + item["link"], "err")
             return
@@ -46,8 +46,8 @@ def be(item, headers, cookies):  # spider.headers, spider.cookies
         '{"docId":"%s","format":"xsl","keyword":null,"sourceParams":{"source":"Unknown","category":"Alles"},"searches":[],"clientID":"bsbe","clientVersion":"bsbe - V06_07_00 - 23.06.2022 11:20","r3ID":"%sT%sZ"}'
         % (item["docId"], date, time)
     )
-    if item["wait"] == True:
-        timelib.sleep(1.5)
+    if item["wait"]:
+        timelib.sleep(item["wait"])
     try:
         req = requests.post(url=url, cookies=cookies, headers=headers, data=body, timeout=30)
     except:
@@ -72,8 +72,8 @@ def bw(item, headers, cookies):  # spider.headers, spider.cookies
         '{"docId":"%s","format":"xsl","keyword":null,"docPart":"L","sourceParams":{"source":"TL","position":1,"sort":"date","category":"Rechtsprechung"},"searches":[],"clientID":"bsbw","clientVersion":"bsbw - V08_18_00 - 24.04.2025 11:53","r3ID":"%sT%sZ"}'
         % (item["docId"], date, time)
     )
-    if item["wait"] == True:
-        timelib.sleep(1.75)
+    if item["wait"]:
+        timelib.sleep(item["wait"])
     try:
         req = requests.post(url=url, cookies=cookies, headers=headers, data=body, timeout=30)
     except:
@@ -116,8 +116,8 @@ def he(item, headers, cookies):  # spider.headers, spider.cookies
         '{"docId":"%s","format":"xsl","keyword":null,"docPart":"L","sourceParams":{"source":"TL","position":1,"sort":"date","category":"Rechtsprechung"},"searches":[],"clientID":"bshe","clientVersion":"bshe - V06_07_00 - 23.06.2022 11:20","r3ID":"%sT%sZ"}'
         % (item["docId"], date, time)
     )
-    if item["wait"] == True:
-        timelib.sleep(1.75)
+    if item["wait"]:
+        timelib.sleep(item["wait"])
     try:
         req = requests.post(url=url, cookies=cookies, headers=headers, data=body, timeout=30)
     except:
@@ -142,8 +142,8 @@ def hh(item, headers, cookies):  # spider.headers, spider.cookies
         '{"docId":"%s","format":"xsl","keyword":null,"docPart":"L","sourceParams":{"source":"TL","position":1,"sort":"date","category":"Rechtsprechung"},"searches":[],"clientID":"bsha","clientVersion":"bsha - V06_07_00 - 23.06.2022 11:20","r3ID":"%sT%sZ"}'
         % (item["docId"], date, time)
     )
-    if item["wait"] == True:
-        timelib.sleep(1.75)
+    if item["wait"]:
+        timelib.sleep(item["wait"])
     try:
         req = requests.post(url=url, cookies=cookies, headers=headers, data=body, timeout=30)
     except:
@@ -168,8 +168,8 @@ def mv(item, headers, cookies):  # spider.headers, spider.cookies
         '{"docId":"%s","format":"xsl","keyword":null,"docPart":"L","sourceParams":{"source":"TL","position":1,"sort":"date","category":"Rechtsprechung"},"searches":[],"clientID":"bsmv","clientVersion":"bsmv - V06_07_00 - 23.06.2022 11:20","r3ID":"%sT%sZ"}'
         % (item["docId"], date, time)
     )
-    if item["wait"] == True:
-        timelib.sleep(1.75)
+    if item["wait"]:
+        timelib.sleep(item["wait"])
     try:
         req = requests.post(url=url, cookies=cookies, headers=headers, data=body, timeout=30)
     except:
@@ -188,8 +188,8 @@ def ni(item):
     # In normal runs the spider pre-fetches the detail page and attaches `tree`.
     # During fingerprint reconstruction the spider is bypassed, so fetch here.
     if "tree" not in item:
-        if item.get("wait") == True:
-            timelib.sleep(1.75)
+        if item.get("wait"):
+            timelib.sleep(item["wait"])
         try:
             txt = requests.get(item["link"], headers=config.ni_headers, timeout=30).text
         except Exception:
@@ -217,20 +217,19 @@ def ni(item):
 
 
 def nw(item):
-    if item["wait"] == True:
-        timelib.sleep(0.25)
+    if item["wait"]:
+        timelib.sleep(item["wait"])
     try:
         item["text"] = requests.get(item["link"], headers=config.HEADERS, timeout=30).text
-    except:
-        output("could not retrieve " + item["link"], "err")
-    else:
-        if (
-            item["text"][14] == " "
-        ):  # Herausfiltern von leeren Seiten / bei leeren Seite ist text[14] == " " / schnellere Version
-            item["filetype"] = "html"
-            return item
-        else:
-            output("empty page " + item["link"], "err")
+    except requests.RequestException as e:
+        output(f"could not retrieve {item['link']}: {e!r}", "err")
+        return
+    if (
+        item["text"][14] == " "
+    ):  # Herausfiltern von leeren Seiten / bei leeren Seite ist text[14] == " " / schnellere Version
+        item["filetype"] = "html"
+        return item
+    output("empty page " + item["link"], "err")
 
 
 def rp(item, headers, cookies):  # spider.headers, spider.cookies
@@ -243,8 +242,8 @@ def rp(item, headers, cookies):  # spider.headers, spider.cookies
         '{"docId":"%s","format":"xsl","keyword":null,"docPart":"L","sourceParams":{"source":"TL","position":1,"sort":"date","category":"Rechtsprechung"},"searches":[],"clientID":"bsrp","clientVersion":"bsrp - V06_07_00 - 23.06.2022 11:20","r3ID":"%sT%sZ"}'
         % (item["docId"], date, time)
     )
-    if item["wait"] == True:
-        timelib.sleep(1.75)
+    if item["wait"]:
+        timelib.sleep(item["wait"])
     try:
         req = requests.post(url=url, cookies=cookies, headers=headers, data=body, timeout=30)
     except:
@@ -269,8 +268,8 @@ def sh(item, headers, cookies):
         '{"docId":"%s","format":"xsl","keyword":null,"docPart":"L","sourceParams":{"source":"TL","position":1,"sort":"date","category":"Rechtsprechung"},"searches":[],"clientID":"bssh","clientVersion":"bssh - V06_07_00 - 23.06.2022 11:20","r3ID":"%sT%sZ"}'
         % (item["docId"], date, time)
     )
-    if item["wait"] == True:
-        timelib.sleep(1.75)
+    if item["wait"]:
+        timelib.sleep(item["wait"])
     try:
         req = requests.post(url=url, cookies=cookies, headers=headers, data=body, timeout=30)
     except:
@@ -295,8 +294,8 @@ def sl(item, headers, cookies):  # spider.headers, spider.cookies
         '{"docId":"%s","format":"xsl","keyword":null,"docPart":"L","sourceParams":{"source":"TL","position":1,"sort":"date","category":"Rechtsprechung"},"searches":[],"clientID":"bssl","clientVersion":"bssl - V06_07_00 - 23.06.2022 11:20","r3ID":"%sT%sZ"}'
         % (item["docId"], date, time)
     )
-    if item["wait"] == True:
-        timelib.sleep(1.75)
+    if item["wait"]:
+        timelib.sleep(item["wait"])
     try:
         req = requests.post(url=url, cookies=cookies, headers=headers, data=body, timeout=30)
     except:
@@ -315,8 +314,8 @@ def sn(item, headers):  # spider.headers
     if "body" in item:  # AG/LG/OLG-Subportal
         url = "https://www.justiz.sachsen.de/esamosplus/pages/treffer.aspx"
         headers["Referer"] = "https://www.justiz.sachsen.de/esamosplus/pages/suchen.aspx"
-        if item["wait"] == True:
-            timelib.sleep(1)
+        if item["wait"]:
+            timelib.sleep(item["wait"])
         try:
             item["req"] = requests.post(url=url, headers=headers, data=item["body"], timeout=30)
         except:
@@ -324,8 +323,8 @@ def sn(item, headers):  # spider.headers
         else:
             return item
     elif "link" in item:  # OVG-Subportal
-        if item["wait"] == True:
-            timelib.sleep(1)
+        if item["wait"]:
+            timelib.sleep(item["wait"])
         try:
             # Zwischengeschaltete Seite, von der aus erst der Filelink kopiert werden muss
             tree = html.fromstring(requests.get(item["link"], timeout=30).text)
@@ -346,8 +345,8 @@ def st(item, headers, cookies):
         '{"docId":"%s","format":"xsl","keyword":null,"docPart":"L","sourceParams":{"source":"TL","position":1,"sort":"date","category":"Rechtsprechung"},"searches":[],"clientID":"bsst","clientVersion":"bsst - V06_07_00 - 23.06.2022 11:20","r3ID":"%sT%sZ"}'
         % (item["docId"], date, time)
     )
-    if item["wait"] == True:
-        timelib.sleep(1.75)
+    if item["wait"]:
+        timelib.sleep(item["wait"])
     try:
         req = requests.post(url=url, cookies=cookies, headers=headers, data=body, timeout=30)
     except:
@@ -372,8 +371,8 @@ def th(item, headers, cookies):  # spider.headers, spider.cookies
         '{"docId":"%s","format":"xsl","keyword":null,"docPart":"L","sourceParams":{"source":"TL","position":1,"sort":"date","category":"Rechtsprechung"},"searches":[],"clientID":"bsth","clientVersion":"bsth - V06_07_00 - 23.06.2022 11:20","r3ID":"%sT%sZ"}'
         % (item["docId"], date, time)
     )
-    if item["wait"] == True:
-        timelib.sleep(1.75)
+    if item["wait"]:
+        timelib.sleep(item["wait"])
     try:
         req = requests.post(url=url, cookies=cookies, headers=headers, data=body, timeout=30)
     except:
