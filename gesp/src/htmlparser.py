@@ -952,9 +952,13 @@ def _populate_ni_metadata_from_tree(parser, tree):
 
 
 def parse_data_from_html(item, spider_name, spider_path):
-    verbose = False
-    parser = DecisionHTMLParser()
+    """Post-process a fetched decision into the flat `blanko` text template.
 
+    Returns the populated DecisionHTMLParser on success, or None on failure.
+    Failures (missing source file, malformed HTML, parser crash) are logged
+    via output(..., "err") with enough context to identify the item.
+    """
+    parser = DecisionHTMLParser()
     parser.mode = spider_name
     if parser.mode == "by":
         # gesetze-bayern.de ships UTF-8 XML with a BOM; utf-8-sig strips it
@@ -967,47 +971,35 @@ def parse_data_from_html(item, spider_name, spider_path):
 
     parser.output_path = os.path.join(spider_path, "preprocessed")
 
-    i = 0
-    # print("File #%5d (%5d) [%5d]: mode %s" % (i,parser.eclitests,parser.reextracted, parser.mode))
+    item_id = f"{item.get('court', '?')}/{item.get('az', '?')}"
 
-    if (parser.mode == "bund") or (parser.mode == "by"):
-        # bund mode only extracts the zip files. contents of the file are never loaded into the RAM
-        file = codecs.open(item["xmlfilename"], "r", codec)
-        text = file.read()
-        file.close()
-    else:
-        text = item["text"]
+    try:
+        if parser.mode in ("bund", "by"):
+            # bund/by extract zips to disk; contents are reloaded here.
+            with codecs.open(item["xmlfilename"], "r", codec) as f:
+                text = f.read()
+        else:
+            text = item["text"]
+    except (KeyError, OSError, UnicodeDecodeError) as e:
+        output(f"postprocess {spider_name} {item_id}: could not load source ({e!r})", "err")
+        return None
 
-    ## SH decisions sometimes contain invalid HTML which causes the parser to crash
-    if parser.mode == "sh":
-        try:
-            parser.feed(text)
-            parser.complete_attributes()
-            parser.save_to_file()
-            if parser.waitforinput:
-                # input()
-                parser.waitforinput = False
-
-            return parser
-        except KeyError as e:
-            print(e)
-            traceback.print_exc()
-            output("invalid HTML @ sh", "err")
-
-    else:
-        try:
-            parser.feed(text)
-            if parser.mode == "ni":
-                tree = item.get("tree")
-                if tree is not None:
-                    _populate_ni_metadata_from_tree(parser, tree)
-            parser.complete_attributes()
-
-            parser.save_to_file()
-            if parser.waitforinput:
-                # input()
-                parser.waitforinput = False
-        except Exception as e:
-            print(e)
-            traceback.print_exc()
-            # os._exit(1)
+    try:
+        parser.feed(text)
+        if parser.mode == "ni":
+            tree = item.get("tree")
+            if tree is not None:
+                _populate_ni_metadata_from_tree(parser, tree)
+        parser.complete_attributes()
+        parser.save_to_file()
+        if parser.waitforinput:
+            parser.waitforinput = False
+    except Exception as e:
+        # The legacy parser trips on malformed input in many shapes (KeyError on
+        # missing court codes, AttributeError on unexpected DOM, IndexError on
+        # truncated dates, ...). Keep the broad except, but log with full context
+        # and surface failure to the caller instead of swallowing.
+        output(f"postprocess {spider_name} {item_id}: {e!r}", "err")
+        traceback.print_exc()
+        return None
+    return parser
