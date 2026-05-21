@@ -229,10 +229,20 @@ class SpdrSN(scrapy.Spider):
 
     def parse_results_ovg(self, response):
         for table in response.xpath("//table"):
-            tmp_link = table.xpath(".//td[2]/a/@href").get()
-            tmp_link = re.findall(r"'([^']*)'", tmp_link)
-            tmp_link = "https://www.justiz.sachsen.de/ovgentschweb/document.phtml?id=" + tmp_link[0]
-            data = table.xpath(".//td[2]/a/text()").get()[15:]
+            raw_href = table.xpath(".//td[2]/a/@href").get()
+            if not raw_href:
+                output("sn: ovg row missing detail link", "warn")
+                continue
+            ids = re.findall(r"'([^']*)'", raw_href)
+            if not ids:
+                output(f"sn: ovg row link has no id ({raw_href!r})", "warn")
+                continue
+            tmp_link = "https://www.justiz.sachsen.de/ovgentschweb/document.phtml?id=" + ids[0]
+            raw_data = table.xpath(".//td[2]/a/text()").get()
+            if not raw_data or len(raw_data) < 16:
+                output(f"sn: ovg row text missing or too short ({raw_data!r})", "warn")
+                continue
+            data = raw_data[15:]
             if self.wait:
                 timelib.sleep(self.wait)
             try:  # Zwischengeschaltete Seite, von der aus erst der Filelink kopiert werden muss
@@ -244,7 +254,10 @@ class SpdrSN(scrapy.Spider):
                 file = None
                 for link in tree.xpath("//a[@target='_blank']"):
                     text = "".join(link.xpath("./text()"))
-                    ref = link.xpath("./@href")[0]
+                    href_list = link.xpath("./@href")
+                    if not href_list:
+                        continue
+                    ref = href_list[0]
                     if re.match(doc_pattern, ref):
                         file = re.sub(doc_pattern, "\\2", ref)
                         break

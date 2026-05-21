@@ -22,18 +22,23 @@ def bb(item):
         except (etree.LxmlError, ValueError) as e:
             output(f"could not parse {item['link']}: {e!r}", "err")
             return
-    if (
-        not item["tree"].xpath("//h1[@id='header']/text()")[0].rstrip().strip() == "Entscheidung"
-    ):  # Herausfiltern von leeren Seiten
-        # Dokument Aufräumen (nur bestimmte Bereiche übernehmen)...
-        body_meta = html.tostring(item["tree"].xpath("//div[@id='metadata']")[0]).decode("utf-8")
-        body_content = html.tostring(item["tree"].xpath("//div[@id='metadata']/following::div[1]")[0]).decode("utf-8")
-        doc = "<html><head><title>%s</title></head><body>%s%s</body></html>" % (item["az"], body_meta, body_content)
-        item["text"] = doc
-        item["filetype"] = "html"
-        return item
-    else:
+    # Herausfiltern von leeren Seiten: pages with header text "Entscheidung" are the
+    # portal's blank placeholder. A missing header is equally unusable.
+    header = item["tree"].xpath("//h1[@id='header']/text()")
+    if not header or header[0].rstrip().strip() == "Entscheidung":
         output("could not retrieve " + item["link"], "err")
+        return
+    metadata = item["tree"].xpath("//div[@id='metadata']")
+    metadata_next = item["tree"].xpath("//div[@id='metadata']/following::div[1]")
+    if not metadata or not metadata_next:
+        output(f"bb: missing metadata block on {item['link']}", "err")
+        return
+    body_meta = html.tostring(metadata[0]).decode("utf-8")
+    body_content = html.tostring(metadata_next[0]).decode("utf-8")
+    doc = "<html><head><title>%s</title></head><body>%s%s</body></html>" % (item["az"], body_meta, body_content)
+    item["text"] = doc
+    item["filetype"] = "html"
+    return item
 
 
 def be(item, headers, cookies):  # spider.headers, spider.cookies
