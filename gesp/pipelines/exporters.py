@@ -3,6 +3,8 @@ import lzma
 import os
 from datetime import datetime
 
+from scrapy.exceptions import DropItem
+
 from ..src import config
 from ..src.create_file import save_as_html, save_as_pdf
 from ..src.htmlparser import parse_data_from_html
@@ -106,7 +108,14 @@ class RawExporter(CrawlerAware):
     def process_item(self, item, spider=None):
         if item is None:
             return None
-        if item.get("postprocess"):
-            spider = self._spider(spider)
-            parse_data_from_html(item, spider.name[7:], spider.path)
+        if not item.get("postprocess"):
+            return item
+        spider = self._spider(spider)
+        # Pipeline order matters: RawExporter (900) runs after Export* (300/400)
+        # and FingerprintExportPipeline (400/500/600), so dropping here does
+        # not unwrite the raw html/pdf or poison fp.xz — it only flags the
+        # optional preprocessed/<file> as missing, and Scrapy records the drop
+        # in item_dropped_count.
+        if parse_data_from_html(item, spider.name[7:], spider.path) is None:
+            raise DropItem(f"postprocess failed for {item.get('court', '?')}/{item.get('az', '?')}")
         return item

@@ -1,9 +1,12 @@
 """Failure semantics for parse_data_from_html and RawExporter."""
 
+from types import SimpleNamespace
 from unittest.mock import patch
 
 import pytest
+from scrapy.exceptions import DropItem
 
+from gesp.pipelines.exporters import RawExporter
 from gesp.src.htmlparser import DecisionHTMLParser, parse_data_from_html
 
 
@@ -69,3 +72,42 @@ def test_parse_logs_item_identifier_on_failure(tmp_path, capsys, mode):
     result = parse_data_from_html(item, mode, str(tmp_path))
     assert result is None
     assert "lg-X/42-Y" in capsys.readouterr().out
+
+
+def _raw_exporter(tmp_path):
+    """Build a RawExporter with a stub spider; bypass from_crawler."""
+    exp = RawExporter()
+    exp.crawler = SimpleNamespace(spider=SimpleNamespace(name="spider_nw", path=str(tmp_path)))
+    return exp
+
+
+def test_raw_exporter_drops_when_postprocess_returns_none(tmp_path):
+    exp = _raw_exporter(tmp_path)
+    item = _item(postprocess=True)
+    with patch("gesp.pipelines.exporters.parse_data_from_html", return_value=None):
+        with pytest.raises(DropItem):
+            exp.process_item(item)
+
+
+def test_raw_exporter_passes_through_on_success(tmp_path):
+    exp = _raw_exporter(tmp_path)
+    item = _item(postprocess=True)
+    sentinel = object()
+    with patch("gesp.pipelines.exporters.parse_data_from_html", return_value=sentinel) as fn:
+        out = exp.process_item(item)
+    assert out is item
+    fn.assert_called_once()
+
+
+def test_raw_exporter_skips_when_postprocess_flag_off(tmp_path):
+    exp = _raw_exporter(tmp_path)
+    item = _item()  # no postprocess key
+    with patch("gesp.pipelines.exporters.parse_data_from_html") as fn:
+        out = exp.process_item(item)
+    assert out is item
+    fn.assert_not_called()
+
+
+def test_raw_exporter_passes_through_none_item(tmp_path):
+    exp = _raw_exporter(tmp_path)
+    assert exp.process_item(None) is None
