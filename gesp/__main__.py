@@ -53,6 +53,36 @@ def _wait_seconds(s: str) -> float:
     return v
 
 
+_COURT_ALIASES = {"larbg": "lag", "vgh": "ovg"}
+
+
+def _csv_choices(parser, flag, raw, allowed, *, aliases=None):
+    """Split a comma-separated CLI value; reject unknown/empty tokens via parser.error."""
+    aliases = aliases or {}
+    out = []
+    for tok in raw.split(","):
+        tok = tok.strip()
+        if not tok:
+            parser.error(f"{flag}: empty value in {raw!r}")
+        if tok in aliases:
+            output(f"court '{tok}' is interpreted as '{aliases[tok]}'", "warn")
+            tok = aliases[tok]
+        if tok not in allowed:
+            parser.error(f"{flag}: unknown value {tok!r} (allowed: {', '.join(sorted(allowed))})")
+        out.append(tok)
+    return out
+
+
+def _validate(parser, args):
+    """Return (cl_courts, cl_states, cl_domains) or exit via parser.error."""
+    cl_courts = (
+        _csv_choices(parser, "-c", args.courts, set(config.COURTS), aliases=_COURT_ALIASES) if args.courts else []
+    )
+    cl_states = _csv_choices(parser, "-s", args.states, set(config.STATES)) if args.states else []
+    cl_domains = _csv_choices(parser, "-d", args.domains, set(config.DOMAINS)) if args.domains else []
+    return cl_courts, cl_states, cl_domains
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="gesp", description="scraping of german court decisions")
     p.add_argument("-c", "--courts", type=str.lower, help="individual selection of the included courts (ag/lg/olg/...)")
@@ -106,9 +136,11 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def main():
-    args = build_parser().parse_args()
+    parser = build_parser()
+    args = parser.parse_args()
     if args.probe_only:
         sys.exit(_run_probes(args))
+    cl_courts, cl_states, cl_domains = _validate(parser, args)
     if not args.yes:
         output(
             "Due to the terms of use governing the databases accessed by gesp, the use of gesp is only permitted for non-commercial purposes. Do you use gesp exclusively for non-commercial purposes?"
@@ -119,7 +151,6 @@ def main():
             sys.exit()
         if inp not in ("y", "yes"):
             sys.exit()
-    cl_courts, cl_states, cl_domains = [], [], []
     # -p (path)
     base = os.path.join(os.getcwd(), "results", datetime.datetime.now().strftime("%Y-%m-%d_%H-%M"))
     path = base
@@ -145,38 +176,15 @@ def main():
         except OSError:
             output(f"could not create folder {path}", "err")
             sys.exit(1)
-    # if path[-1] != "/": path = path + "/"
-    # -c (courts)
-    if args.courts:
-        for court in args.courts.split(","):
-            if court not in config.COURTS and court != "larbg" and court != "vgh":
-                output(f"unknown court '{court}'", "err")
-            elif court == "larbg":  # larbg = lag
-                output(f"court '{court}' is interpreted as 'lag'", "warn")
-                cl_courts.append("lag")
-            elif court == "vgh":  # vgh = ovg
-                output(f"court '{court}' is interpreted as 'ovg'", "warn")
-                cl_courts.append("ovg")
-            else:
-                cl_courts.append(court)
-    # -s (states)
-    if args.states:
-        for state in args.states.split(","):
-            if state not in config.STATES:
-                output(f"unknown state '{state}'", "err")
-            else:
-                cl_states.append(state)
-    elif cl_courts and set(cl_courts).issubset({"bgh", "bfh", "bverwg", "bverfg", "bpatg", "bag", "bsg"}):
-        cl_states.append("bund")  # Nur Bundesgericht(e) angegeben → Bundesportal
-    else:
-        cl_states.extend(config.HTML_STATES)  # Sachsen und Bremen (PDF) nur bei expliziter Nennung
-    # -d (domains)
-    if args.domains:
-        for domain in args.domains.split(","):
-            if domain not in config.DOMAINS:
-                output(f"unknown legal domain '{domain}'", "err")
-            else:
-                cl_domains.append(domain)
+    # State defaulting: cl_states is only empty when -s was omitted (invalid -s
+    # already exited via parser.error in _validate). Preserve the two existing
+    # convenience defaults — federal-courts-only goes to bund, otherwise crawl
+    # every HTML-capable state (sn/hb are PDF-only, opt-in).
+    if not cl_states:
+        if cl_courts and set(cl_courts).issubset({"bgh", "bfh", "bverwg", "bverfg", "bpatg", "bag", "bsg"}):
+            cl_states.append("bund")
+        else:
+            cl_states.extend(config.HTML_STATES)
     args.postprocess = bool(args.postprocess)
     # -fp (fingerprint)
     if isinstance(args.fingerprint, str):  # fp als Argument
