@@ -75,11 +75,17 @@ def _csv_choices(parser, flag, raw, allowed, *, aliases=None):
 
 def _validate(parser, args):
     """Return (cl_courts, cl_states, cl_domains) or exit via parser.error."""
+    # `is not None` rather than truthiness: argparse gives "" for `-s ""`, and
+    # treating that as "omitted" would silently fall through to the default
+    # all-HTML-states crawl. Pushing it through _csv_choices makes the empty
+    # token check fail loudly instead.
     cl_courts = (
-        _csv_choices(parser, "-c", args.courts, set(config.COURTS), aliases=_COURT_ALIASES) if args.courts else []
+        _csv_choices(parser, "-c", args.courts, set(config.COURTS), aliases=_COURT_ALIASES)
+        if args.courts is not None
+        else []
     )
-    cl_states = _csv_choices(parser, "-s", args.states, set(config.STATES)) if args.states else []
-    cl_domains = _csv_choices(parser, "-d", args.domains, set(config.DOMAINS)) if args.domains else []
+    cl_states = _csv_choices(parser, "-s", args.states, set(config.STATES)) if args.states is not None else []
+    cl_domains = _csv_choices(parser, "-d", args.domains, set(config.DOMAINS)) if args.domains is not None else []
     if isinstance(args.fingerprint, str):
         # README contract: reconstruction with -fp PATH is mutually exclusive with
         # -s/-c/-d, which would otherwise silently desync from the recipe.

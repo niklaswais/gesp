@@ -111,6 +111,13 @@ def test_empty_token_rejected(argv):
         _parse_and_validate(argv)
 
 
+@pytest.mark.parametrize("flag", ["-s", "-c", "-d"])
+def test_empty_quoted_value_rejected(flag):
+    """`-s ""` must not be silently treated as omitted (would crawl all states)."""
+    with pytest.raises(SystemExit):
+        _parse_and_validate([flag, ""])
+
+
 def test_alias_substitution_with_warning(capsys):
     courts, _, _ = _parse_and_validate(["-c", "larbg,vgh"])
     assert courts == ["lag", "ovg"]
