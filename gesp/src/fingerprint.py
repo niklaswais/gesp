@@ -113,8 +113,11 @@ _SIMPLE_EXTRACTORS = {"bb": bb, "ni": ni, "nw": nw}
 class Fingerprint:
     def __init__(self, path, fp_path, store_docId, wait=0):
         try:
+            # list() forces full consumption so load_file's end-of-stream checks
+            # fire here — lazy iteration would skip them.
             records = list(Fingerprint.load_file(fp_path))
-        except (lzma.LZMAError, json.JSONDecodeError, UnicodeDecodeError, OSError) as e:
+        except (lzma.LZMAError, ValueError, OSError) as e:
+            # ValueError covers JSONDecodeError and UnicodeDecodeError.
             output(f"could not read fingerprint {fp_path}: {e!r}", "err")
             sys.exit(1)
         for i in records:
@@ -177,3 +180,11 @@ class Fingerprint:
                     if line:
                         yield json.loads(line)
                 buf = parts[-1]
+        # A well-formed fingerprint ends with a flushed LZMA stream and every
+        # record terminated by "|", so buf must be empty here. Anything else
+        # means the file was truncated mid-stream or mid-record — yield-and-pray
+        # would produce a silently-incomplete dataset on reconstruction.
+        if not lzmad.eof:
+            raise lzma.LZMAError("truncated fingerprint stream (no LZMA end marker)")
+        if buf.strip():
+            raise ValueError(f"trailing data after final record: {buf!r}")

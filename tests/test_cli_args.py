@@ -181,3 +181,51 @@ def test_fingerprint_corrupted_file_exits(tmp_path, monkeypatch):
     with pytest.raises(SystemExit) as exc:
         gmain.main()
     assert exc.value.code == 1
+
+
+def _build_fp(tmp_path, body_bytes):
+    """Compress `body_bytes` with a flushed LZMA stream and return the file path."""
+    import lzma
+
+    c = lzma.LZMACompressor()
+    out = c.compress(body_bytes) + c.flush()
+    fp = tmp_path / "fp.xz"
+    fp.write_bytes(out)
+    return fp
+
+
+def test_load_file_rejects_truncated_lzma(tmp_path):
+    """A .xz without the LZMA end marker must raise even when earlier records decode."""
+    import lzma
+
+    from gesp.src.fingerprint import Fingerprint
+
+    fp = _build_fp(tmp_path, b'{"a":1}|{"b":2}|')
+    # Drop the end-of-stream marker without corrupting the readable prefix.
+    fp.write_bytes(fp.read_bytes()[:-5])
+    with pytest.raises(lzma.LZMAError):
+        list(Fingerprint.load_file(str(fp)))
+
+
+def test_load_file_rejects_unterminated_trailing_record(tmp_path):
+    """An unflushed final record after the last '|' must raise, not silently drop."""
+    from gesp.src.fingerprint import Fingerprint
+
+    fp = _build_fp(tmp_path, b'{"a":1}|{"partial":')
+    with pytest.raises(ValueError):
+        list(Fingerprint.load_file(str(fp)))
+
+
+def test_fingerprint_truncated_file_exits_via_main(tmp_path, monkeypatch):
+    """End-to-end: -fp on a truncated fingerprint exits 1, no folder left dangling."""
+    import sys
+
+    from gesp import __main__ as gmain
+
+    fp = _build_fp(tmp_path, b'{"version":"0","date":"0","args":{}}|{"s":"nw","c":"ag","d":"20200101","az":"1"}|')
+    fp.write_bytes(fp.read_bytes()[:-5])  # truncate end marker
+    out_dir = tmp_path / "out"
+    monkeypatch.setattr(sys, "argv", ["gesp", "-y", "-p", str(out_dir), "-fp", str(fp)])
+    with pytest.raises(SystemExit) as exc:
+        gmain.main()
+    assert exc.value.code == 1
