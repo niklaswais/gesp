@@ -27,7 +27,16 @@ def test_csrf_headers_swallows_network_error():
 
 def test_csrf_headers_swallows_malformed_json():
     bad_response = MagicMock()
-    bad_response.json.side_effect = ValueError("not json")
+    # requests >=2.27 raises JSONDecodeError (a RequestException) on bad bodies.
+    bad_response.json.side_effect = requests.exceptions.JSONDecodeError("not json", "", 0)
     with patch("gesp.src.fingerprint.requests.post", MagicMock(return_value=bad_response)):
+        headers = _csrf_headers("be", "https://example/init", {}, {}, "body")
+    assert "x-csrf-token" not in headers
+
+
+def test_csrf_headers_swallows_missing_token_key():
+    response = MagicMock()
+    response.json.return_value = {}  # no "csrfToken" key
+    with patch("gesp.src.fingerprint.requests.post", MagicMock(return_value=response)):
         headers = _csrf_headers("be", "https://example/init", {}, {}, "body")
     assert "x-csrf-token" not in headers

@@ -23,7 +23,7 @@ class SpdrBY(scrapy.Spider):
     }
 
     def __init__(
-        self, path, courts="", states="", fp=False, domains="", store_docId=False, postprocess=False, **kwargs
+        self, path, courts="", states="", fp=False, domains="", store_docId=False, postprocess=False, wait=0, **kwargs
     ):
         self.path = path
         self.courts = courts
@@ -32,6 +32,7 @@ class SpdrBY(scrapy.Spider):
         self.domains = domains
         self.store_docId = store_docId
         self.postprocess = postprocess
+        self.wait = wait
         super().__init__(**kwargs)
 
     async def start(self):
@@ -96,6 +97,7 @@ class SpdrBY(scrapy.Spider):
 
                 yield {
                     "postprocess": self.postprocess,
+                    "wait": self.wait,
                     "court": court,
                     "date": date,
                     "az": az.rstrip(),

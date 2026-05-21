@@ -16,8 +16,8 @@ def _csrf_headers(state: str, url: str, headers: dict, cookies, body) -> dict:
     try:
         r = requests.post(url=url, headers=headers, cookies=cookies, data=body, timeout=10)
         headers["x-csrf-token"] = r.json()["csrfToken"]
-    except Exception:
-        output(f"{state}: could not get x-csrf-token", "err")
+    except (requests.RequestException, KeyError) as e:
+        output(f"{state}: could not get x-csrf-token: {e!r}", "err")
     return headers
 
 
@@ -117,8 +117,8 @@ class Fingerprint:
             if not os.path.exists(results_subfolder):
                 try:
                     os.makedirs(results_subfolder)
-                except Exception:
-                    output(f"could not create folder {results_subfolder}", "err")
+                except OSError as e:
+                    output(f"could not create folder {results_subfolder}: {e!r}", "err")
 
             # Extractors read item["wait"] unconditionally; fingerprints don't
             # store it (a fingerprint is a recipe, not a rate-limit policy), so

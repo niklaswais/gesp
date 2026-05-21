@@ -65,6 +65,8 @@ def save_as_html(item, spider_name, spider_path, store_docId):  # spider.name, s
         filename = _item_filename(item, "xml", store_docId)
 
         retries = 3  # Anzahl der Versuche
+        if item.get("wait"):
+            time.sleep(item["wait"])
         for attempt in range(retries):
             try:
                 response = requests.get(item["link"], timeout=10)
@@ -110,6 +112,8 @@ def save_as_html(item, spider_name, spider_path, store_docId):  # spider.name, s
             filename = _item_filename(item, "html", store_docId)
             filepath = os.path.join(spider_path, spider_name, filename)
             enc = "utf-8"
+            if item.get("wait"):
+                time.sleep(item["wait"])
             try:
                 with open(filepath, "w", encoding=enc) as f:
                     f.write(requests.get(item["link"], timeout=30).content.decode(enc))
@@ -126,6 +130,8 @@ def save_as_pdf(item, spider_name, spider_path):  # spider.name, spider.path
     info(item)
     content = ""
     if "link" in item and "body" not in item:  # Bremen / Sachsen (OVG)
+        if item.get("wait"):
+            time.sleep(item["wait"])
         try:
             content = requests.get(url=item["link"], timeout=30).content
         except RequestException:

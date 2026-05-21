@@ -10,17 +10,17 @@ from .output import output
 
 def bb(item):
     if "tree" not in item:
+        if item["wait"]:
+            timelib.sleep(item["wait"])
         try:
             txt = requests.get(item["link"], timeout=30).text
-            if item["wait"]:
-                timelib.sleep(item["wait"])
-        except:
-            output("could not retrieve " + item["link"], "err")
+        except requests.RequestException as e:
+            output(f"could not retrieve {item['link']}: {e!r}", "err")
             return
         try:
             item["tree"] = html.fromstring(txt)
-        except:
-            output("could not parse " + item["link"], "err")
+        except (etree.LxmlError, ValueError) as e:
+            output(f"could not parse {item['link']}: {e!r}", "err")
             return
     if (
         not item["tree"].xpath("//h1[@id='header']/text()")[0].rstrip().strip() == "Entscheidung"
@@ -50,8 +50,8 @@ def be(item, headers, cookies):  # spider.headers, spider.cookies
         timelib.sleep(item["wait"])
     try:
         req = requests.post(url=url, cookies=cookies, headers=headers, data=body, timeout=30)
-    except:
-        output("could not retrieve " + item["link"], "err")
+    except requests.RequestException as e:
+        output(f"could not retrieve {item['link']}: {e!r}", "err")
     else:
         data = req.json()
         doc = html.fromstring(
@@ -76,8 +76,8 @@ def bw(item, headers, cookies):  # spider.headers, spider.cookies
         timelib.sleep(item["wait"])
     try:
         req = requests.post(url=url, cookies=cookies, headers=headers, data=body, timeout=30)
-    except:
-        output("could not retrieve " + item["link"], "err")
+    except requests.RequestException as e:
+        output(f"could not retrieve {item['link']}: {e!r}", "err")
     else:
         data = req.json()
         doc = html.fromstring(
@@ -91,8 +91,8 @@ def bw(item, headers, cookies):  # spider.headers, spider.cookies
 def by(item):
     try:
         txt = requests.get(item["link"], headers=config.HEADERS, timeout=30).text
-    except:
-        output("could not retrieve " + item["link"], "err")
+    except requests.RequestException as e:
+        output(f"could not retrieve {item['link']}: {e!r}", "err")
     else:
         if (
             txt[154:160] != "Fehler"
@@ -120,8 +120,8 @@ def he(item, headers, cookies):  # spider.headers, spider.cookies
         timelib.sleep(item["wait"])
     try:
         req = requests.post(url=url, cookies=cookies, headers=headers, data=body, timeout=30)
-    except:
-        output("could not retrieve " + item["link"], "err")
+    except requests.RequestException as e:
+        output(f"could not retrieve {item['link']}: {e!r}", "err")
     else:
         data = req.json()
         doc = html.fromstring(
@@ -146,8 +146,8 @@ def hh(item, headers, cookies):  # spider.headers, spider.cookies
         timelib.sleep(item["wait"])
     try:
         req = requests.post(url=url, cookies=cookies, headers=headers, data=body, timeout=30)
-    except:
-        output("could not retrieve " + item["link"], "err")
+    except requests.RequestException as e:
+        output(f"could not retrieve {item['link']}: {e!r}", "err")
     else:
         data = req.json()
         doc = html.fromstring(
@@ -172,8 +172,8 @@ def mv(item, headers, cookies):  # spider.headers, spider.cookies
         timelib.sleep(item["wait"])
     try:
         req = requests.post(url=url, cookies=cookies, headers=headers, data=body, timeout=30)
-    except:
-        output("could not retrieve " + item["link"], "err")
+    except requests.RequestException as e:
+        output(f"could not retrieve {item['link']}: {e!r}", "err")
     else:
         data = req.json()
         doc = html.fromstring(
@@ -192,13 +192,13 @@ def ni(item):
             timelib.sleep(item["wait"])
         try:
             txt = requests.get(item["link"], headers=config.ni_headers, timeout=30).text
-        except Exception:
-            output("could not retrieve " + item["link"], "err")
+        except requests.RequestException as e:
+            output(f"could not retrieve {item['link']}: {e!r}", "err")
             return
         try:
             item["tree"] = html.fromstring(txt)
-        except Exception:
-            output("could not parse " + item["link"], "err")
+        except (etree.LxmlError, ValueError) as e:
+            output(f"could not parse {item['link']}: {e!r}", "err")
             return
     tree = item["tree"]
     article = tree.xpath("//article")
@@ -246,8 +246,8 @@ def rp(item, headers, cookies):  # spider.headers, spider.cookies
         timelib.sleep(item["wait"])
     try:
         req = requests.post(url=url, cookies=cookies, headers=headers, data=body, timeout=30)
-    except:
-        output("could not retrieve " + item["link"], "err")
+    except requests.RequestException as e:
+        output(f"could not retrieve {item['link']}: {e!r}", "err")
     else:
         data = req.json()
         doc = html.fromstring(
@@ -272,8 +272,8 @@ def sh(item, headers, cookies):
         timelib.sleep(item["wait"])
     try:
         req = requests.post(url=url, cookies=cookies, headers=headers, data=body, timeout=30)
-    except:
-        output("could not retrieve " + item["link"], "err")
+    except requests.RequestException as e:
+        output(f"could not retrieve {item['link']}: {e!r}", "err")
     else:
         data = req.json()
         doc = html.fromstring(
@@ -298,8 +298,8 @@ def sl(item, headers, cookies):  # spider.headers, spider.cookies
         timelib.sleep(item["wait"])
     try:
         req = requests.post(url=url, cookies=cookies, headers=headers, data=body, timeout=30)
-    except:
-        output("could not retrieve " + item["link"], "err")
+    except requests.RequestException as e:
+        output(f"could not retrieve {item['link']}: {e!r}", "err")
     else:
         data = req.json()
         doc = html.fromstring(
@@ -318,8 +318,8 @@ def sn(item, headers):  # spider.headers
             timelib.sleep(item["wait"])
         try:
             item["req"] = requests.post(url=url, headers=headers, data=item["body"], timeout=30)
-        except:
-            output("could not retrieve " + item["az"], "err")
+        except requests.RequestException as e:
+            output(f"could not retrieve {item['az']}: {e!r}", "err")
         else:
             return item
     elif "link" in item:  # OVG-Subportal
@@ -328,8 +328,8 @@ def sn(item, headers):  # spider.headers
         try:
             # Zwischengeschaltete Seite, von der aus erst der Filelink kopiert werden muss
             tree = html.fromstring(requests.get(item["link"], timeout=30).text)
-        except:
-            output("could not retrieve " + item["link"], "err")
+        except (requests.RequestException, etree.LxmlError, ValueError) as e:
+            output(f"could not retrieve {item['link']}: {e!r}", "err")
         else:
             item["link"] = "https://www.justiz.sachsen.de/ovgentschweb/" + tree.xpath("//a[@target='_blank']/@href")[0]
             return item
@@ -349,8 +349,8 @@ def st(item, headers, cookies):
         timelib.sleep(item["wait"])
     try:
         req = requests.post(url=url, cookies=cookies, headers=headers, data=body, timeout=30)
-    except:
-        output("could not retrieve " + item["link"], "err")
+    except requests.RequestException as e:
+        output(f"could not retrieve {item['link']}: {e!r}", "err")
     else:
         data = req.json()
         doc = html.fromstring(
@@ -375,8 +375,8 @@ def th(item, headers, cookies):  # spider.headers, spider.cookies
         timelib.sleep(item["wait"])
     try:
         req = requests.post(url=url, cookies=cookies, headers=headers, data=body, timeout=30)
-    except:
-        output("could not retrieve " + item["link"], "err")
+    except requests.RequestException as e:
+        output(f"could not retrieve {item['link']}: {e!r}", "err")
     else:
         data = req.json()
         doc = html.fromstring(

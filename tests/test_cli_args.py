@@ -1,3 +1,5 @@
+import pytest
+
 from gesp.__main__ import build_parser
 
 
@@ -55,3 +57,14 @@ def test_wait_bare_uses_juris_safe_default():
 def test_wait_accepts_explicit_seconds():
     args = build_parser().parse_args(["-w", "3.5"])
     assert args.wait == 3.5
+
+
+def test_wait_accepts_explicit_zero():
+    args = build_parser().parse_args(["-w", "0"])
+    assert args.wait == 0.0
+
+
+@pytest.mark.parametrize("bad", ["-1", "-0.5", "nan", "inf", "-inf"])
+def test_wait_rejects_invalid_values(bad):
+    with pytest.raises(SystemExit):
+        build_parser().parse_args(["-w", bad])

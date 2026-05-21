@@ -2,7 +2,7 @@ import time as timelib
 
 import requests
 import scrapy
-from lxml import html
+from lxml import etree, html
 
 from ..pipelines.exporters import ExportAsHtmlPipeline, FingerprintExportPipeline, RawExporter
 from ..pipelines.formatters import AZsPipeline, CourtsPipeline, DatesPipeline
@@ -108,8 +108,8 @@ class SpdrNI(scrapy.Spider):
                     else:
                         try:
                             tree = html.fromstring(txt)
-                        except:
-                            output("could not parse " + self.base_url + href, "err")
+                        except (etree.LxmlError, ValueError) as e:
+                            output(f"could not parse {self.base_url + href}: {e!r}", "err")
                         else:
                             article = tree.xpath("//article")
                             if article:

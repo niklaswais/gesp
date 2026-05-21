@@ -1,3 +1,5 @@
+import time as timelib
+
 import requests
 import scrapy
 from lxml import html
@@ -104,6 +106,8 @@ class SpdrBB(scrapy.Spider):
             docid = result.xpath(".//a/@href").get()
             link = self.base_url + docid
             # Herausfinden des AZ...
+            if self.wait:
+                timelib.sleep(self.wait)
             tree = html.fromstring(requests.get(link).text)
             az = tree.xpath("//div[@id='metadata']/div/table/tbody/tr[2]/td[1]/text()")[0]
             yield {

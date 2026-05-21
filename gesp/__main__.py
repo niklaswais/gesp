@@ -1,6 +1,7 @@
 import argparse
 import datetime
 import logging
+import math
 import os
 import sys
 
@@ -45,6 +46,13 @@ for setting, value in SCRAPY_SETTINGS.items():
     settings.set(setting, value, priority="project")
 
 
+def _wait_seconds(s: str) -> float:
+    v = float(s)
+    if not math.isfinite(v) or v < 0:
+        raise argparse.ArgumentTypeError(f"-w/--wait must be a non-negative finite number, got {s!r}")
+    return v
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="gesp", description="scraping of german court decisions")
     p.add_argument("-c", "--courts", type=str.lower, help="individual selection of the included courts (ag/lg/olg/...)")
@@ -86,7 +94,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument(
         "-w",
         "--wait",
-        type=float,
+        type=_wait_seconds,
         nargs="?",
         const=1.75,
         default=0.0,

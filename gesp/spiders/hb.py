@@ -18,7 +18,7 @@ class SpdrHB(scrapy.Spider):
     }
 
     def __init__(
-        self, path, courts="", states="", fp=False, domains="", store_docId=False, postprocess=False, **kwargs
+        self, path, courts="", states="", fp=False, domains="", store_docId=False, postprocess=False, wait=0, **kwargs
     ):
         self.path = path
         self.courts = courts
@@ -27,6 +27,7 @@ class SpdrHB(scrapy.Spider):
         self.domains = domains
         self.store_docId = store_docId
         self.postprocess = postprocess
+        self.wait = wait
         super().__init__(**kwargs)
 
     async def start(self):
@@ -56,6 +57,7 @@ class SpdrHB(scrapy.Spider):
             link = "https://" + response.url.split("/")[2] + td.xpath(".//following-sibling::td/a[1]/@href").get()
             yield {
                 "postprocess": self.postprocess,
+                "wait": self.wait,
                 "court": response.meta["c"],
                 "date": td.xpath(".//em/text()").get(),
                 "az": td.xpath("text()").get(),

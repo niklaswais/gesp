@@ -21,7 +21,7 @@ class SpdrBund(scrapy.Spider):
     }
 
     def __init__(
-        self, path, courts="", states="", fp=False, domains="", store_docId=False, postprocess=False, **kwargs
+        self, path, courts="", states="", fp=False, domains="", store_docId=False, postprocess=False, wait=0, **kwargs
     ):
         self.path = path
         self.courts = courts
@@ -30,6 +30,7 @@ class SpdrBund(scrapy.Spider):
         self.domains = domains
         self.store_docId = store_docId
         self.postprocess = postprocess
+        self.wait = wait
         self.bverfg_az_bmj = {}
         if "zivil" in domains and not any(court in courts for court in ["bgh", "bpatg", "bag"]):
             courts.extend(["bgh", "bpatg", "bag"])
@@ -62,6 +63,7 @@ class SpdrBund(scrapy.Spider):
                 "link": link,
                 "docId": re.fullmatch(r".+/jb\-([0-9A-Z]+)\.zip", link)[1],
                 "postprocess": self.postprocess,
+                "wait": self.wait,
             }
             if self.courts:
                 for court in self.courts:

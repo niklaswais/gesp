@@ -1,10 +1,11 @@
 import datetime
 import re
+import time as timelib
 import urllib
 
 import requests
 import scrapy
-from lxml import html
+from lxml import etree, html
 
 from ..pipelines.exporters import ExportAsPdfPipeline, FingerprintExportPipeline, RawExporter
 from ..pipelines.formatters import AZsPipeline, CourtsPipeline, DatesPipeline
@@ -232,10 +233,12 @@ class SpdrSN(scrapy.Spider):
             tmp_link = re.findall(r"'([^']*)'", tmp_link)
             tmp_link = "https://www.justiz.sachsen.de/ovgentschweb/document.phtml?id=" + tmp_link[0]
             data = table.xpath(".//td[2]/a/text()").get()[15:]
+            if self.wait:
+                timelib.sleep(self.wait)
             try:  # Zwischengeschaltete Seite, von der aus erst der Filelink kopiert werden muss
                 tree = html.fromstring(requests.get(tmp_link, timeout=30).text)
-            except:
-                output("could not retrieve " + tmp_link, "err")
+            except (requests.RequestException, etree.LxmlError, ValueError) as e:
+                output(f"could not retrieve {tmp_link}: {e!r}", "err")
             else:
                 doc_pattern = "^(.*[/])?([^/]*[.](pdf|docx))([^a-z].*)?$"
                 file = None
