@@ -16,7 +16,10 @@ def _csrf_headers(state: str, url: str, headers: dict, cookies, body) -> dict:
     try:
         r = requests.post(url=url, headers=headers, cookies=cookies, data=body, timeout=10)
         headers["x-csrf-token"] = r.json()["csrfToken"]
-    except (requests.RequestException, KeyError) as e:
+    except (requests.RequestException, KeyError, TypeError, ValueError) as e:
+        # TypeError: r.json() returned a list/string/number, so ["csrfToken"] is invalid.
+        # ValueError: defense-in-depth against malformed JSON in older `requests` releases
+        # — in 2.31+, JSONDecodeError already inherits from RequestException.
         output(f"{state}: could not get x-csrf-token: {e!r}", "err")
     return headers
 

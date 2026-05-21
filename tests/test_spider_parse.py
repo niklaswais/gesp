@@ -193,3 +193,71 @@ def test_jportal_fixtures_are_valid_json():
             json.loads(fp.read_text(encoding="utf-8"))
         except json.JSONDecodeError as e:
             pytest.fail(f"{state}: fixture is not valid JSON: {e}")
+
+
+# ─── bb: detail-fetch failure paths ───────────────────────────────────────────
+# parse() does a synchronous requests.get per result row to pull the AZ off
+# the detail page. Each failure mode (network error, missing metadata, missing
+# anchor) must skip the row rather than crash the spider.
+def _bb_response(tmp_path, body_bytes):
+    spider = _make_spider("bb", tmp_path)
+    response = HtmlResponse(url=_PROBE_URLS["bb"], body=body_bytes, encoding="utf-8")
+    return spider, response
+
+
+def test_bb_skips_row_on_detail_fetch_failure(tmp_path, monkeypatch):
+    import requests as _requests
+
+    body = _load_or_skip("bb")
+
+    # `RequestException` must be reachable through the stub — the spider's except
+    # clause resolves it via the same module binding we're replacing here.
+    class _Boom:
+        RequestException = _requests.RequestException
+
+        @staticmethod
+        def get(*_args, **_kwargs):
+            raise _requests.RequestException("network down")
+
+    monkeypatch.setattr("gesp.spiders.bb.requests", _Boom)
+    monkeypatch.setattr("gesp.spiders.bb.timelib.sleep", lambda _s: None)
+    spider, response = _bb_response(tmp_path, body)
+    items, _ = _items_and_requests(spider.parse(response))
+    assert items == []  # every row's detail fetch failed → no items, but no crash
+
+
+def test_bb_skips_row_when_detail_lacks_az(tmp_path, monkeypatch):
+    import requests as _requests
+
+    body = _load_or_skip("bb")
+    # Detail page without the //div[@id='metadata'] block the spider looks for.
+    detail_html = "<html><body><h1>no metadata table here</h1></body></html>"
+
+    class _NoAz:
+        RequestException = _requests.RequestException
+
+        @staticmethod
+        def get(*_args, **_kwargs):
+            return SimpleNamespace(text=detail_html)
+
+    monkeypatch.setattr("gesp.spiders.bb.requests", _NoAz)
+    monkeypatch.setattr("gesp.spiders.bb.timelib.sleep", lambda _s: None)
+    spider, response = _bb_response(tmp_path, body)
+    items, _ = _items_and_requests(spider.parse(response))
+    assert items == []
+
+
+def test_bb_skips_row_when_docid_missing(tmp_path, monkeypatch):
+    # Synthetic search page with one row that has no <a href> at all.
+    # Before the guard, `self.base_url + None` raised TypeError.
+    body = (
+        b"<html><body>"
+        b"<table id='resultlist'><tbody>"
+        b"<tr><td>1</td><td>2</td><td>2024-01-01</td><td>4</td><td>OLG</td></tr>"
+        b"</tbody></table>"
+        b"</body></html>"
+    )
+    monkeypatch.setattr("gesp.spiders.bb.timelib.sleep", lambda _s: None)
+    spider, response = _bb_response(tmp_path, body)
+    items, _ = _items_and_requests(spider.parse(response))
+    assert items == []

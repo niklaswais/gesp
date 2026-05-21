@@ -50,16 +50,16 @@ def be(item, headers, cookies):  # spider.headers, spider.cookies
         timelib.sleep(item["wait"])
     try:
         req = requests.post(url=url, cookies=cookies, headers=headers, data=body, timeout=30)
-    except requests.RequestException as e:
-        output(f"could not retrieve {item['link']}: {e!r}", "err")
-    else:
         data = req.json()
         doc = html.fromstring(
             f"<!doctype html><html><head><title>{item['az']}</title></head><body>{data['head']}{data['text']}</body></html>"
         )
         item["text"] = html.tostring(doc, pretty_print=True).decode("utf-8")
-        item["filetype"] = "html"
-        return item
+    except (requests.RequestException, ValueError, KeyError, TypeError, etree.LxmlError) as e:
+        output(f"could not retrieve {item['link']}: {e!r}", "err")
+        return None
+    item["filetype"] = "html"
+    return item
 
 
 def bw(item, headers, cookies):  # spider.headers, spider.cookies
@@ -76,16 +76,16 @@ def bw(item, headers, cookies):  # spider.headers, spider.cookies
         timelib.sleep(item["wait"])
     try:
         req = requests.post(url=url, cookies=cookies, headers=headers, data=body, timeout=30)
-    except requests.RequestException as e:
-        output(f"could not retrieve {item['link']}: {e!r}", "err")
-    else:
         data = req.json()
         doc = html.fromstring(
             f"<!doctype html><html><head><title>{item['az']}</title></head><body>{data['head']}{data['text']}</body></html>"
         )
         item["text"] = html.tostring(doc, pretty_print=True).decode("utf-8")
-        item["filetype"] = "html"
-        return item
+    except (requests.RequestException, ValueError, KeyError, TypeError, etree.LxmlError) as e:
+        output(f"could not retrieve {item['link']}: {e!r}", "err")
+        return None
+    item["filetype"] = "html"
+    return item
 
 
 def by(item):
@@ -120,16 +120,16 @@ def he(item, headers, cookies):  # spider.headers, spider.cookies
         timelib.sleep(item["wait"])
     try:
         req = requests.post(url=url, cookies=cookies, headers=headers, data=body, timeout=30)
-    except requests.RequestException as e:
-        output(f"could not retrieve {item['link']}: {e!r}", "err")
-    else:
         data = req.json()
         doc = html.fromstring(
             f"<!doctype html><html><head><title>{item['az']}</title></head><body>{data['head']}{data['text']}</body></html>"
         )
         item["text"] = html.tostring(doc, pretty_print=True).decode("utf-8")
-        item["filetype"] = "html"
-        return item
+    except (requests.RequestException, ValueError, KeyError, TypeError, etree.LxmlError) as e:
+        output(f"could not retrieve {item['link']}: {e!r}", "err")
+        return None
+    item["filetype"] = "html"
+    return item
 
 
 def hh(item, headers, cookies):  # spider.headers, spider.cookies
@@ -146,16 +146,16 @@ def hh(item, headers, cookies):  # spider.headers, spider.cookies
         timelib.sleep(item["wait"])
     try:
         req = requests.post(url=url, cookies=cookies, headers=headers, data=body, timeout=30)
-    except requests.RequestException as e:
-        output(f"could not retrieve {item['link']}: {e!r}", "err")
-    else:
         data = req.json()
         doc = html.fromstring(
             f"<!doctype html><html><head><title>{item['az']}</title></head><body>{data['head']}{data['text']}</body></html>"
         )
         item["text"] = html.tostring(doc, pretty_print=True).decode("utf-8")
-        item["filetype"] = "html"
-        return item
+    except (requests.RequestException, ValueError, KeyError, TypeError, etree.LxmlError) as e:
+        output(f"could not retrieve {item['link']}: {e!r}", "err")
+        return None
+    item["filetype"] = "html"
+    return item
 
 
 def mv(item, headers, cookies):  # spider.headers, spider.cookies
@@ -172,16 +172,16 @@ def mv(item, headers, cookies):  # spider.headers, spider.cookies
         timelib.sleep(item["wait"])
     try:
         req = requests.post(url=url, cookies=cookies, headers=headers, data=body, timeout=30)
-    except requests.RequestException as e:
-        output(f"could not retrieve {item['link']}: {e!r}", "err")
-    else:
         data = req.json()
         doc = html.fromstring(
             f"<!doctype html><html><head><title>{item['az']}</title></head><body>{data['head']}{data['text']}</body></html>"
         )
         item["text"] = html.tostring(doc, pretty_print=True).decode("utf-8")
-        item["filetype"] = "html"
-        return item
+    except (requests.RequestException, ValueError, KeyError, TypeError, etree.LxmlError) as e:
+        output(f"could not retrieve {item['link']}: {e!r}", "err")
+        return None
+    item["filetype"] = "html"
+    return item
 
 
 def ni(item):
@@ -246,16 +246,16 @@ def rp(item, headers, cookies):  # spider.headers, spider.cookies
         timelib.sleep(item["wait"])
     try:
         req = requests.post(url=url, cookies=cookies, headers=headers, data=body, timeout=30)
-    except requests.RequestException as e:
-        output(f"could not retrieve {item['link']}: {e!r}", "err")
-    else:
         data = req.json()
         doc = html.fromstring(
             f"<!doctype html><html><head><title>{item['az']}</title></head><body>{data['head']}{data['text']}</body></html>"
         )
         item["text"] = html.tostring(doc, pretty_print=True).decode("utf-8")
-        item["filetype"] = "html"
-        return item
+    except (requests.RequestException, ValueError, KeyError, TypeError, etree.LxmlError) as e:
+        output(f"could not retrieve {item['link']}: {e!r}", "err")
+        return None
+    item["filetype"] = "html"
+    return item
 
 
 def sh(item, headers, cookies):
@@ -272,16 +272,16 @@ def sh(item, headers, cookies):
         timelib.sleep(item["wait"])
     try:
         req = requests.post(url=url, cookies=cookies, headers=headers, data=body, timeout=30)
-    except requests.RequestException as e:
-        output(f"could not retrieve {item['link']}: {e!r}", "err")
-    else:
         data = req.json()
         doc = html.fromstring(
             f"<!doctype html><html><head><title>{item['az']}</title></head><body>{data['head']}{data['text']}</body></html>"
         )
         item["text"] = html.tostring(doc, pretty_print=True).decode("utf-8")
-        item["filetype"] = "html"
-        return item
+    except (requests.RequestException, ValueError, KeyError, TypeError, etree.LxmlError) as e:
+        output(f"could not retrieve {item['link']}: {e!r}", "err")
+        return None
+    item["filetype"] = "html"
+    return item
 
 
 def sl(item, headers, cookies):  # spider.headers, spider.cookies
@@ -298,16 +298,16 @@ def sl(item, headers, cookies):  # spider.headers, spider.cookies
         timelib.sleep(item["wait"])
     try:
         req = requests.post(url=url, cookies=cookies, headers=headers, data=body, timeout=30)
-    except requests.RequestException as e:
-        output(f"could not retrieve {item['link']}: {e!r}", "err")
-    else:
         data = req.json()
         doc = html.fromstring(
             f"<!doctype html><html><head><title>{item['az']}</title></head><body>{data['head']}{data['text']}</body></html>"
         )
         item["text"] = html.tostring(doc, pretty_print=True).decode("utf-8")
-        item["filetype"] = "html"
-        return item
+    except (requests.RequestException, ValueError, KeyError, TypeError, etree.LxmlError) as e:
+        output(f"could not retrieve {item['link']}: {e!r}", "err")
+        return None
+    item["filetype"] = "html"
+    return item
 
 
 def sn(item, headers):  # spider.headers
@@ -331,7 +331,11 @@ def sn(item, headers):  # spider.headers
         except (requests.RequestException, etree.LxmlError, ValueError) as e:
             output(f"could not retrieve {item['link']}: {e!r}", "err")
         else:
-            item["link"] = "https://www.justiz.sachsen.de/ovgentschweb/" + tree.xpath("//a[@target='_blank']/@href")[0]
+            hrefs = tree.xpath("//a[@target='_blank']/@href")
+            if not hrefs:
+                output(f"sn: no detail link on {item['link']}", "err")
+                return None
+            item["link"] = "https://www.justiz.sachsen.de/ovgentschweb/" + hrefs[0]
             return item
 
 
@@ -349,16 +353,16 @@ def st(item, headers, cookies):
         timelib.sleep(item["wait"])
     try:
         req = requests.post(url=url, cookies=cookies, headers=headers, data=body, timeout=30)
-    except requests.RequestException as e:
-        output(f"could not retrieve {item['link']}: {e!r}", "err")
-    else:
         data = req.json()
         doc = html.fromstring(
             f"<!doctype html><html><head><title>{item['az']}</title></head><body>{data['head']}{data['text']}</body></html>"
         )
         item["text"] = html.tostring(doc, pretty_print=True).decode("utf-8")
-        item["filetype"] = "html"
-        return item
+    except (requests.RequestException, ValueError, KeyError, TypeError, etree.LxmlError) as e:
+        output(f"could not retrieve {item['link']}: {e!r}", "err")
+        return None
+    item["filetype"] = "html"
+    return item
 
 
 def th(item, headers, cookies):  # spider.headers, spider.cookies
@@ -375,13 +379,13 @@ def th(item, headers, cookies):  # spider.headers, spider.cookies
         timelib.sleep(item["wait"])
     try:
         req = requests.post(url=url, cookies=cookies, headers=headers, data=body, timeout=30)
-    except requests.RequestException as e:
-        output(f"could not retrieve {item['link']}: {e!r}", "err")
-    else:
         data = req.json()
         doc = html.fromstring(
             f"<!doctype html><html><head><title>{item['az']}</title></head><body>{data['head']}{data['text']}</body></html>"
         )
         item["text"] = html.tostring(doc, pretty_print=True).decode("utf-8")
-        item["filetype"] = "html"
-        return item
+    except (requests.RequestException, ValueError, KeyError, TypeError, etree.LxmlError) as e:
+        output(f"could not retrieve {item['link']}: {e!r}", "err")
+        return None
+    item["filetype"] = "html"
+    return item

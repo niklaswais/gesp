@@ -114,11 +114,21 @@ def save_as_html(item, spider_name, spider_path, store_docId):  # spider.name, s
             enc = "utf-8"
             if item.get("wait"):
                 time.sleep(item["wait"])
+            # Fetch + decode before opening: if either fails (RequestException, or
+            # UnicodeDecodeError on a non-utf-8 body), opening the target in "w" mode
+            # would otherwise leave a zero-byte file behind.
+            try:
+                content = requests.get(item["link"], timeout=30).content.decode(enc)
+            except (RequestException, ValueError) as e:
+                output(f"could not retrieve {item['link']}: {e!r}", "err")
+                return None
             try:
                 with open(filepath, "w", encoding=enc) as f:
-                    f.write(requests.get(item["link"], timeout=30).content.decode(enc))
-            except (OSError, RequestException):
+                    f.write(content)
+            except OSError:
                 output(f"could not create file {filepath}", "err")
+            else:
+                return item
         else:
             output(f"could not retrieve item {item.get('court', '?')}/{item.get('az', '?')}", "err")
 

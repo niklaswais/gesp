@@ -40,3 +40,22 @@ def test_csrf_headers_swallows_missing_token_key():
     with patch("gesp.src.fingerprint.requests.post", MagicMock(return_value=response)):
         headers = _csrf_headers("be", "https://example/init", {}, {}, "body")
     assert "x-csrf-token" not in headers
+
+
+def test_csrf_headers_swallows_non_object_json():
+    # If the endpoint returns a JSON array/scalar, ["csrfToken"] raises TypeError.
+    response = MagicMock()
+    response.json.return_value = [1, 2, 3]
+    with patch("gesp.src.fingerprint.requests.post", MagicMock(return_value=response)):
+        headers = _csrf_headers("be", "https://example/init", {"User-Agent": "x"}, {}, "body")
+    assert "x-csrf-token" not in headers
+    assert headers["User-Agent"] == "x"
+
+
+def test_csrf_headers_swallows_value_error():
+    # Some `requests` configurations raise a bare ValueError on malformed JSON.
+    response = MagicMock()
+    response.json.side_effect = ValueError("decode failed")
+    with patch("gesp.src.fingerprint.requests.post", MagicMock(return_value=response)):
+        headers = _csrf_headers("be", "https://example/init", {}, {}, "body")
+    assert "x-csrf-token" not in headers

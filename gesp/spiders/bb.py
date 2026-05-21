@@ -2,11 +2,12 @@ import time as timelib
 
 import requests
 import scrapy
-from lxml import html
+from lxml import etree, html
 
 from ..pipelines.exporters import ExportAsHtmlPipeline, FingerprintExportPipeline, RawExporter
 from ..pipelines.formatters import AZsPipeline, CourtsPipeline, DatesPipeline
 from ..pipelines.texts import TextsPipeline
+from ..src.output import output
 
 
 class SpdrBB(scrapy.Spider):
@@ -104,19 +105,30 @@ class SpdrBB(scrapy.Spider):
             yield response.follow(response.xpath("//a[@aria-label='Weiter']/@href").get(), callback=self.parse)
         for result in response.xpath("//table[@id='resultlist']/tbody/tr"):
             docid = result.xpath(".//a/@href").get()
+            if not docid:
+                # Row without an anchor — skip; concatenating `None` below would TypeError.
+                output("bb: result row missing detail link", "warn")
+                continue
             link = self.base_url + docid
             # Herausfinden des AZ...
             if self.wait:
                 timelib.sleep(self.wait)
-            tree = html.fromstring(requests.get(link).text)
-            az = tree.xpath("//div[@id='metadata']/div/table/tbody/tr[2]/td[1]/text()")[0]
+            try:
+                tree = html.fromstring(requests.get(link, timeout=30).text)
+            except (requests.RequestException, etree.LxmlError, ValueError) as e:
+                output(f"could not retrieve {link}: {e!r}", "err")
+                continue
+            az_cells = tree.xpath("//div[@id='metadata']/div/table/tbody/tr[2]/td[1]/text()")
+            if not az_cells:
+                output(f"bb: no az on detail page {link}", "err")
+                continue
             yield {
                 "postprocess": self.postprocess,
                 "wait": self.wait,
                 "court": result.xpath(".//td[5]/text()").get(),
                 "date": result.xpath(".//td[3]/text()").get(),
                 "link": link,
-                "az": az,
+                "az": az_cells[0],
                 "docId": docid,
                 "tree": tree,  # Wenn ohnehin schon verarbeitet...
             }

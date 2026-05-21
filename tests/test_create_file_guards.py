@@ -5,6 +5,7 @@ from unittest.mock import patch
 from zipfile import BadZipFile, ZipFile
 
 import pytest
+from requests.exceptions import RequestException
 
 from gesp.src.create_file import save_as_html, save_as_pdf
 
@@ -118,6 +119,29 @@ def test_zip_xml_recovers_archive_with_trailing_junk(tmp_path):
     assert target.exists()
     assert target.read_bytes().lstrip(b"\xef\xbb\xbf").startswith(b"<?xml")
     assert item["xmlfilename"] == str(target)
+
+
+def test_save_as_html_link_branch_leaves_no_file_on_network_failure(tmp_path):
+    """A failed download must not leave a zero-byte file behind. Previously the file
+    was opened in 'w' mode before the request ran, so any RequestException
+    truncated the target to 0 bytes and made the failure look like a success."""
+    (tmp_path / "ni").mkdir()
+    item = {"court": "vg", "date": "20200101", "az": "1-A-1", "link": "https://example.test/x.html"}
+    with patch("gesp.src.create_file.requests.get", side_effect=RequestException("boom")):
+        assert save_as_html(item, "ni", str(tmp_path), False) is None
+    assert list((tmp_path / "ni").iterdir()) == []
+
+
+def test_save_as_html_link_branch_handles_decode_error(tmp_path):
+    """A response body that isn't valid UTF-8 must be reported, not crash, and
+    must not leave a file behind."""
+    (tmp_path / "ni").mkdir()
+    # Bytes that can't be decoded as UTF-8.
+    response = SimpleNamespace(content=b"\xff\xfe\x00\xff", raise_for_status=lambda: None)
+    item = {"court": "vg", "date": "20200101", "az": "1-A-1", "link": "https://example.test/x.html"}
+    with patch("gesp.src.create_file.requests.get", return_value=response):
+        assert save_as_html(item, "ni", str(tmp_path), False) is None
+    assert list((tmp_path / "ni").iterdir()) == []
 
 
 def test_zip_xml_bad_zip_download_does_not_raise(tmp_path, monkeypatch, capsys):
