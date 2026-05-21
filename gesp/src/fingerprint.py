@@ -2,6 +2,7 @@ import datetime
 import json
 import lzma
 import os
+import sys
 
 import requests
 
@@ -111,7 +112,12 @@ _SIMPLE_EXTRACTORS = {"bb": bb, "ni": ni, "nw": nw}
 
 class Fingerprint:
     def __init__(self, path, fp_path, store_docId, wait=0):
-        for i in Fingerprint.load_file(fp_path):
+        try:
+            records = list(Fingerprint.load_file(fp_path))
+        except (lzma.LZMAError, json.JSONDecodeError, UnicodeDecodeError, OSError) as e:
+            output(f"could not read fingerprint {fp_path}: {e!r}", "err")
+            sys.exit(1)
+        for i in records:
             if "version" in i and "date" in i and "args" in i:
                 output(f"reconstructing from fingerprint {fp_path} ({i['version']}, {i['date']}, {i['args']})")
                 continue

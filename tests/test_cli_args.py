@@ -130,3 +130,54 @@ def test_validate_runs_before_makedirs(tmp_path, monkeypatch):
     with pytest.raises(SystemExit):
         gmain.main()
     assert not target.exists()
+
+
+def test_fingerprint_missing_path_exits(tmp_path):
+    missing = tmp_path / "nope.xz"
+    with pytest.raises(SystemExit):
+        _parse_and_validate(["-fp", str(missing)])
+
+
+def test_fingerprint_directory_path_exits(tmp_path):
+    with pytest.raises(SystemExit):
+        _parse_and_validate(["-fp", str(tmp_path)])
+
+
+@pytest.mark.parametrize(
+    "extra",
+    [["-s", "bund"], ["-c", "bgh"], ["-d", "zivil"]],
+)
+def test_fingerprint_rejects_filter_flags(tmp_path, extra):
+    fp = tmp_path / "fp.xz"
+    fp.write_bytes(b"")  # exists, validation should still exit on the mutual-exclusion check
+    with pytest.raises(SystemExit):
+        _parse_and_validate(["-fp", str(fp), *extra])
+
+
+def test_fingerprint_missing_path_no_makedirs(tmp_path, monkeypatch):
+    """Bad -fp must exit before creating the -p folder."""
+    import sys
+
+    from gesp import __main__ as gmain
+
+    target = tmp_path / "out"
+    missing = tmp_path / "nope.xz"
+    monkeypatch.setattr(sys, "argv", ["gesp", "-y", "-p", str(target), "-fp", str(missing)])
+    with pytest.raises(SystemExit):
+        gmain.main()
+    assert not target.exists()
+
+
+def test_fingerprint_corrupted_file_exits(tmp_path, monkeypatch):
+    """A non-lzma .xz must exit non-zero with a readable error."""
+    import sys
+
+    from gesp import __main__ as gmain
+
+    fp = tmp_path / "fp.xz"
+    fp.write_bytes(b"not actually lzma compressed data")
+    out_dir = tmp_path / "out"
+    monkeypatch.setattr(sys, "argv", ["gesp", "-y", "-p", str(out_dir), "-fp", str(fp)])
+    with pytest.raises(SystemExit) as exc:
+        gmain.main()
+    assert exc.value.code == 1

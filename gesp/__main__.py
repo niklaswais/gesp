@@ -80,6 +80,15 @@ def _validate(parser, args):
     )
     cl_states = _csv_choices(parser, "-s", args.states, set(config.STATES)) if args.states else []
     cl_domains = _csv_choices(parser, "-d", args.domains, set(config.DOMAINS)) if args.domains else []
+    if isinstance(args.fingerprint, str):
+        # README contract: reconstruction with -fp PATH is mutually exclusive with
+        # -s/-c/-d, which would otherwise silently desync from the recipe.
+        if args.states or args.courts or args.domains:
+            parser.error("-fp PATH cannot be combined with -s/-c/-d")
+        if not os.path.exists(args.fingerprint):
+            parser.error(f"-fp: file {args.fingerprint!r} does not exist")
+        if not os.path.isfile(args.fingerprint):
+            parser.error(f"-fp: {args.fingerprint!r} is a folder, not a file")
     return cl_courts, cl_states, cl_domains
 
 
@@ -186,15 +195,9 @@ def main():
         else:
             cl_states.extend(config.HTML_STATES)
     args.postprocess = bool(args.postprocess)
-    # -fp (fingerprint)
-    if isinstance(args.fingerprint, str):  # fp als Argument
-        fp = args.fingerprint
-        if not os.path.exists(fp):
-            output(f"file {fp} does not exist", "err")
-        elif not os.path.isfile(fp):
-            output(f"file {fp} is a folder, not a file", "err")
-        else:
-            Fingerprint(path, fp, args.docId, wait=args.wait)
+    # -fp (fingerprint) — path existence and mutual exclusion already validated in _validate
+    if isinstance(args.fingerprint, str):
+        Fingerprint(path, args.fingerprint, args.docId, wait=args.wait)
     else:  # fp als Flag / kein fp
         fp = args.fingerprint is True
         logger = logging.getLogger("scrapy")
