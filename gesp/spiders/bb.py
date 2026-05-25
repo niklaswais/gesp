@@ -3,6 +3,9 @@ import time as timelib
 import requests
 import scrapy
 from lxml import etree, html
+from scrapy.utils.defer import deferred_to_future
+from twisted.internet.defer import DeferredSemaphore
+from twisted.internet.threads import deferToThread
 
 from ..pipelines.exporters import ExportAsHtmlPipeline, FingerprintExportPipeline, RawExporter
 from ..pipelines.formatters import AZsPipeline, CourtsPipeline, DatesPipeline
@@ -47,7 +50,18 @@ class SpdrBB(scrapy.Spider):
         self.fp = fp
         self.postprocess = postprocess
         self.wait = wait
+        self.detail_sem = DeferredSemaphore(1)
         super().__init__(**kwargs)
+
+    @staticmethod
+    def _fetch_detail_tree(link, wait):
+        if wait:
+            timelib.sleep(wait)
+        try:
+            return html.fromstring(requests.get(link, timeout=30).text)
+        except (requests.RequestException, etree.LxmlError, ValueError) as e:
+            output(f"could not retrieve {link}: {e!r}", "err")
+            return None
 
     async def start(self):
         start_urls = []
@@ -100,7 +114,7 @@ class SpdrBB(scrapy.Spider):
         for url in start_urls:
             yield scrapy.Request(url=url, callback=self.parse)
 
-    def parse(self, response):
+    async def parse(self, response):
         if response.xpath("//a[@aria-label='Weiter']"):
             yield response.follow(response.xpath("//a[@aria-label='Weiter']/@href").get(), callback=self.parse)
         for result in response.xpath("//table[@id='resultlist']/tbody/tr"):
@@ -111,12 +125,11 @@ class SpdrBB(scrapy.Spider):
                 continue
             link = self.base_url + docid
             # Herausfinden des AZ...
-            if self.wait:
-                timelib.sleep(self.wait)
-            try:
-                tree = html.fromstring(requests.get(link, timeout=30).text)
-            except (requests.RequestException, etree.LxmlError, ValueError) as e:
-                output(f"could not retrieve {link}: {e!r}", "err")
+            wait = self.wait
+            tree = await deferred_to_future(
+                self.detail_sem.run(deferToThread, self._fetch_detail_tree, link, wait)
+            )
+            if tree is None:
                 continue
             az_cells = tree.xpath("//div[@id='metadata']/div/table/tbody/tr[2]/td[1]/text()")
             if not az_cells:

@@ -3,6 +3,9 @@ import time as timelib
 import requests
 import scrapy
 from lxml import etree, html
+from scrapy.utils.defer import deferred_to_future
+from twisted.internet.defer import DeferredSemaphore
+from twisted.internet.threads import deferToThread
 
 from ..pipelines.exporters import ExportAsHtmlPipeline, FingerprintExportPipeline, RawExporter
 from ..pipelines.formatters import AZsPipeline, CourtsPipeline, DatesPipeline
@@ -50,7 +53,18 @@ class SpdrNI(scrapy.Spider):
         self.wait = wait
         self.base_url = "https://voris.wolterskluwer-online.de"
         self.headers = config.ni_headers
+        self.detail_sem = DeferredSemaphore(1)
         super().__init__(**kwargs)
+
+    @staticmethod
+    def _fetch_detail_text(url, headers, wait):
+        if wait:
+            timelib.sleep(wait)
+        try:
+            return requests.get(url, headers=headers, timeout=30).text
+        except Exception as e:
+            output(f"could not retrieve {url}: {e}", "err")
+            return None
 
     async def start(self):
         filter_url = (
@@ -88,7 +102,7 @@ class SpdrNI(scrapy.Spider):
         for i, url in enumerate(start_urls):
             yield scrapy.Request(url=url, meta={"cookiejar": i}, dont_filter=True, callback=self.parse)
 
-    def parse(self, response):
+    async def parse(self, response):
         view_content = response.xpath('//ul[@class="view-content"]')
         if view_content:
             items = view_content[0].xpath('./li[@class="views-row"]')
@@ -98,42 +112,42 @@ class SpdrNI(scrapy.Spider):
                 href = item.xpath(".//h3/a/@href").get()
                 if href:
                     # Extrahieren der Meta-Informationen via Seiten-Aufruf
-                    if self.wait:
-                        timelib.sleep(self.wait)
-                    try:
-                        txt = requests.get(self.base_url + href, headers=self.headers, timeout=30).text
-                    except Exception as e:
-                        output(f"could not retrieve {self.base_url + href}: {e}", "err")
+                    url = self.base_url + href
+                    headers = dict(self.headers)
+                    wait = self.wait
+                    txt = await deferred_to_future(
+                        self.detail_sem.run(deferToThread, self._fetch_detail_text, url, headers, wait)
+                    )
+                    if txt is None:
                         continue
+                    try:
+                        tree = html.fromstring(txt)
+                    except (etree.LxmlError, ValueError) as e:
+                        output(f"could not parse {self.base_url + href}: {e!r}", "err")
                     else:
-                        try:
-                            tree = html.fromstring(txt)
-                        except (etree.LxmlError, ValueError) as e:
-                            output(f"could not parse {self.base_url + href}: {e!r}", "err")
-                        else:
-                            article = tree.xpath("//article")
-                            if article:
-                                # Extraktion der Meta-Daten
-                                court = tree.xpath(
-                                    '//section[@class="wkde-bibliography"]//dt[text()="Gericht"]/following-sibling::dd[1]/text()'
-                                )[0]
-                                date = tree.xpath(
-                                    '//section[@class="wkde-bibliography"]//dt[text()="Datum"]/following-sibling::dd[1]/text()'
-                                )[0]
-                                az = tree.xpath(
-                                    '//section[@class="wkde-bibliography"]//dt[text()="Aktenzeichen"]/following-sibling::dd[1]/text()'
-                                )[0]
+                        article = tree.xpath("//article")
+                        if article:
+                            # Extraktion der Meta-Daten
+                            court = tree.xpath(
+                                '//section[@class="wkde-bibliography"]//dt[text()="Gericht"]/following-sibling::dd[1]/text()'
+                            )[0]
+                            date = tree.xpath(
+                                '//section[@class="wkde-bibliography"]//dt[text()="Datum"]/following-sibling::dd[1]/text()'
+                            )[0]
+                            az = tree.xpath(
+                                '//section[@class="wkde-bibliography"]//dt[text()="Aktenzeichen"]/following-sibling::dd[1]/text()'
+                            )[0]
 
-                                yield {
-                                    "postprocess": self.postprocess,
-                                    "wait": self.wait,
-                                    "court": court,
-                                    "date": date,
-                                    "az": az.rstrip(),
-                                    "link": self.base_url + href,
-                                    "docId": href.split("/browse/document/")[1],
-                                    "tree": tree,  # wenn ohnehin schon verarbeitet...
-                                }
+                            yield {
+                                "postprocess": self.postprocess,
+                                "wait": self.wait,
+                                "court": court,
+                                "date": date,
+                                "az": az.rstrip(),
+                                "link": self.base_url + href,
+                                "docId": href.split("/browse/document/")[1],
+                                "tree": tree,  # wenn ohnehin schon verarbeitet...
+                            }
 
         # Button für nächste Seite
         next_page = response.xpath(

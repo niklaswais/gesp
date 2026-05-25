@@ -225,6 +225,7 @@ def main():
                 )
         d = rnr.join()
         d.addBoth(lambda _: reactor.stop())
+        reactor.suggestThreadPoolSize(max(24, len(STATE_SPIDERS) + 6))
         reactor.run()
 
 

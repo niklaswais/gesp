@@ -8,15 +8,23 @@ Fixtures live in tests/fixtures/:
   * <state>_search.{html,xml,json} — discovery response (every state). Refresh
     via `python tests/refresh_fixtures.py`.
   * <state>_detail.html — one decision's detail page (only bb, ni, whose
-    parse() makes a synchronous requests.get() per result row). Refreshed
-    manually; see tests/fixtures/README.md.
+    parse() reaches out to the detail page once per result row to extract
+    metadata the listing doesn't carry). Refreshed manually; see
+    tests/fixtures/README.md.
 
 Missing fixtures cause the corresponding state's test to skip (not fail), so
 the suite stays green on a fresh checkout before the cron has run.
+
+Note: `bb.parse` and `ni.parse` are async generators after the threading
+patch (they offload the per-row detail fetch via deferToThread). The driver
+in _parse() detects this at runtime via inspect.isasyncgen and drains them
+through asyncio.run.
 """
 
 from __future__ import annotations
 
+import asyncio
+import inspect
 import json
 from pathlib import Path
 from types import SimpleNamespace
@@ -27,15 +35,18 @@ from scrapy.http import HtmlResponse, TextResponse, XmlResponse
 
 from gesp.__main__ import STATE_SPIDERS
 from gesp.probe import all_states, fixture_filename, is_jportal
+from tests._async_helpers import adrain, stub_async_machinery
 
 FIXTURES = Path(__file__).parent / "fixtures"
 
 REQUIRED_KEYS = {"court", "date", "az", "link"}
 
-# Spiders whose parse() makes a synchronous requests.get() per result row to
-# pull metadata off the detail page. The drift test would otherwise hit those
+# Spiders whose parse() reaches the detail page once per result row to pull
+# metadata the listing doesn't carry. The drift test would otherwise hit those
 # portals live on every CI run; stub the spider module's `requests` binding to
-# replay a recorded detail-page response instead.
+# replay a recorded detail-page response instead. (The fetch itself runs in a
+# worker thread after the threading patch, but in tests we stub it out
+# synchronously via stub_async_machinery.)
 _DETAIL_FETCH_STATES = {"bb", "ni"}
 
 # State → discovery URL used to construct the scrapy.http.Response object.
@@ -109,7 +120,11 @@ def _stub_detail_fetch(state: str, monkeypatch) -> None:
         pytest.skip(f"detail fixture {fp.name} not present — capture one detail page manually")
     body = fp.read_bytes()
 
+    import requests as _requests  # local: don't pollute module-level imports
+
     class _StubRequests:
+        RequestException = _requests.RequestException
+
         @staticmethod
         def get(*_args, **_kwargs):
             return SimpleNamespace(text=body.decode("utf-8"))
@@ -143,7 +158,10 @@ def _parse(state: str, spider, body: bytes):
     response_cls = XmlResponse if state == "bund" else HtmlResponse
     response = response_cls(**response_kwargs)
 
-    return _items_and_requests(spider.parse(response))
+    result = spider.parse(response)
+    if inspect.isasyncgen(result):
+        return _items_and_requests(asyncio.run(adrain(result)))
+    return _items_and_requests(result)
 
 
 # ─── Parametrized over every supported state ──────────────────────────────────
@@ -151,6 +169,7 @@ def _parse(state: str, spider, body: bytes):
 def test_spider_parses_fixture(state, tmp_path, monkeypatch):
     body = _load_or_skip(state)
     _stub_detail_fetch(state, monkeypatch)
+    stub_async_machinery(state, monkeypatch)
     spider = _make_spider(state, tmp_path)
     items, requests = _parse(state, spider, body)
     if state in _DISCOVERY_ONLY:
@@ -169,6 +188,7 @@ def test_spider_parses_fixture(state, tmp_path, monkeypatch):
 def test_items_have_required_keys(state, tmp_path, monkeypatch):
     body = _load_or_skip(state)
     _stub_detail_fetch(state, monkeypatch)
+    stub_async_machinery(state, monkeypatch)
     spider = _make_spider(state, tmp_path)
     items, _ = _parse(state, spider, body)
     for item in items:
@@ -221,8 +241,9 @@ def test_bb_skips_row_on_detail_fetch_failure(tmp_path, monkeypatch):
 
     monkeypatch.setattr("gesp.spiders.bb.requests", _Boom)
     monkeypatch.setattr("gesp.spiders.bb.timelib.sleep", lambda _s: None)
+    stub_async_machinery("bb", monkeypatch)
     spider, response = _bb_response(tmp_path, body)
-    items, _ = _items_and_requests(spider.parse(response))
+    items, _ = _items_and_requests(asyncio.run(adrain(spider.parse(response))))
     assert items == []  # every row's detail fetch failed → no items, but no crash
 
 
@@ -242,8 +263,9 @@ def test_bb_skips_row_when_detail_lacks_az(tmp_path, monkeypatch):
 
     monkeypatch.setattr("gesp.spiders.bb.requests", _NoAz)
     monkeypatch.setattr("gesp.spiders.bb.timelib.sleep", lambda _s: None)
+    stub_async_machinery("bb", monkeypatch)
     spider, response = _bb_response(tmp_path, body)
-    items, _ = _items_and_requests(spider.parse(response))
+    items, _ = _items_and_requests(asyncio.run(adrain(spider.parse(response))))
     assert items == []
 
 
@@ -258,6 +280,7 @@ def test_bb_skips_row_when_docid_missing(tmp_path, monkeypatch):
         b"</body></html>"
     )
     monkeypatch.setattr("gesp.spiders.bb.timelib.sleep", lambda _s: None)
+    stub_async_machinery("bb", monkeypatch)
     spider, response = _bb_response(tmp_path, body)
-    items, _ = _items_and_requests(spider.parse(response))
+    items, _ = _items_and_requests(asyncio.run(adrain(spider.parse(response))))
     assert items == []

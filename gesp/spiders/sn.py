@@ -6,6 +6,9 @@ import urllib
 import requests
 import scrapy
 from lxml import etree, html
+from scrapy.utils.defer import deferred_to_future
+from twisted.internet.defer import DeferredSemaphore
+from twisted.internet.threads import deferToThread
 
 from ..pipelines.exporters import ExportAsPdfPipeline, FingerprintExportPipeline, RawExporter
 from ..pipelines.formatters import AZsPipeline, CourtsPipeline, DatesPipeline
@@ -49,7 +52,18 @@ class SpdrSN(scrapy.Spider):
         self.postprocess = postprocess
         self.wait = wait
         self.headers = config.sn_headers
+        self.detail_sem = DeferredSemaphore(1)
         super().__init__(**kwargs)
+
+    @staticmethod
+    def _fetch_ovg_intermediate_tree(tmp_link, wait):
+        if wait:
+            timelib.sleep(wait)
+        try:
+            return html.fromstring(requests.get(tmp_link, timeout=30).text)
+        except (requests.RequestException, etree.LxmlError, ValueError) as e:
+            output(f"could not retrieve {tmp_link}: {e!r}", "err")
+            return None
 
     async def start(self):
         supported_courts = ["ag", "lg", "olg"]
@@ -227,7 +241,7 @@ class SpdrSN(scrapy.Spider):
             url = "https://www.justiz.sachsen.de/esaver/answers.php?funkt=get_satz&container=" + container
             yield scrapy.Request(url=url, dont_filter=True, callback=self.parse_container)
 
-    def parse_results_ovg(self, response):
+    async def parse_results_ovg(self, response):
         for table in response.xpath("//table"):
             raw_href = table.xpath(".//td[2]/a/@href").get()
             if not raw_href:
@@ -243,34 +257,33 @@ class SpdrSN(scrapy.Spider):
                 output(f"sn: ovg row text missing or too short ({raw_data!r})", "warn")
                 continue
             data = raw_data[15:]
-            if self.wait:
-                timelib.sleep(self.wait)
-            try:  # Zwischengeschaltete Seite, von der aus erst der Filelink kopiert werden muss
-                tree = html.fromstring(requests.get(tmp_link, timeout=30).text)
-            except (requests.RequestException, etree.LxmlError, ValueError) as e:
-                output(f"could not retrieve {tmp_link}: {e!r}", "err")
-            else:
-                doc_pattern = "^(.*[/])?([^/]*[.](pdf|docx))([^a-z].*)?$"
-                file = None
-                for link in tree.xpath("//a[@target='_blank']"):
-                    text = "".join(link.xpath("./text()"))
-                    href_list = link.xpath("./@href")
-                    if not href_list:
-                        continue
-                    ref = href_list[0]
-                    if re.match(doc_pattern, ref):
-                        file = re.sub(doc_pattern, "\\2", ref)
-                        break
-                    if re.match(doc_pattern, text):
-                        file = re.sub(doc_pattern, "\\2", text)
-                        break
-                if not file:
+            wait = self.wait
+            tree = await deferred_to_future(
+                self.detail_sem.run(deferToThread, self._fetch_ovg_intermediate_tree, tmp_link, wait)
+            )
+            if tree is None:
+                continue
+            doc_pattern = "^(.*[/])?([^/]*[.](pdf|docx))([^a-z].*)?$"
+            file = None
+            for link in tree.xpath("//a[@target='_blank']"):
+                text = "".join(link.xpath("./text()"))
+                href_list = link.xpath("./@href")
+                if not href_list:
                     continue
-                url = "documents/" + file
-                yield {
-                    "wait": self.wait,
-                    "date": data[-11:-1],
-                    "az": data.split("(")[0].strip(),
-                    "court": "ovg",
-                    "link": "https://www.justiz.sachsen.de/ovgentschweb/" + url,
-                }
+                ref = href_list[0]
+                if re.match(doc_pattern, ref):
+                    file = re.sub(doc_pattern, "\\2", ref)
+                    break
+                if re.match(doc_pattern, text):
+                    file = re.sub(doc_pattern, "\\2", text)
+                    break
+            if not file:
+                continue
+            url = "documents/" + file
+            yield {
+                "wait": self.wait,
+                "date": data[-11:-1],
+                "az": data.split("(")[0].strip(),
+                "court": "ovg",
+                "link": "https://www.justiz.sachsen.de/ovgentschweb/" + url,
+            }

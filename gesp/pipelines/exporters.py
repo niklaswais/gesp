@@ -4,6 +4,9 @@ import os
 from datetime import datetime
 
 from scrapy.exceptions import DropItem
+from scrapy.utils.defer import deferred_to_future
+from twisted.internet.defer import DeferredSemaphore
+from twisted.internet.threads import deferToThread
 
 from ..src import config
 from ..src.create_file import save_as_html, save_as_pdf
@@ -13,6 +16,9 @@ from ._base import CrawlerAware
 
 
 class ExportPipeline(CrawlerAware):
+    def __init__(self):
+        self.sem = DeferredSemaphore(1)
+
     def open_spider(self, spider=None):
         spider = self._spider(spider)
         spdr_folder = os.path.join(spider.path, spider.name[7:])
@@ -24,17 +30,19 @@ class ExportPipeline(CrawlerAware):
 
 
 class ExportAsHtmlPipeline(ExportPipeline):
-    def process_item(self, item, spider=None):
+    async def process_item(self, item, spider=None):
         spider = self._spider(spider)
-        save_as_html(item, spider.name[7:], spider.path, spider.store_docId)
-        return item
+        name, path, store_docId = spider.name[7:], spider.path, spider.store_docId
+        return await deferred_to_future(
+            self.sem.run(deferToThread, save_as_html, item, name, path, store_docId)
+        )
 
 
 class ExportAsPdfPipeline(ExportPipeline):
-    def process_item(self, item, spider=None):
+    async def process_item(self, item, spider=None):
         spider = self._spider(spider)
-        save_as_pdf(item, spider.name[7:], spider.path)
-        return item
+        name, path = spider.name[7:], spider.path
+        return await deferred_to_future(self.sem.run(deferToThread, save_as_pdf, item, name, path))
 
 
 class FingerprintExportPipeline(CrawlerAware):

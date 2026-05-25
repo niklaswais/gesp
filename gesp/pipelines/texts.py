@@ -1,37 +1,61 @@
+from scrapy.utils.defer import deferred_to_future
+from twisted.internet.defer import DeferredSemaphore
+from twisted.internet.threads import deferToThread
+
 from ..src.get_text import bb, be, bw, he, hh, mv, ni, nw, rp, sh, sl, sn, st, th
 from ._base import CrawlerAware
 
 
 class TextsPipeline(CrawlerAware):
-    def process_item(self, item, spider=None):
+    def __init__(self):
+        self.sem = DeferredSemaphore(1)
+
+    async def process_item(self, item, spider=None):
         spider = self._spider(spider)
-        if spider.name[7:] == "bb":
+        name = spider.name[7:]
+        headers = getattr(spider, "headers", None)
+        cookies = getattr(spider, "cookies", None)
+        # Several get_text.* functions mutate headers["Referer"] per item (see
+        # get_text.be, get_text.bw, etc.). Without copying, concurrent items
+        # from the same portal would race on that mutation. Copy on the reactor
+        # thread before deferring.
+        if headers is not None:
+            headers = dict(headers)
+        if cookies is not None:
+            cookies = dict(cookies)
+        return await deferred_to_future(
+            self.sem.run(deferToThread, self._dispatch, item, name, headers, cookies)
+        )
+
+    @staticmethod
+    def _dispatch(item, name, headers, cookies):
+        if name == "bb":
             return bb(item)
-        elif spider.name[7:] == "be":
-            return be(item, spider.headers, spider.cookies)
-        elif spider.name[7:] == "bw":
-            return bw(item, spider.headers, spider.cookies)
-        # elif spider.name[7:] == "by":
-        #    return by(item)
-        elif spider.name[7:] == "he":
-            return he(item, spider.headers, spider.cookies)
-        elif spider.name[7:] == "hh":
-            return hh(item, spider.headers, spider.cookies)
-        elif spider.name[7:] == "mv":
-            return mv(item, spider.headers, spider.cookies)
-        elif spider.name[7:] == "ni":
+        elif name == "be":
+            return be(item, headers, cookies)
+        elif name == "bw":
+            return bw(item, headers, cookies)
+        # by is intentionally absent — its decisions are zip files handled by
+        # save_as_html, not by a get_text dispatch.
+        elif name == "he":
+            return he(item, headers, cookies)
+        elif name == "hh":
+            return hh(item, headers, cookies)
+        elif name == "mv":
+            return mv(item, headers, cookies)
+        elif name == "ni":
             return ni(item)
-        elif spider.name[7:] == "nw":
+        elif name == "nw":
             return nw(item)
-        elif spider.name[7:] == "rp":
-            return rp(item, spider.headers, spider.cookies)
-        elif spider.name[7:] == "sh":
-            return sh(item, spider.headers, spider.cookies)
-        elif spider.name[7:] == "sl":
-            return sl(item, spider.headers, spider.cookies)
-        elif spider.name[7:] == "sn":
-            return sn(item, spider.headers)
-        elif spider.name[7:] == "st":
-            return st(item, spider.headers, spider.cookies)
-        elif spider.name[7:] == "th":
-            return th(item, spider.headers, spider.cookies)
+        elif name == "rp":
+            return rp(item, headers, cookies)
+        elif name == "sh":
+            return sh(item, headers, cookies)
+        elif name == "sl":
+            return sl(item, headers, cookies)
+        elif name == "sn":
+            return sn(item, headers)
+        elif name == "st":
+            return st(item, headers, cookies)
+        elif name == "th":
+            return th(item, headers, cookies)
