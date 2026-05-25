@@ -126,9 +126,7 @@ class SpdrBB(scrapy.Spider):
             link = self.base_url + docid
             # Herausfinden des AZ...
             wait = self.wait
-            tree = await deferred_to_future(
-                self.detail_sem.run(deferToThread, self._fetch_detail_tree, link, wait)
-            )
+            tree = await deferred_to_future(self.detail_sem.run(deferToThread, self._fetch_detail_tree, link, wait))
             if tree is None:
                 continue
             az_cells = tree.xpath("//div[@id='metadata']/div/table/tbody/tr[2]/td[1]/text()")

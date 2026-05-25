@@ -107,11 +107,7 @@ def test_ovg_yields_item_through_detail_fetch(tmp_path, monkeypatch):
         f"<td><a href=\"openWindow('abc123')\">{raw_text}</a></td>"
         "</tr></table></body></html>"
     )
-    detail_body = (
-        "<html><body>"
-        "<a target='_blank' href='documents/x.pdf'>file</a>"
-        "</body></html>"
-    )
+    detail_body = "<html><body><a target='_blank' href='documents/x.pdf'>file</a></body></html>"
 
     monkeypatch.setattr("gesp.spiders.sn.timelib.sleep", lambda _s: None)
     stub_async_machinery("sn", monkeypatch)

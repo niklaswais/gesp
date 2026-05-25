@@ -23,9 +23,7 @@ class TextsPipeline(CrawlerAware):
             headers = dict(headers)
         if cookies is not None:
             cookies = dict(cookies)
-        return await deferred_to_future(
-            self.sem.run(deferToThread, self._dispatch, item, name, headers, cookies)
-        )
+        return await deferred_to_future(self.sem.run(deferToThread, self._dispatch, item, name, headers, cookies))
 
     @staticmethod
     def _dispatch(item, name, headers, cookies):

@@ -33,9 +33,7 @@ class ExportAsHtmlPipeline(ExportPipeline):
     async def process_item(self, item, spider=None):
         spider = self._spider(spider)
         name, path, store_docId = spider.name[7:], spider.path, spider.store_docId
-        return await deferred_to_future(
-            self.sem.run(deferToThread, save_as_html, item, name, path, store_docId)
-        )
+        return await deferred_to_future(self.sem.run(deferToThread, save_as_html, item, name, path, store_docId))
 
 
 class ExportAsPdfPipeline(ExportPipeline):
